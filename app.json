@@ -1,0 +1,9 @@
+{
+  "expo": {
+    "sdkVersion": "27.0.0",
+    "splash": {
+      "image": "./assets/logoFull.png",
+      "backgroundColor": "#000"
+    }
+  }
+}
