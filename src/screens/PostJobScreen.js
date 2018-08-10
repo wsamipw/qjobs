@@ -3,13 +3,12 @@ import { StyleSheet, Text } from "react-native";
 import { Container, Content, Button } from "native-base";
 
 export default class PostJobScreen extends Component {
+  static navigationOptions = { header: null };
   render() {
     return (
       <Container>
         <Content contentContainerStyle={styles.contentStyle}>
-          <Button block onPress={() => this.props.navigation.navigate("login")}>
-            <Text>Go to Login</Text>
-          </Button>
+          <Text>Post Job Screen</Text>
         </Content>
       </Container>
     );

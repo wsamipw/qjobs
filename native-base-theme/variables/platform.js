@@ -103,7 +103,11 @@ export default {
   checkboxTickColor: "#fff",
 
   // Color
-  brandPrimary: platform === "ios" ? "#007aff" : "#3F51B5",
+
+  brandPrimary: platform === "ios" ? "#5968ef" : "#5968ef",
+  brandSecondary: "#ff960a",
+
+  // brandPrimary: platform === "ios" ? "#007aff" : "#3F51B5",
   brandInfo: "#62B1F6",
   brandSuccess: "#5cb85c",
   brandDanger: "#d9534f",
@@ -158,7 +162,7 @@ export default {
   iosStatusbar: platform === "ios" ? "dark-content" : "light-content",
   get statusBarColor() {
     return color(this.toolbarDefaultBg)
-      .darken(0.2)
+      .darken(0.9)
       .hex();
   },
   get darkenHeader() {
@@ -232,7 +236,10 @@ export default {
   inverseSpinnerColor: "#1A191B",
 
   // Tab
-  tabDefaultBg: platform === "ios" ? "#F8F8F8" : "#3F51B5",
+  get tabDefaultBg() {
+    return this.brandPrimary;
+  },
+  // tabDefaultBg: platform === "ios" ? "#F8F8F8" : "#3F51B5",
   topTabBarTextColor: platform === "ios" ? "#6b6b6b" : "#b3c7f9",
   topTabBarActiveTextColor: platform === "ios" ? "#007aff" : "#fff",
   topTabBarBorderColor: platform === "ios" ? "#a7a6ab" : "#fff",

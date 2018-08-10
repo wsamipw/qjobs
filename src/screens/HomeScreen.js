@@ -10,13 +10,16 @@ class HomeScreen extends Component {
   state = { activePage: 1 };
   componentWillMount() {
     this.props.setMainNavigation(this.props.navigation);
-    // setTimeout(() => this.setState({ activePage: 2 }), 0);
   }
   render() {
     return (
       <Container>
         <Content contentContainerStyle={styles.contentStyle}>
-          <Tabs page={this.state.activePage} tabBarPosition="bottom">
+          <Tabs
+            locked
+            tabBarPosition="bottom"
+            initialPage={this.state.activePage}
+          >
             <Tab
               heading={
                 <TabHeading>

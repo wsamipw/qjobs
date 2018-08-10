@@ -5,6 +5,7 @@ import ProfileScreen from "./ProfileScreen";
 import ProfileDetailScreen from "./ProfileDetailScreen";
 import SearchJobScreen from "./SearchJobScreen";
 import PostJobScreen from "./PostJobScreen";
+import SearchResultScreen from "./SearchResultScreen";
 
 export {
   LoginScreen,
@@ -13,5 +14,6 @@ export {
   ProfileScreen,
   ProfileDetailScreen,
   PostJobScreen,
-  SearchJobScreen
+  SearchJobScreen,
+  SearchResultScreen
 };

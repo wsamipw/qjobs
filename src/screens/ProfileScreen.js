@@ -3,13 +3,12 @@ import { StyleSheet, Text } from "react-native";
 import { Container, Content, Button } from "native-base";
 
 export default class ProfileScreen extends Component {
+  static navigationOptions = { header: null };
   render() {
     return (
       <Container>
         <Content contentContainerStyle={styles.contentStyle}>
-          <Button block onPress={() => this.props.navigation.navigate("login")}>
-            <Text>Go to Login</Text>
-          </Button>
+          <Text>Profile Screen</Text>
         </Content>
       </Container>
     );

@@ -1,15 +1,120 @@
 import React, { Component } from "react";
-import { StyleSheet, Text } from "react-native";
-import { Container, Content, Button } from "native-base";
+import { StyleSheet, View, Image, StatusBar, Dimensions } from "react-native";
+import {
+  Container,
+  Content,
+  Text,
+  Item,
+  Input,
+  Icon,
+  Button
+} from "native-base";
+import Slider from "react-native-slider";
+import PopupDialog, {
+  DialogTitle,
+  ScaleAnimation
+} from "react-native-popup-dialog";
+
+const scaleAnimation = new ScaleAnimation();
 
 export default class SearchJobScreen extends Component {
+  static navigationOptions = { header: null };
+  state = {
+    dialogShow: false,
+    proximity: 0
+  };
+
+  showScaleAnimationDialog = () => {
+    this.scaleAnimationDialog.show();
+  };
+
   render() {
     return (
       <Container>
+        <StatusBar barStyle="dark-content" backgroundColor="#ecf0f1" />
         <Content contentContainerStyle={styles.contentStyle}>
-          <Button block onPress={() => this.props.navigation.navigate("login")}>
-            <Text>Go to Login</Text>
-          </Button>
+          <View style={styles.mainWrapper}>
+            <Image
+              source={require("../static/img/logoIcon.png")}
+              style={styles.logo}
+            />
+            <Item rounded>
+              <Input
+                placeholder="Enter Job title or keyword"
+                style={styles.inputStyles}
+              />
+            </Item>
+            <Button
+              style={styles.searchButtton}
+              rounded
+              block
+              onPress={() => this.props.navigation.navigate("result")}
+            >
+              <Text uppercase={false}>Find Job</Text>
+            </Button>
+          </View>
+          <View style={styles.filterWrapper}>
+            <Button
+              onPress={this.showScaleAnimationDialog}
+              style={styles.fabButton}
+            >
+              <Icon name="funnel" />
+            </Button>
+          </View>
+          <PopupDialog
+            containerStyle={{
+              zIndex: 999
+            }}
+            width={0.8}
+            ref={popupDialog => {
+              this.scaleAnimationDialog = popupDialog;
+            }}
+            dialogAnimation={scaleAnimation}
+            dialogTitle={<DialogTitle title="Search Filters" />}
+          >
+            <View style={styles.dialogContentView}>
+              <Text>Select Proximity of your search</Text>
+              <View
+                style={{
+                  flex: 1,
+                  marginVertical: 15,
+                  alignItems: "stretch",
+                  justifyContent: "center"
+                }}
+              >
+                <Slider
+                  animateTransitions
+                  animationType="spring"
+                  minimumValue={0}
+                  maximumValue={10}
+                  step={1}
+                  value={this.state.proximity}
+                  onValueChange={proximity => this.setState({ proximity })}
+                />
+              </View>
+              <Text style={{ marginVertical: 15 }}>
+                {this.state.proximity === 0
+                  ? `Proximity: Search everywhere`
+                  : `Proximity: ${this.state.proximity} KM`}
+              </Text>
+              <Item rounded>
+                <Input
+                  placeholder="Enter location"
+                  style={styles.inputStyles}
+                />
+              </Item>
+              <Button
+                block
+                rounded
+                style={styles.filterApplyButtton}
+                onPress={() => {
+                  this.scaleAnimationDialog.dismiss();
+                }}
+              >
+                <Text uppercase={false}>Apply</Text>
+              </Button>
+            </View>
+          </PopupDialog>
         </Content>
       </Container>
     );
@@ -22,5 +127,51 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "flex-start",
     alignItems: "center"
+  },
+  mainWrapper: {
+    flex: 1,
+    marginTop: Dimensions.get("window").height * 0.1,
+    width: Dimensions.get("screen").width * 0.8,
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    zIndex: 1
+  },
+  logo: {
+    height: 80,
+    width: 80,
+    resizeMode: "contain",
+    marginBottom: 26
+  },
+  inputStyles: {
+    paddingLeft: 15,
+    flex: 1
+  },
+  searchButtton: {
+    zIndex: 1,
+    marginVertical: 15
+  },
+  fabButton: {
+    height: 55,
+    width: 55,
+    borderRadius: 55,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  filterWrapper: {
+    width: Dimensions.get("window").width,
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    marginBottom: 20,
+    marginRight: Dimensions.get("window").width * 0.1
+  },
+  dialogContentView: {
+    flex: 1,
+    padding: 15
+  },
+  filterApplyButtton: {
+    marginVertical: 15,
+    marginHorizontal: 0
   }
 });

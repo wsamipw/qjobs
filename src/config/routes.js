@@ -6,7 +6,8 @@ import {
   SearchJobScreen,
   PostJobScreen,
   ProfileScreen,
-  ProfileDetailScreen
+  ProfileDetailScreen,
+  SearchResultScreen
 } from "../screens";
 
 export const ProfileStack = createStackNavigator(
@@ -18,7 +19,8 @@ export const ProfileStack = createStackNavigator(
 );
 export const SearchStack = createStackNavigator(
   {
-    search: SearchJobScreen
+    search: SearchJobScreen,
+    result: SearchResultScreen
   },
   { initialRouteName: "search" }
 );
