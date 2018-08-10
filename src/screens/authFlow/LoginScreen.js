@@ -64,7 +64,6 @@ export default class LoginScreen extends Component {
               title="Login"
               onPress={() => this.props.navigation.navigate("home")}
             />
-
             <View style={styles.socialLoginWrapper}>
               <SocialIcon
                 style={styles.SocialloginButtton}

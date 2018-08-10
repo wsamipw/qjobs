@@ -1,12 +1,13 @@
 import React from "react";
 import { SafeAreaView } from "react-native";
 import { Container, StyleProvider } from "native-base";
+import { Provider } from "react-redux";
 import Expo from "expo";
 import mainNavigator from "./src/config/routes";
 import getTheme from "./native-base-theme/components";
 import platform from "./native-base-theme/variables/platform";
-
-export default class App extends React.Component {
+import store from "./src/store";
+class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = { loading: true };
@@ -39,3 +40,9 @@ export default class App extends React.Component {
     );
   }
 }
+
+export default () => (
+  <Provider store={store}>
+    <App />
+  </Provider>
+);

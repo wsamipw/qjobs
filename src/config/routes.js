@@ -1,11 +1,32 @@
 import { createSwitchNavigator, createStackNavigator } from "react-navigation";
-import { LoginScreen, RegisterScreen, HomeScreen } from "../screens";
+import {
+  LoginScreen,
+  RegisterScreen,
+  HomeScreen,
+  SearchJobScreen,
+  PostJobScreen,
+  ProfileScreen,
+  ProfileDetailScreen
+} from "../screens";
 
-export const MainStack = createStackNavigator(
+export const ProfileStack = createStackNavigator(
   {
-    home: HomeScreen
+    profile: ProfileScreen,
+    profileDetail: ProfileDetailScreen
   },
-  { initialRouteName: "home" }
+  { initialRouteName: "profile" }
+);
+export const SearchStack = createStackNavigator(
+  {
+    search: SearchJobScreen
+  },
+  { initialRouteName: "search" }
+);
+export const PostStack = createStackNavigator(
+  {
+    post: PostJobScreen
+  },
+  { initialRouteName: "post" }
 );
 
 export default initialRouteName =>
