@@ -17,6 +17,7 @@ export const ProfileStack = createStackNavigator(
   },
   { initialRouteName: "profile" }
 );
+
 export const SearchStack = createStackNavigator(
   {
     search: SearchJobScreen,
@@ -24,6 +25,7 @@ export const SearchStack = createStackNavigator(
   },
   { initialRouteName: "search" }
 );
+
 export const PostStack = createStackNavigator(
   {
     post: PostJobScreen

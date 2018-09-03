@@ -8,9 +8,11 @@ import { setMainNavigation } from "../actions";
 
 class HomeScreen extends Component {
   state = { activePage: 1 };
-  componentWillMount() {
+
+  componentDidMount() {
     this.props.setMainNavigation(this.props.navigation);
   }
+
   render() {
     return (
       <Container>

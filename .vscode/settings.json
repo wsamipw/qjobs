@@ -1,0 +1,12 @@
+{
+    "editor.tabSize": 2,
+    "editor.formatOnSave": true,
+    "[javascript]": {
+      "editor.formatOnSave": false
+    },
+    "eslint.autoFixOnSave": true,
+    "eslint.alwaysShowStatus": false,
+    "prettier.disableLanguages": ["js"],
+    "python.pythonPath": "/usr/bin/python3"
+  }
+  
