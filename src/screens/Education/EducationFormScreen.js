@@ -13,26 +13,11 @@ import { v4 } from "uuid";
 export const EDUCATION_MUTATION = gql`
   mutation AddEducationMutation($education: JSONString!) {
     updateUser(education: $education) {
-      user {
-        education
-      }
       msg
       status
     }
   }
 `;
-
-// $id: String!
-// $levelOfEducation: String!
-// $nameOfInstitute: String!
-// $subject: String!
-// $startDate: Date!
-// $endDate: Date!
-// levelOfEducation
-// nameOfInstitute
-// subject
-// startDate
-// endDate
 
 class EducationFormScreen extends Component {
   state = {
@@ -44,11 +29,6 @@ class EducationFormScreen extends Component {
   };
 
   componentDidMount() {
-    console.log(
-      "selectedEducation : ",
-      this.props.navigation.getParam("selectedEducation", null)
-    );
-
     const data = this.props.navigation.getParam("selectedEducation", null);
 
     if (data) {
@@ -170,17 +150,9 @@ class EducationFormScreen extends Component {
               ]);
             }
 
-            console.log(
-              "educationsss.s......ss.: ",
-              this.props.navigation.getParam("educations", [])
-            );
-            console.log("edcation state: ", this.state);
-            console.log("edcation state stringiysidf1: ", education);
-
             this.props
               .updateUser(education)
               .then(({ data }) => {
-                console.log("Eduation:", data);
                 if (data.updateUser.msg === "success") {
                   console.log("add education success");
                   this.props.navigation.goBack();

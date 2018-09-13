@@ -18,23 +18,6 @@ export const EDUCATION_DETAILS_QUERY = gql`
 `;
 
 class EducationScreen extends Component {
-  // componentDidMount() {
-  //   this.onQueryFetch();
-  // }
-
-  // onQueryFetch = () =>
-  //   this.props.client
-  //     .query({
-  //       query: EDUCATION_DETAILS_QUERY,
-  //       fetchPolicy: "no-cache"
-  //     })
-  //     .then(response => {
-  //       console.log("education response: ", response);
-  //     })
-  //     .catch(error => {
-  //       console.log("eduation fetch error: ", response);
-  //     });
-
   render() {
     return (
       <ScrollView scrollEnabled>
@@ -47,11 +30,8 @@ class EducationScreen extends Component {
               {({ loading, error, data }) => {
                 if (loading) return <Text>Fetching Data ...</Text>;
                 if (error) return <Text>Error Fetching Data !</Text>;
-                console.log("loading list: ", loading);
-                console.log("error list: ", error);
-                console.log("data list: ", data);
+
                 const educationDetailsList = JSON.parse(data.me.education);
-                console.log("JSON parsed data: ", educationDetailsList);
 
                 return educationDetailsList ? (
                   <View>
@@ -112,9 +92,8 @@ class EducationScreen extends Component {
                             this.props
                               .updateUser(JSON.stringify(filteredEducationList))
                               .then(({ data }) => {
-                                console.log("Eduation:", data);
                                 if (data.updateUser.msg === "success") {
-                                  console.log(" education deleted");
+                                  console.log("education deleted");
                                 } else throw new Error(data.updateUser.msg);
                               })
                               .catch(error => {
