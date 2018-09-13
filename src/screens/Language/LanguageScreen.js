@@ -7,69 +7,49 @@ import { Button } from "react-native-elements";
 import { compose, graphql, withApollo, Query } from "react-apollo";
 import gql from "graphql-tag";
 import { Card } from "react-native-elements";
-import { EDUCATION_MUTATION } from "./EducationFormScreen";
+import { LANGUAGE_MUTATION } from "./LanguageFormScreen";
 
-export const EDUCATION_DETAILS_QUERY = gql`
+export const LANGUAGE_DETAILS_QUERY = gql`
   {
     me {
-      education
+      language
     }
   }
 `;
 
-class EducationScreen extends Component {
+class LanguageScreen extends Component {
   render() {
     return (
       <ScrollView scrollEnabled>
         <Container>
           <Content scrollEnabled contentContainerStyle={styles.contentStyle}>
             <Query
-              query={EDUCATION_DETAILS_QUERY}
+              query={LANGUAGE_DETAILS_QUERY}
               fetchPolicy="cache-and-network"
             >
               {({ loading, error, data }) => {
                 if (loading) return <Text>Fetching Data ...</Text>;
                 if (error) return <Text>Error Fetching Data !</Text>;
 
-                let educationDetailsList = JSON.parse(data.me.education);
+                let languageDetailsList = JSON.parse(data.me.language);
 
-                if (!Array.isArray(educationDetailsList))
-                  educationDetailsList = [];
+                if (!Array.isArray(languageDetailsList))
+                  languageDetailsList = [];
 
-                return educationDetailsList.length ? (
+                return languageDetailsList.length ? (
                   <View>
-                    {educationDetailsList.map((each, index) => (
+                    {languageDetailsList.map((each, index) => (
                       <Card key={index}>
                         <Text style={styles.boldText}>
-                          <Text style={styles.titleStyle}>
-                            Education Level:{" "}
-                          </Text>
+                          <Text style={styles.titleStyle}>Language: </Text>
                           <Text style={styles.textStyle}>
-                            {each.levelOfEducation}
+                            {each.language}
                             {"\n"}
                           </Text>
 
-                          <Text style={styles.titleStyle}>Institute: </Text>
+                          <Text style={styles.titleStyle}>Proficiency: </Text>
                           <Text tyle={styles.textStyle}>
-                            {each.nameOfInstitute}
-                            {"\n"}
-                          </Text>
-
-                          <Text style={styles.titleStyle}>Field: </Text>
-                          <Text style={styles.textStyle}>
-                            {each.subject}
-                            {"\n"}
-                          </Text>
-
-                          <Text style={styles.titleStyle}>Start Date: </Text>
-                          <Text style={styles.textStyle}>
-                            {each.startDate}
-                            {"\n"}
-                          </Text>
-
-                          <Text style={styles.titleStyle}>End Date: </Text>
-                          <Text style={styles.textStyle}>
-                            {each.endDate}
+                            {each.proficiency}
                             {"\n"}
                           </Text>
                         </Text>
@@ -77,9 +57,9 @@ class EducationScreen extends Component {
                           backgroundColor="green"
                           title="Edit"
                           onPress={() =>
-                            this.props.navigation.navigate("educationForm", {
-                              educations: educationDetailsList,
-                              selectedEducation: each
+                            this.props.navigation.navigate("languageForm", {
+                              languages: languageDetailsList,
+                              selectedLanguage: each
                             })
                           }
                         />
@@ -88,15 +68,15 @@ class EducationScreen extends Component {
                           title="Delete"
                           onPress={() => {
                             const id = each.id;
-                            const filteredEducationList = educationDetailsList.filter(
-                              eachEducation => eachEducation.id !== id
+                            const filteredLanguageList = languageDetailsList.filter(
+                              eachLanguage => eachLanguage.id !== id
                             );
 
                             this.props
-                              .updateUser(JSON.stringify(filteredEducationList))
+                              .updateUser(JSON.stringify(filteredLanguageList))
                               .then(({ data }) => {
                                 if (data.updateUser.msg === "success") {
-                                  console.log("education deleted");
+                                  console.log("Language deleted");
                                 } else throw new Error(data.updateUser.msg);
                               })
                               .catch(error => {
@@ -108,23 +88,23 @@ class EducationScreen extends Component {
                     ))}
                     <Button
                       backgroundColor="#3F51B5"
-                      title="Add Education"
+                      title="Add Language"
                       onPress={() =>
-                        this.props.navigation.navigate("educationForm", {
-                          educations: educationDetailsList
+                        this.props.navigation.navigate("languageForm", {
+                          languages: languageDetailsList
                         })
                       }
                     />
                   </View>
                 ) : (
                   <View>
-                    <Text>No Education Details Found</Text>
+                    <Text>No Language Details Found</Text>
                     <Button
                       backgroundColor="#3F51B5"
-                      title="Add Education"
+                      title="Add Language"
                       onPress={() =>
-                        this.props.navigation.navigate("educationForm", {
-                          educations: educationDetailsList
+                        this.props.navigation.navigate("languageForm", {
+                          languages: languageDetailsList
                         })
                       }
                     />
@@ -164,15 +144,15 @@ const mapStateToProps = ({ myNavigation }) => {
 
 export default compose(
   connect(mapStateToProps),
-  graphql(EDUCATION_MUTATION, {
+  graphql(LANGUAGE_MUTATION, {
     props: ({ mutate }) => ({
-      updateUser: education =>
+      updateUser: language =>
         mutate({
           variables: {
-            education
+            language
           },
-          refetchQueries: [{ query: EDUCATION_DETAILS_QUERY }]
+          refetchQueries: [{ query: LANGUAGE_DETAILS_QUERY }]
         })
     })
   })
-)(EducationScreen);
+)(LanguageScreen);

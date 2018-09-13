@@ -9,15 +9,41 @@ import {
   ProfileDetailScreen,
   SearchResultScreen,
   EducationScreen,
-  EducationFormScreen
+  EducationFormScreen,
+  LanguageScreen,
+  LanguageFormScreen,
+  ReferenceScreen,
+  ReferenceFormScreen,
+  SocialAccountsScreen,
+  SocialAccountsFormScreen,
+  WorkExperienceScreen,
+  WorkExperienceFormScreen,
+  TrainingScreen,
+  TrainingFormScreen
 } from "../screens";
 
 export const ProfileStack = createStackNavigator(
   {
     profile: ProfileScreen,
     profileDetail: ProfileDetailScreen,
+
     education: EducationScreen,
-    educationForm: EducationFormScreen
+    educationForm: EducationFormScreen,
+
+    language: LanguageScreen,
+    languageForm: LanguageFormScreen,
+
+    reference: ReferenceScreen,
+    referenceForm: ReferenceFormScreen,
+
+    socialAccounts: SocialAccountsScreen,
+    socialAccountsForm: SocialAccountsFormScreen,
+
+    workExperience: WorkExperienceScreen,
+    workExperienceForm: WorkExperienceFormScreen,
+
+    training: TrainingScreen,
+    trainingForm: TrainingFormScreen
   },
   { initialRouteName: "profile" }
 );

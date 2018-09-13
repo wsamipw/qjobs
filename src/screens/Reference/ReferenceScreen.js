@@ -7,69 +7,69 @@ import { Button } from "react-native-elements";
 import { compose, graphql, withApollo, Query } from "react-apollo";
 import gql from "graphql-tag";
 import { Card } from "react-native-elements";
-import { EDUCATION_MUTATION } from "./EducationFormScreen";
+import { REFERENCE_MUTATION } from "./ReferenceFormScreen";
 
-export const EDUCATION_DETAILS_QUERY = gql`
+export const REFERENCE_DETAILS_QUERY = gql`
   {
     me {
-      education
+      reference
     }
   }
 `;
 
-class EducationScreen extends Component {
+class ReferenceScreen extends Component {
   render() {
     return (
       <ScrollView scrollEnabled>
         <Container>
           <Content scrollEnabled contentContainerStyle={styles.contentStyle}>
             <Query
-              query={EDUCATION_DETAILS_QUERY}
+              query={REFERENCE_DETAILS_QUERY}
               fetchPolicy="cache-and-network"
             >
               {({ loading, error, data }) => {
                 if (loading) return <Text>Fetching Data ...</Text>;
                 if (error) return <Text>Error Fetching Data !</Text>;
 
-                let educationDetailsList = JSON.parse(data.me.education);
+                let referenceDetailsList = JSON.parse(data.me.reference);
 
-                if (!Array.isArray(educationDetailsList))
-                  educationDetailsList = [];
+                if (!Array.isArray(referenceDetailsList))
+                  referenceDetailsList = [];
 
-                return educationDetailsList.length ? (
+                return referenceDetailsList && referenceDetailsList.length ? (
                   <View>
-                    {educationDetailsList.map((each, index) => (
+                    {referenceDetailsList.map((each, index) => (
                       <Card key={index}>
                         <Text style={styles.boldText}>
-                          <Text style={styles.titleStyle}>
-                            Education Level:{" "}
-                          </Text>
+                          <Text style={styles.titleStyle}>Person Name: </Text>
                           <Text style={styles.textStyle}>
-                            {each.levelOfEducation}
+                            {each.name}
                             {"\n"}
                           </Text>
 
-                          <Text style={styles.titleStyle}>Institute: </Text>
+                          <Text style={styles.titleStyle}>Organisation: </Text>
                           <Text tyle={styles.textStyle}>
-                            {each.nameOfInstitute}
+                            {each.organisation}
                             {"\n"}
                           </Text>
 
-                          <Text style={styles.titleStyle}>Field: </Text>
+                          <Text style={styles.titleStyle}>Designation: </Text>
                           <Text style={styles.textStyle}>
-                            {each.subject}
+                            {each.designation}
                             {"\n"}
                           </Text>
 
-                          <Text style={styles.titleStyle}>Start Date: </Text>
+                          <Text style={styles.titleStyle}>Email: </Text>
                           <Text style={styles.textStyle}>
-                            {each.startDate}
+                            {each.email}
                             {"\n"}
                           </Text>
 
-                          <Text style={styles.titleStyle}>End Date: </Text>
+                          <Text style={styles.titleStyle}>
+                            Contact Number:{" "}
+                          </Text>
                           <Text style={styles.textStyle}>
-                            {each.endDate}
+                            {each.contactNumber}
                             {"\n"}
                           </Text>
                         </Text>
@@ -77,9 +77,9 @@ class EducationScreen extends Component {
                           backgroundColor="green"
                           title="Edit"
                           onPress={() =>
-                            this.props.navigation.navigate("educationForm", {
-                              educations: educationDetailsList,
-                              selectedEducation: each
+                            this.props.navigation.navigate("referenceForm", {
+                              references: referenceDetailsList,
+                              selectedReference: each
                             })
                           }
                         />
@@ -88,15 +88,15 @@ class EducationScreen extends Component {
                           title="Delete"
                           onPress={() => {
                             const id = each.id;
-                            const filteredEducationList = educationDetailsList.filter(
-                              eachEducation => eachEducation.id !== id
+                            const filteredReferenceList = referenceDetailsList.filter(
+                              eachReference => eachReference.id !== id
                             );
 
                             this.props
-                              .updateUser(JSON.stringify(filteredEducationList))
+                              .updateUser(JSON.stringify(filteredReferenceList))
                               .then(({ data }) => {
                                 if (data.updateUser.msg === "success") {
-                                  console.log("education deleted");
+                                  console.log("reference deleted");
                                 } else throw new Error(data.updateUser.msg);
                               })
                               .catch(error => {
@@ -108,23 +108,23 @@ class EducationScreen extends Component {
                     ))}
                     <Button
                       backgroundColor="#3F51B5"
-                      title="Add Education"
+                      title="Add Reference"
                       onPress={() =>
-                        this.props.navigation.navigate("educationForm", {
-                          educations: educationDetailsList
+                        this.props.navigation.navigate("referenceForm", {
+                          references: referenceDetailsList
                         })
                       }
                     />
                   </View>
                 ) : (
                   <View>
-                    <Text>No Education Details Found</Text>
+                    <Text>No Reference Details Found</Text>
                     <Button
                       backgroundColor="#3F51B5"
-                      title="Add Education"
+                      title="Add Reference"
                       onPress={() =>
-                        this.props.navigation.navigate("educationForm", {
-                          educations: educationDetailsList
+                        this.props.navigation.navigate("referenceForm", {
+                          references: referenceDetailsList
                         })
                       }
                     />
@@ -164,15 +164,15 @@ const mapStateToProps = ({ myNavigation }) => {
 
 export default compose(
   connect(mapStateToProps),
-  graphql(EDUCATION_MUTATION, {
+  graphql(REFERENCE_MUTATION, {
     props: ({ mutate }) => ({
-      updateUser: education =>
+      updateUser: reference =>
         mutate({
           variables: {
-            education
+            reference
           },
-          refetchQueries: [{ query: EDUCATION_DETAILS_QUERY }]
+          refetchQueries: [{ query: REFERENCE_DETAILS_QUERY }]
         })
     })
   })
-)(EducationScreen);
+)(ReferenceScreen);

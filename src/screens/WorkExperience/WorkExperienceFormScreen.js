@@ -3,47 +3,50 @@ import { StyleSheet } from "react-native";
 import { Container, Content, Item, Input, DatePicker } from "native-base";
 import { Button } from "react-native-elements";
 import { connect } from "react-redux";
-import { EDUCATION_DETAILS_QUERY } from "./EducationScreen";
+import { WORK_EXPERIENCE_DETAILS_QUERY } from "./WorkExperienceScreen";
 
 import { compose, graphql } from "react-apollo";
 import gql from "graphql-tag";
 
 import { v4 } from "uuid";
 
-export const EDUCATION_MUTATION = gql`
-  mutation EducationMutation($education: JSONString!) {
-    updateUser(education: $education) {
+export const WORK_EXPERIENCE_MUTATION = gql`
+  mutation WorkExperienceMutation($workExperience: JSONString!) {
+    updateUser(workExperience: $workExperience) {
       msg
       status
     }
   }
 `;
 
-class EducationFormScreen extends Component {
+class WorkExperienceFormScreen extends Component {
   state = {
-    levelOfEducation: "",
-    nameOfInstitute: "",
-    subject: "",
+    organisationName: "",
+    location: "",
+    field: "",
+    designation: "",
     startDate: null,
     endDate: null
   };
 
   componentDidMount() {
-    const data = this.props.navigation.getParam("selectedEducation", null);
+    const data = this.props.navigation.getParam("selectedWorkExperience", null);
 
     if (data) {
       const {
-        levelOfEducation,
-        nameOfInstitute,
-        subject,
+        organisationName,
+        location,
+        field,
+        designation,
         startDate,
         endDate
       } = data;
 
       this.setState({
-        levelOfEducation,
-        nameOfInstitute,
-        subject,
+        organisationName,
+        location,
+        field,
+        designation,
         startDate,
         endDate
       });
@@ -59,25 +62,33 @@ class EducationFormScreen extends Component {
           <Item rounded>
             <Input
               selectionColor="rgba(255,255,255,0.5)"
-              placeholder="Education Level"
-              value={this.state.levelOfEducation}
-              onChangeText={val => this.onChange("levelOfEducation", val)}
+              placeholder="Organisation Name"
+              value={this.state.organisationName}
+              onChangeText={val => this.onChange("organisationName", val)}
             />
           </Item>
           <Item rounded>
             <Input
               selectionColor="rgba(255,255,255,0.5)"
-              placeholder="Institute"
-              value={this.state.nameOfInstitute}
-              onChangeText={val => this.onChange("nameOfInstitute", val)}
+              placeholder="Location"
+              value={this.state.location}
+              onChangeText={val => this.onChange("location", val)}
             />
           </Item>
           <Item rounded>
             <Input
               selectionColor="rgba(255,255,255,0.5)"
               placeholder="Field"
-              value={this.state.subject}
-              onChangeText={val => this.onChange("subject", val)}
+              value={this.state.field}
+              onChangeText={val => this.onChange("field", val)}
+            />
+          </Item>
+          <Item rounded>
+            <Input
+              selectionColor="rgba(255,255,255,0.5)"
+              placeholder="Designation"
+              value={this.state.designation}
+              onChangeText={val => this.onChange("designation", val)}
             />
           </Item>
           <DatePicker
@@ -118,43 +129,44 @@ class EducationFormScreen extends Component {
           containerViewStyle={styles.loginButtton}
           rounded
           title={
-            this.props.navigation.getParam("selectedEducation", null)
+            this.props.navigation.getParam("selectedWorkExperience", null)
               ? "Update"
               : "Add"
           }
           onPress={() => {
-            let education = "";
+            let workExperience = "";
 
-            const educationsList = this.props.navigation.getParam(
-              "educations",
+            const workExperiencesList = this.props.navigation.getParam(
+              "workExperiences",
               []
             );
-            const selectedEducation = this.props.navigation.getParam(
-              "selectedEducation",
+            const selectedWorkExperience = this.props.navigation.getParam(
+              "selectedWorkExperience",
               null
             );
 
-            if (selectedEducation) {
-              const deletedEducationList = educationsList.filter(
-                eachEducation => eachEducation.id !== selectedEducation.id
+            if (selectedWorkExperience) {
+              const deletedWorkExperienceList = workExperiencesList.filter(
+                eachWorkExperience =>
+                  eachWorkExperience.id !== selectedWorkExperience.id
               );
 
-              education = JSON.stringify([
-                ...deletedEducationList,
-                { ...this.state, id: selectedEducation.id }
+              workExperience = JSON.stringify([
+                ...deletedWorkExperienceList,
+                { ...this.state, id: selectedWorkExperience.id }
               ]);
             } else {
-              education = JSON.stringify([
-                ...educationsList,
+              workExperience = JSON.stringify([
+                ...workExperiencesList,
                 { ...this.state, id: v4() }
               ]);
             }
 
             this.props
-              .updateUser(education)
+              .updateUser(workExperience)
               .then(({ data }) => {
                 if (data.updateUser.msg === "success") {
-                  console.log("add education success");
+                  console.log("add work experience success");
                   this.props.navigation.goBack();
                 } else throw new Error(data.updateUser.msg);
               })
@@ -183,15 +195,15 @@ const mapStateToProps = ({ myNavigation }) => {
 
 export default compose(
   connect(mapStateToProps),
-  graphql(EDUCATION_MUTATION, {
+  graphql(WORK_EXPERIENCE_MUTATION, {
     props: ({ mutate }) => ({
-      updateUser: education =>
+      updateUser: workExperience =>
         mutate({
           variables: {
-            education
+            workExperience
           },
-          refetchQueries: [{ query: EDUCATION_DETAILS_QUERY }]
+          refetchQueries: [{ query: WORK_EXPERIENCE_DETAILS_QUERY }]
         })
     })
   })
-)(EducationFormScreen);
+)(WorkExperienceFormScreen);

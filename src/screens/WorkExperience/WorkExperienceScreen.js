@@ -7,57 +7,65 @@ import { Button } from "react-native-elements";
 import { compose, graphql, withApollo, Query } from "react-apollo";
 import gql from "graphql-tag";
 import { Card } from "react-native-elements";
-import { EDUCATION_MUTATION } from "./EducationFormScreen";
+import { WORK_EXPERIENCE_MUTATION } from "./WorkExperienceFormScreen";
 
-export const EDUCATION_DETAILS_QUERY = gql`
+export const WORK_EXPERIENCE_DETAILS_QUERY = gql`
   {
     me {
-      education
+      workExperience
     }
   }
 `;
 
-class EducationScreen extends Component {
+class WorkExperienceScreen extends Component {
   render() {
     return (
       <ScrollView scrollEnabled>
         <Container>
           <Content scrollEnabled contentContainerStyle={styles.contentStyle}>
             <Query
-              query={EDUCATION_DETAILS_QUERY}
+              query={WORK_EXPERIENCE_DETAILS_QUERY}
               fetchPolicy="cache-and-network"
             >
               {({ loading, error, data }) => {
                 if (loading) return <Text>Fetching Data ...</Text>;
                 if (error) return <Text>Error Fetching Data !</Text>;
 
-                let educationDetailsList = JSON.parse(data.me.education);
+                let workExperienceDetailsList = JSON.parse(
+                  data.me.workExperience
+                );
 
-                if (!Array.isArray(educationDetailsList))
-                  educationDetailsList = [];
+                if (!Array.isArray(workExperienceDetailsList))
+                  workExperienceDetailsList = [];
 
-                return educationDetailsList.length ? (
+                return workExperienceDetailsList.length ? (
                   <View>
-                    {educationDetailsList.map((each, index) => (
+                    {workExperienceDetailsList.map((each, index) => (
                       <Card key={index}>
                         <Text style={styles.boldText}>
                           <Text style={styles.titleStyle}>
-                            Education Level:{" "}
+                            Organisation Name:{" "}
                           </Text>
                           <Text style={styles.textStyle}>
-                            {each.levelOfEducation}
+                            {each.organisationName}
                             {"\n"}
                           </Text>
 
-                          <Text style={styles.titleStyle}>Institute: </Text>
+                          <Text style={styles.titleStyle}>Location: </Text>
                           <Text tyle={styles.textStyle}>
-                            {each.nameOfInstitute}
+                            {each.location}
                             {"\n"}
                           </Text>
 
                           <Text style={styles.titleStyle}>Field: </Text>
+                          <Text tyle={styles.textStyle}>
+                            {each.field}
+                            {"\n"}
+                          </Text>
+
+                          <Text style={styles.titleStyle}>Designation: </Text>
                           <Text style={styles.textStyle}>
-                            {each.subject}
+                            {each.designation}
                             {"\n"}
                           </Text>
 
@@ -77,10 +85,13 @@ class EducationScreen extends Component {
                           backgroundColor="green"
                           title="Edit"
                           onPress={() =>
-                            this.props.navigation.navigate("educationForm", {
-                              educations: educationDetailsList,
-                              selectedEducation: each
-                            })
+                            this.props.navigation.navigate(
+                              "workExperienceForm",
+                              {
+                                workExperiences: workExperienceDetailsList,
+                                selectedWorkExperience: each
+                              }
+                            )
                           }
                         />
                         <Button
@@ -88,15 +99,17 @@ class EducationScreen extends Component {
                           title="Delete"
                           onPress={() => {
                             const id = each.id;
-                            const filteredEducationList = educationDetailsList.filter(
-                              eachEducation => eachEducation.id !== id
+                            const filteredWorkExperienceList = workExperienceDetailsList.filter(
+                              eachWorkExperience => eachWorkExperience.id !== id
                             );
 
                             this.props
-                              .updateUser(JSON.stringify(filteredEducationList))
+                              .updateUser(
+                                JSON.stringify(filteredWorkExperienceList)
+                              )
                               .then(({ data }) => {
                                 if (data.updateUser.msg === "success") {
-                                  console.log("education deleted");
+                                  console.log("workExperience deleted");
                                 } else throw new Error(data.updateUser.msg);
                               })
                               .catch(error => {
@@ -108,23 +121,23 @@ class EducationScreen extends Component {
                     ))}
                     <Button
                       backgroundColor="#3F51B5"
-                      title="Add Education"
+                      title="Add Work Experience"
                       onPress={() =>
-                        this.props.navigation.navigate("educationForm", {
-                          educations: educationDetailsList
+                        this.props.navigation.navigate("workExperienceForm", {
+                          workExperiences: workExperienceDetailsList
                         })
                       }
                     />
                   </View>
                 ) : (
                   <View>
-                    <Text>No Education Details Found</Text>
+                    <Text>No Work Experience Details Found</Text>
                     <Button
                       backgroundColor="#3F51B5"
-                      title="Add Education"
+                      title="Add Work Experience"
                       onPress={() =>
-                        this.props.navigation.navigate("educationForm", {
-                          educations: educationDetailsList
+                        this.props.navigation.navigate("workExperienceForm", {
+                          workExperiences: workExperienceDetailsList
                         })
                       }
                     />
@@ -164,15 +177,15 @@ const mapStateToProps = ({ myNavigation }) => {
 
 export default compose(
   connect(mapStateToProps),
-  graphql(EDUCATION_MUTATION, {
+  graphql(WORK_EXPERIENCE_MUTATION, {
     props: ({ mutate }) => ({
-      updateUser: education =>
+      updateUser: workExperience =>
         mutate({
           variables: {
-            education
+            workExperience
           },
-          refetchQueries: [{ query: EDUCATION_DETAILS_QUERY }]
+          refetchQueries: [{ query: WORK_EXPERIENCE_DETAILS_QUERY }]
         })
     })
   })
-)(EducationScreen);
+)(WorkExperienceScreen);
