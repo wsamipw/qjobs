@@ -1,13 +1,15 @@
 import React, { Component } from "react";
 import { StyleSheet, Image, Dimensions, TouchableOpacity } from "react-native";
 import { Container, Content, Text, View, Input, Item, Icon } from "native-base";
-import { AsyncStorage } from "react-native";
-
 import { Button, SocialIcon } from "react-native-elements";
-import styles from "../../Styles/LoginRegisterStyles";
 
 import { graphql } from "react-apollo";
 import gql from "graphql-tag";
+
+import styles from "../../Styles/LoginRegisterStyles";
+import { JWT_AUTH_TOKEN } from "../../config/CONSTANTS";
+
+import { _storeData, _retrieveData } from "../../config/utils";
 
 const LOGIN_MUTATION = gql`
   mutation LoginMutation($username: String!, $password: String!) {
@@ -32,26 +34,6 @@ class LoginScreen extends Component {
     this.setState({
       hidePass: !this.state.hidePass
     });
-  };
-
-  _storeData = async data => {
-    try {
-      await AsyncStorage.setItem("token", data);
-    } catch (error) {
-      // Error saving data
-    }
-  };
-
-  _retrieveData = async () => {
-    try {
-      const value = await AsyncStorage.getItem("token");
-      if (value !== null) {
-        // We have data!!
-        console.log(value);
-      }
-    } catch (error) {
-      // Error retrieving data
-    }
   };
 
   onChange = (key, val) => this.setState({ [key]: val });
@@ -140,10 +122,15 @@ class LoginScreen extends Component {
                     .tokenAuth(username, password)
                     .then(({ data }) => {
                       console.log("data: ", data);
-                      this._storeData(data.tokenAuth.token);
+                      _storeData(JWT_AUTH_TOKEN, data.tokenAuth.token);
+                      _retrieveData(JWT_AUTH_TOKEN);
                       this.props.navigation.navigate("home");
                     })
                     .catch(error => console.log("data error: ", error));
+
+                {
+                  /* this.props.navigation.navigate("home"); */
+                }
               }}
             />
 

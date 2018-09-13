@@ -7,13 +7,17 @@ import {
   PostJobScreen,
   ProfileScreen,
   ProfileDetailScreen,
-  SearchResultScreen
+  SearchResultScreen,
+  EducationScreen,
+  EducationFormScreen
 } from "../screens";
 
 export const ProfileStack = createStackNavigator(
   {
     profile: ProfileScreen,
-    profileDetail: ProfileDetailScreen
+    profileDetail: ProfileDetailScreen,
+    education: EducationScreen,
+    educationForm: EducationFormScreen
   },
   { initialRouteName: "profile" }
 );

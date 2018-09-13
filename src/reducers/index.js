@@ -1,6 +1,6 @@
 import { combineReducers } from "redux";
-import navigation from "./NavigationReducer";
+import myNavigation from "./NavigationReducer";
 
 export default combineReducers({
-  navigation
+  myNavigation
 });

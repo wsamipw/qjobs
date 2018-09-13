@@ -3,15 +3,18 @@ import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { Container, Content, Item, Input, Icon } from "native-base";
 import { Button } from "react-native-elements";
 import styles from "../../Styles/LoginRegisterStyles";
+
 export default class RegisterScreen extends Component {
   state = {
     hidePass: true
   };
+
   togglePassVisisble = () => {
     this.setState({
       hidePass: !this.state.hidePass
     });
   };
+
   render() {
     return (
       <Container>
