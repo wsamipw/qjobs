@@ -1,6 +1,8 @@
 import { combineReducers } from "redux";
-import myNavigation from "./NavigationReducer";
+import myNavigationReducer from "./NavigationReducer";
+import postJobReducer from "./PostJobReducer";
 
 export default combineReducers({
-  myNavigation
+  myNavigationReducer,
+  postJobReducer
 });

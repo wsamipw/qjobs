@@ -4,20 +4,12 @@ import { Container, Content, Text, View, Input, Item, Icon } from "native-base";
 import { Button, SocialIcon } from "react-native-elements";
 
 import { graphql } from "react-apollo";
-import gql from "graphql-tag";
 
 import styles from "../../Styles/LoginRegisterStyles";
 import { JWT_AUTH_TOKEN } from "../../config/CONSTANTS";
+import { LOGIN_MUTATION } from "../../config/mutations";
 
 import { _storeData, _retrieveData } from "../../config/utils";
-
-const LOGIN_MUTATION = gql`
-  mutation LoginMutation($username: String!, $password: String!) {
-    tokenAuth(username: $username, password: $password) {
-      token
-    }
-  }
-`;
 
 class LoginScreen extends Component {
   state = {

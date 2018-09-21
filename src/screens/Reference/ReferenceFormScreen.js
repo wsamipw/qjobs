@@ -3,21 +3,14 @@ import { StyleSheet } from "react-native";
 import { Container, Content, Item, Input, DatePicker } from "native-base";
 import { Button } from "react-native-elements";
 import { connect } from "react-redux";
-import { REFERENCE_DETAILS_QUERY } from "./ReferenceScreen";
+import {
+  REFERENCE_DETAILS_QUERY,
+  REFERENCE_MUTATION
+} from "../../config/mutations";
 
 import { compose, graphql } from "react-apollo";
-import gql from "graphql-tag";
 
 import { v4 } from "uuid";
-
-export const REFERENCE_MUTATION = gql`
-  mutation ReferenceMutation($reference: JSONString!) {
-    updateUser(reference: $reference) {
-      msg
-      status
-    }
-  }
-`;
 
 class ReferenceFormScreen extends Component {
   state = {
@@ -52,7 +45,6 @@ class ReferenceFormScreen extends Component {
         <Content scrollEnabled contentContainerStyle={styles.contentStyle}>
           <Item rounded>
             <Input
-              selectionColor="rgba(255,255,255,0.5)"
               placeholder="Referencer Name"
               value={this.state.name}
               onChangeText={val => this.onChange("name", val)}
@@ -60,7 +52,6 @@ class ReferenceFormScreen extends Component {
           </Item>
           <Item rounded>
             <Input
-              selectionColor="rgba(255,255,255,0.5)"
               placeholder="Organisation"
               value={this.state.organisation}
               onChangeText={val => this.onChange("organisation", val)}
@@ -68,7 +59,6 @@ class ReferenceFormScreen extends Component {
           </Item>
           <Item rounded>
             <Input
-              selectionColor="rgba(255,255,255,0.5)"
               placeholder="Designation"
               value={this.state.designation}
               onChangeText={val => this.onChange("designation", val)}
@@ -76,7 +66,6 @@ class ReferenceFormScreen extends Component {
           </Item>
           <Item rounded>
             <Input
-              selectionColor="rgba(255,255,255,0.5)"
               placeholder="Email"
               value={this.state.email}
               onChangeText={val => this.onChange("email", val)}
@@ -84,7 +73,6 @@ class ReferenceFormScreen extends Component {
           </Item>
           <Item rounded>
             <Input
-              selectionColor="rgba(255,255,255,0.5)"
               placeholder="Contact Number"
               value={this.state.contactNumber}
               onChangeText={val => this.onChange("contactNumber", val)}
@@ -155,8 +143,8 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = ({ myNavigation }) => {
-  return { ...myNavigation };
+const mapStateToProps = ({ myNavigationReducer }) => {
+  return { ...myNavigationReducer };
 };
 
 export default compose(

@@ -3,13 +3,19 @@ import {
   StyleSheet,
   Text,
   View,
-  Image,
   StatusBar,
-  Dimensions
+  Dimensions,
+  FlatList,
+  TouchableOpacity
 } from "react-native";
-import { Container, Content, Button, Item, Input, Icon } from "native-base";
+import { Container, Content, Item, Input, Icon } from "native-base";
+import { Button, Card } from "react-native-elements";
 
-export default class SearchResultScreen extends Component {
+import { Query, compose, withApollo, graphql } from "react-apollo";
+
+import { JOBS_QUERY } from "../config/mutations";
+
+class SearchResultScreen extends Component {
   static navigationOptions = {
     title: "Search Result",
     headerStyle: {
@@ -20,13 +26,99 @@ export default class SearchResultScreen extends Component {
       fontWeight: "bold"
     }
   };
+
+  val = { page: 1, rows: 4 };
+
   render() {
+    const query = this.props.navigation.getParam("query", undefined);
+
     return (
       <Container>
         <StatusBar barStyle="light-content" backgroundColor="#ecf0f1" />
         <Content contentContainerStyle={styles.contentStyle}>
           <View style={styles.mainWrapper}>
-            <Text>Result Screen</Text>
+            <Query
+              query={JOBS_QUERY}
+              fetchPolicy="cache-and-network"
+              variables={{ page: this.val.page, rows: this.val.rows, query }}
+              notifyOnNetworkStatusChange
+            >
+              {({
+                loading,
+                error,
+                data,
+                refetch,
+                fetchMore,
+                networkStatus
+              }) => {
+                console.log("data: ", data);
+                console.log("loading: ", loading);
+                if (error) return <Text>Error Fetching Data !</Text>;
+
+                if (data && data.jobs && data.jobs.data.length) {
+                  return (
+                    <View>
+                      <FlatList
+                        data={data.jobs.data}
+                        keyExtractor={item => item.id}
+                        onEndReached={() => {
+                          this.val.page += 1;
+
+                          if (this.val.page <= data.jobs.pages) {
+                            fetchMore({
+                              variables: {
+                                page: this.val.page,
+                                rows: this.val.rows
+                              },
+                              updateQuery: (prev, { fetchMoreResult }) => {
+                                if (!fetchMoreResult) return prev;
+                                return Object.assign({}, prev, {
+                                  jobs: {
+                                    ...prev.jobs,
+                                    data: [
+                                      ...prev.jobs.data,
+                                      ...fetchMoreResult.jobs.data
+                                    ]
+                                  }
+                                });
+                              }
+                            });
+                          }
+                        }}
+                        onEndReachedThreshold={0.1}
+                        renderItem={({ item }) => {
+                          return (
+                            <TouchableOpacity
+                              onPress={() =>
+                                this.props.navigation.navigate("searchDetail", {
+                                  item
+                                })
+                              }
+                              key={item.id}
+                            >
+                              <Card>
+                                <Text>Id: {item.id}</Text>
+                                <Text>Name: {item.name}</Text>
+                                <Text>Type of Job: {item.typeOfJob}</Text>
+                              </Card>
+                            </TouchableOpacity>
+                          );
+                        }}
+                      />
+                    </View>
+                  );
+                } else {
+                  if (loading) displayText = "Loading ...";
+                  else displayText = "No Data Found";
+
+                  return (
+                    <View>
+                      <Text>{displayText}</Text>
+                    </View>
+                  );
+                }
+              }}
+            </Query>
           </View>
         </Content>
       </Container>
@@ -61,3 +153,5 @@ const styles = StyleSheet.create({
     // borderRadius: 50
   }
 });
+
+export default SearchResultScreen;

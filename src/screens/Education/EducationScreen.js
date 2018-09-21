@@ -5,17 +5,11 @@ import { connect } from "react-redux";
 import { Button } from "react-native-elements";
 
 import { compose, graphql, withApollo, Query } from "react-apollo";
-import gql from "graphql-tag";
 import { Card } from "react-native-elements";
-import { EDUCATION_MUTATION } from "./EducationFormScreen";
-
-export const EDUCATION_DETAILS_QUERY = gql`
-  {
-    me {
-      education
-    }
-  }
-`;
+import {
+  EDUCATION_MUTATION,
+  EDUCATION_DETAILS_QUERY
+} from "../../config/mutations";
 
 class EducationScreen extends Component {
   render() {
@@ -158,8 +152,8 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = ({ myNavigation }) => {
-  return { ...myNavigation };
+const mapStateToProps = ({ myNavigationReducer }) => {
+  return { ...myNavigationReducer };
 };
 
 export default compose(

@@ -5,17 +5,11 @@ import { connect } from "react-redux";
 import { Button } from "react-native-elements";
 
 import { compose, graphql, withApollo, Query } from "react-apollo";
-import gql from "graphql-tag";
 import { Card } from "react-native-elements";
-import { TRAINING_MUTATION } from "./TrainingFormScreen";
-
-export const TRAINING_DETAILS_QUERY = gql`
-  {
-    me {
-      training
-    }
-  }
-`;
+import {
+  TRAINING_MUTATION,
+  TRAINING_DETAILS_QUERY
+} from "../../config/mutations";
 
 class TrainingScreen extends Component {
   render() {
@@ -140,8 +134,8 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = ({ myNavigation }) => {
-  return { ...myNavigation };
+const mapStateToProps = ({ myNavigationReducer }) => {
+  return { ...myNavigationReducer };
 };
 
 export default compose(

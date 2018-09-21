@@ -21,7 +21,9 @@ export default class SearchJobScreen extends Component {
   static navigationOptions = { header: null };
   state = {
     dialogShow: false,
-    proximity: 0
+    proximity: 0,
+
+    query: ""
   };
 
   showScaleAnimationDialog = () => {
@@ -41,6 +43,8 @@ export default class SearchJobScreen extends Component {
             <Item rounded>
               <Input
                 placeholder="Enter Job title or keyword"
+                value={this.state.query}
+                onChangeText={query => this.setState({ query })}
                 style={styles.inputStyles}
               />
             </Item>
@@ -48,7 +52,13 @@ export default class SearchJobScreen extends Component {
               style={styles.searchButtton}
               rounded
               block
-              onPress={() => this.props.navigation.navigate("result")}
+              onPress={() => {
+                if (this.state.query)
+                  this.props.navigation.navigate("result", {
+                    query: this.state.query
+                  });
+                else console.log("query is empty");
+              }}
             >
               <Text uppercase={false}>Find Job</Text>
             </Button>

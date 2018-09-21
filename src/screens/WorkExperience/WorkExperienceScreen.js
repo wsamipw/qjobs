@@ -5,17 +5,11 @@ import { connect } from "react-redux";
 import { Button } from "react-native-elements";
 
 import { compose, graphql, withApollo, Query } from "react-apollo";
-import gql from "graphql-tag";
 import { Card } from "react-native-elements";
-import { WORK_EXPERIENCE_MUTATION } from "./WorkExperienceFormScreen";
-
-export const WORK_EXPERIENCE_DETAILS_QUERY = gql`
-  {
-    me {
-      workExperience
-    }
-  }
-`;
+import {
+  WORK_EXPERIENCE_MUTATION,
+  WORK_EXPERIENCE_DETAILS_QUERY
+} from "../../config/mutations";
 
 class WorkExperienceScreen extends Component {
   render() {
@@ -171,8 +165,8 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = ({ myNavigation }) => {
-  return { ...myNavigation };
+const mapStateToProps = ({ myNavigationReducer }) => {
+  return { ...myNavigationReducer };
 };
 
 export default compose(

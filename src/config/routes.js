@@ -4,7 +4,8 @@ import {
   RegisterScreen,
   HomeScreen,
   SearchJobScreen,
-  PostJobScreen,
+  SearchDetailScreen,
+  UserDetailScreen,
   ProfileScreen,
   ProfileDetailScreen,
   SearchResultScreen,
@@ -19,13 +20,24 @@ import {
   WorkExperienceScreen,
   WorkExperienceFormScreen,
   TrainingScreen,
-  TrainingFormScreen
+  TrainingFormScreen,
+  SettingsScreen,
+  PostJobScreen1,
+  PostJobScreen2,
+  PostJobScreen3,
+  PostJobScreen4,
+  PostJobScreen5,
+  PostJobScreen6,
+  // SubPart
+  PostJobScreen41
 } from "../screens";
 
 export const ProfileStack = createStackNavigator(
   {
     profile: ProfileScreen,
     profileDetail: ProfileDetailScreen,
+
+    settings: SettingsScreen,
 
     education: EducationScreen,
     educationForm: EducationFormScreen,
@@ -43,24 +55,43 @@ export const ProfileStack = createStackNavigator(
     workExperienceForm: WorkExperienceFormScreen,
 
     training: TrainingScreen,
-    trainingForm: TrainingFormScreen
+    trainingForm: TrainingFormScreen,
+
+    postJob1: PostJobScreen1,
+    postJob2: PostJobScreen2,
+    postJob3: PostJobScreen3,
+    postJob4: PostJobScreen4,
+    postJob5: PostJobScreen5,
+    postJob6: PostJobScreen6,
+
+    postJob41: PostJobScreen41
   },
   { initialRouteName: "profile" }
+);
+
+export const PostJobStack = createSwitchNavigator(
+  {
+    postJob1: PostJobScreen1,
+    postJob2: PostJobScreen2,
+    postJob3: PostJobScreen3
+  },
+  { initialRouteName: "postJob1" }
 );
 
 export const SearchStack = createStackNavigator(
   {
     search: SearchJobScreen,
-    result: SearchResultScreen
+    result: SearchResultScreen,
+    searchDetail: SearchDetailScreen
   },
   { initialRouteName: "search" }
 );
 
 export const PostStack = createStackNavigator(
   {
-    post: PostJobScreen
+    userDetail: UserDetailScreen
   },
-  { initialRouteName: "post" }
+  { initialRouteName: "userDetail" }
 );
 
 export default initialRouteName =>

@@ -3,21 +3,14 @@ import { StyleSheet } from "react-native";
 import { Container, Content, Item, Input, DatePicker } from "native-base";
 import { Button } from "react-native-elements";
 import { connect } from "react-redux";
-import { TRAINING_DETAILS_QUERY } from "./TrainingScreen";
+import {
+  TRAINING_DETAILS_QUERY,
+  TRAINING_MUTATION
+} from "../../config/mutations";
 
 import { compose, graphql } from "react-apollo";
-import gql from "graphql-tag";
 
 import { v4 } from "uuid";
-
-export const TRAINING_MUTATION = gql`
-  mutation TrainingMutation($training: JSONString!) {
-    updateUser(training: $training) {
-      msg
-      status
-    }
-  }
-`;
 
 class TrainingFormScreen extends Component {
   state = {
@@ -46,7 +39,6 @@ class TrainingFormScreen extends Component {
         <Content scrollEnabled contentContainerStyle={styles.contentStyle}>
           <Item rounded>
             <Input
-              selectionColor="rgba(255,255,255,0.5)"
               placeholder="Training"
               value={this.state.training}
               onChangeText={val => this.onChange("training", val)}
@@ -54,7 +46,6 @@ class TrainingFormScreen extends Component {
           </Item>
           <Item rounded>
             <Input
-              selectionColor="rgba(255,255,255,0.5)"
               placeholder="Training Institute"
               value={this.state.trainingInstitute}
               onChangeText={val => this.onChange("trainingInstitute", val)}
@@ -125,8 +116,8 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = ({ myNavigation }) => {
-  return { ...myNavigation };
+const mapStateToProps = ({ myNavigationReducer }) => {
+  return { ...myNavigationReducer };
 };
 
 export default compose(

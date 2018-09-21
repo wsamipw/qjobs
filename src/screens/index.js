@@ -1,11 +1,15 @@
 import LoginScreen from "./authFlow/LoginScreen";
 import RegisterScreen from "./authFlow/RegisterScreen";
 import HomeScreen from "./HomeScreen";
+
+import UserDetailScreen from "./UserDetailScreen";
+
 import ProfileScreen from "./ProfileScreen";
 import ProfileDetailScreen from "./ProfileDetailScreen";
+
 import SearchJobScreen from "./SearchJobScreen";
-import PostJobScreen from "./PostJobScreen";
 import SearchResultScreen from "./SearchResultScreen";
+import SearchDetailScreen from "./SearchDetailScreen";
 
 import EducationScreen from "./Education/EducationScreen";
 import EducationFormScreen from "./Education/EducationFormScreen";
@@ -25,15 +29,30 @@ import WorkExperienceFormScreen from "./WorkExperience/WorkExperienceFormScreen"
 import TrainingScreen from "./Training/TrainingScreen";
 import TrainingFormScreen from "./Training/TrainingFormScreen";
 
+import SettingsScreen from "./SettingsScreen";
+
+import {
+  PostJobScreen1,
+  PostJobScreen2,
+  PostJobScreen3,
+  PostJobScreen4,
+  PostJobScreen5,
+  PostJobScreen6,
+  // SubPart
+  PostJobScreen41,
+  PostJobScreen51
+} from "./PostJob";
+
 export {
   LoginScreen,
   RegisterScreen,
   HomeScreen,
   ProfileScreen,
   ProfileDetailScreen,
-  PostJobScreen,
+  UserDetailScreen,
   SearchJobScreen,
   SearchResultScreen,
+  SearchDetailScreen,
   EducationScreen,
   EducationFormScreen,
   LanguageScreen,
@@ -45,5 +64,15 @@ export {
   WorkExperienceScreen,
   WorkExperienceFormScreen,
   TrainingScreen,
-  TrainingFormScreen
+  TrainingFormScreen,
+  SettingsScreen,
+  PostJobScreen1,
+  PostJobScreen2,
+  PostJobScreen3,
+  PostJobScreen4,
+  PostJobScreen5,
+  PostJobScreen6,
+  // Subpart
+  PostJobScreen41,
+  PostJobScreen51
 };

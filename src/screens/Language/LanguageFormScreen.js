@@ -3,21 +3,14 @@ import { StyleSheet } from "react-native";
 import { Container, Content, Item, Input, DatePicker } from "native-base";
 import { Button } from "react-native-elements";
 import { connect } from "react-redux";
-import { LANGUAGE_DETAILS_QUERY } from "./LanguageScreen";
+import {
+  LANGUAGE_DETAILS_QUERY,
+  LANGUAGE_MUTATION
+} from "../../config/mutations";
 
 import { compose, graphql } from "react-apollo";
-import gql from "graphql-tag";
 
 import { v4 } from "uuid";
-
-export const LANGUAGE_MUTATION = gql`
-  mutation LanguageMutation($language: JSONString!) {
-    updateUser(language: $language) {
-      msg
-      status
-    }
-  }
-`;
 
 class LanguageFormScreen extends Component {
   state = {
@@ -46,7 +39,6 @@ class LanguageFormScreen extends Component {
         <Content scrollEnabled contentContainerStyle={styles.contentStyle}>
           <Item rounded>
             <Input
-              selectionColor="rgba(255,255,255,0.5)"
               placeholder="Language"
               value={this.state.language}
               onChangeText={val => this.onChange("language", val)}
@@ -54,7 +46,6 @@ class LanguageFormScreen extends Component {
           </Item>
           <Item rounded>
             <Input
-              selectionColor="rgba(255,255,255,0.5)"
               placeholder="Proficiency"
               value={this.state.proficiency}
               onChangeText={val => this.onChange("proficiency", val)}
@@ -127,8 +118,8 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = ({ myNavigation }) => {
-  return { ...myNavigation };
+const mapStateToProps = ({ myNavigationReducer }) => {
+  return { ...myNavigationReducer };
 };
 
 export default compose(

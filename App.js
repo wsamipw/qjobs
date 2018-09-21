@@ -31,7 +31,9 @@ const authLink = setContext(async (_, { headers }) => {
   };
 });
 
-const httpLink = new createHttpLink({ uri });
+const httpLink = new createHttpLink({
+  uri
+});
 
 // const defaultOptions = {
 //   watchQuery: {
@@ -47,6 +49,7 @@ const httpLink = new createHttpLink({ uri });
 const client = new ApolloClient({
   link: authLink.concat(httpLink),
   cache: new InMemoryCache()
+
   // defaultOptions: defaultOptions
 });
 

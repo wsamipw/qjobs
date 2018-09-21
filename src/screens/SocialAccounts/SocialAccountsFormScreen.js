@@ -3,21 +3,14 @@ import { StyleSheet } from "react-native";
 import { Container, Content, Item, Input, DatePicker } from "native-base";
 import { Button } from "react-native-elements";
 import { connect } from "react-redux";
-import { SOCIAL_ACCOUNTS_DETAILS_QUERY } from "./SocialAccountsScreen";
+import {
+  SOCIAL_ACCOUNTS_DETAILS_QUERY,
+  SOCIAL_ACCOUNTS_MUTATION
+} from "../../config/mutations";
 
 import { compose, graphql } from "react-apollo";
-import gql from "graphql-tag";
 
 import { v4 } from "uuid";
-
-export const SOCIAL_ACCOUNTS_MUTATION = gql`
-  mutation SocialAccountsMutation($socialAccounts: JSONString!) {
-    updateUser(socialAccounts: $socialAccounts) {
-      msg
-      status
-    }
-  }
-`;
 
 class SocialAccountsFormScreen extends Component {
   state = {
@@ -46,7 +39,6 @@ class SocialAccountsFormScreen extends Component {
         <Content scrollEnabled contentContainerStyle={styles.contentStyle}>
           <Item rounded>
             <Input
-              selectionColor="rgba(255,255,255,0.5)"
               placeholder="Social Site"
               value={this.state.socialSite}
               onChangeText={val => this.onChange("socialSite", val)}
@@ -54,7 +46,6 @@ class SocialAccountsFormScreen extends Component {
           </Item>
           <Item rounded>
             <Input
-              selectionColor="rgba(255,255,255,0.5)"
               placeholder="URL"
               value={this.state.url}
               onChangeText={val => this.onChange("url", val)}
@@ -126,8 +117,8 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = ({ myNavigation }) => {
-  return { ...myNavigation };
+const mapStateToProps = ({ myNavigationReducer }) => {
+  return { ...myNavigationReducer };
 };
 
 export default compose(

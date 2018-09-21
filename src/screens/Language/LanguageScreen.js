@@ -5,17 +5,11 @@ import { connect } from "react-redux";
 import { Button } from "react-native-elements";
 
 import { compose, graphql, withApollo, Query } from "react-apollo";
-import gql from "graphql-tag";
 import { Card } from "react-native-elements";
-import { LANGUAGE_MUTATION } from "./LanguageFormScreen";
-
-export const LANGUAGE_DETAILS_QUERY = gql`
-  {
-    me {
-      language
-    }
-  }
-`;
+import {
+  LANGUAGE_MUTATION,
+  LANGUAGE_DETAILS_QUERY
+} from "../../config/mutations";
 
 class LanguageScreen extends Component {
   render() {
@@ -138,8 +132,8 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = ({ myNavigation }) => {
-  return { ...myNavigation };
+const mapStateToProps = ({ myNavigationReducer }) => {
+  return { ...myNavigationReducer };
 };
 
 export default compose(

@@ -3,21 +3,14 @@ import { StyleSheet } from "react-native";
 import { Container, Content, Item, Input, DatePicker } from "native-base";
 import { Button } from "react-native-elements";
 import { connect } from "react-redux";
-import { EDUCATION_DETAILS_QUERY } from "./EducationScreen";
+import {
+  EDUCATION_DETAILS_QUERY,
+  EDUCATION_MUTATION
+} from "../../config/mutations";
 
 import { compose, graphql } from "react-apollo";
-import gql from "graphql-tag";
 
 import { v4 } from "uuid";
-
-export const EDUCATION_MUTATION = gql`
-  mutation EducationMutation($education: JSONString!) {
-    updateUser(education: $education) {
-      msg
-      status
-    }
-  }
-`;
 
 class EducationFormScreen extends Component {
   state = {
@@ -58,7 +51,6 @@ class EducationFormScreen extends Component {
         <Content scrollEnabled contentContainerStyle={styles.contentStyle}>
           <Item rounded>
             <Input
-              selectionColor="rgba(255,255,255,0.5)"
               placeholder="Education Level"
               value={this.state.levelOfEducation}
               onChangeText={val => this.onChange("levelOfEducation", val)}
@@ -66,7 +58,6 @@ class EducationFormScreen extends Component {
           </Item>
           <Item rounded>
             <Input
-              selectionColor="rgba(255,255,255,0.5)"
               placeholder="Institute"
               value={this.state.nameOfInstitute}
               onChangeText={val => this.onChange("nameOfInstitute", val)}
@@ -74,7 +65,6 @@ class EducationFormScreen extends Component {
           </Item>
           <Item rounded>
             <Input
-              selectionColor="rgba(255,255,255,0.5)"
               placeholder="Field"
               value={this.state.subject}
               onChangeText={val => this.onChange("subject", val)}
@@ -177,8 +167,8 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = ({ myNavigation }) => {
-  return { ...myNavigation };
+const mapStateToProps = ({ myNavigationReducer }) => {
+  return { ...myNavigationReducer };
 };
 
 export default compose(

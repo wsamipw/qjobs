@@ -1,68 +1,127 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, FlatList, ListView } from "react-native";
-import { Container, Content, View } from "native-base";
-import { Button, List, ListItem, Card } from "react-native-elements";
+import {
+  StyleSheet,
+  StatusBar,
+  ToolbarAndroid,
+  View,
+  ScrollView,
+  Text,
+  RefreshControl,
+  FlatList
+} from "react-native";
+import { getStatusBarHeight } from "react-native-status-bar-height";
+
 import { connect } from "react-redux";
+import { Button, Card, List } from "react-native-elements";
+
 import { _removeData } from "../config/utils";
 import { JWT_AUTH_TOKEN } from "../config/CONSTANTS";
+
+import { Query, compose } from "react-apollo";
+
+import { PostJobStack } from "../config/routes";
+import { MY_JOBS_QUERY } from "../config/mutations";
+import { Container, Content } from "native-base";
 
 class ProfileScreen extends Component {
   static navigationOptions = { header: null };
 
+  onActionSelected = async position => {
+    console.log("postioon: ", position);
+
+    if (position === 0) {
+      this.props.navigation.navigate("settings");
+    } else if (position === 1) {
+      await _removeData(JWT_AUTH_TOKEN);
+      this.props.mainNavigation.navigate("login");
+    }
+  };
+
   render() {
     return (
-      <Container>
-        <Content contentContainerStyle={styles.contentStyle}>
-          <Text>Profile Screen</Text>
+      <View>
+        <StatusBar backgroundColor="rgb(122,77,246)" barStyle="light-content" />
+        <ToolbarAndroid
+          style={styles.toolbar}
+          logo={require("../static/img/logoIcon.png")}
+          title="AwesomeApp"
+          actions={[
+            {
+              title: "Settings",
+              icon: require("../static/img/settings.png"),
+              show: "always"
+            },
+            {
+              title: "Logout",
+              icon: require("../static/img/logout.png"),
+              show: "always"
+            }
+          ]}
+          onActionSelected={this.onActionSelected}
+        />
+
+        <View>
           <Button
-            backgroundColor="red"
-            title="Logout"
-            onPress={async () => {
-              await _removeData(JWT_AUTH_TOKEN);
-              this.props.mainNavigation.navigate("login");
+            backgroundColor="#3F51B5"
+            title="Post A Job"
+            onPress={() => {
+              this.props.navigation.navigate("postJob1");
             }}
           />
-          <FlatList
-            data={[
-              { title: "Education", key: "education" },
-              { title: "Language", key: "language" },
-              { title: "Social Accounts", key: "socialAccounts" },
-              { title: "Reference", key: "reference" },
-              { title: "Training", key: "training" },
-              { title: "Work Experience", key: "workExperience" }
-            ]}
-            renderItem={({ item }) => {
+          <Query
+            query={MY_JOBS_QUERY}
+            fetchPolicy="cache-and-network"
+            notifyOnNetworkStatusChange
+          >
+            {({ loading, error, data, refetch, networkStatus }) => {
+              if (networkStatus === 4) return <Text>Refetching!</Text>;
+              if (loading) return <Text>Loading ...</Text>;
+              if (error) return <Text>Error Fetching Data !</Text>;
               return (
-                <View style={styles.contentStyle}>
-                  <Text
-                    onPress={() => {
-                      console.log(item.title, " pressed");
-                      this.props.navigation.navigate(item.key);
+                <View>
+                  <FlatList
+                    data={data.me.jobSet}
+                    refreshing={networkStatus === 4}
+                    onRefresh={() => refetch()}
+                    keyExtractor={item => item.id}
+                    renderItem={({ item }) => {
+                      return (
+                        <Card key={item.id}>
+                          <Text>Id: {item.id}</Text>
+                          <Text>Name: {item.name}</Text>
+                          <Text>Type of Job: {item.typeOfJob}</Text>
+                        </Card>
+                      );
                     }}
-                  >
-                    {item.title}
-                  </Text>
+                  />
                 </View>
               );
             }}
-          />
-        </Content>
-      </Container>
+          </Query>
+        </View>
+      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  contentStyle: {
+  containerToolbar: {
     flex: 1,
-    flexDirection: "column",
+    //justifyContent: 'center',
     justifyContent: "flex-start",
-    alignItems: "center"
+    // https://github.com/facebook/react-native/issues/2957#event-417214498
+    alignItems: "stretch",
+    backgroundColor: "#F5FCFF"
+  },
+  toolbar: {
+    backgroundColor: "#95a2b2",
+    marginTop: getStatusBarHeight(),
+    height: 30 + getStatusBarHeight()
   }
 });
 
-const mapStateToProps = ({ myNavigation }) => {
-  return { ...myNavigation };
+const mapStateToProps = ({ myNavigationReducer }) => {
+  return { ...myNavigationReducer };
 };
 
-export default connect(mapStateToProps)(ProfileScreen);
+export default compose(connect(mapStateToProps))(ProfileScreen);

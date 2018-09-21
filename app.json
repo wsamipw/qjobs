@@ -4,6 +4,14 @@
     "splash": {
       "image": "./assets/logoFull.png",
       "backgroundColor": "#000"
+    },
+    "android": {
+      "package": "np.com.techkunja.qjobs",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyDhf_MVoLfC8nEoxgSRsDLr3DxcbTO9aqA"
+        }
+      }
     }
   }
 }

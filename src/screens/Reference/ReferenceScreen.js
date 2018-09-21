@@ -5,17 +5,11 @@ import { connect } from "react-redux";
 import { Button } from "react-native-elements";
 
 import { compose, graphql, withApollo, Query } from "react-apollo";
-import gql from "graphql-tag";
 import { Card } from "react-native-elements";
-import { REFERENCE_MUTATION } from "./ReferenceFormScreen";
-
-export const REFERENCE_DETAILS_QUERY = gql`
-  {
-    me {
-      reference
-    }
-  }
-`;
+import {
+  REFERENCE_MUTATION,
+  REFERENCE_DETAILS_QUERY
+} from "../../config/mutations";
 
 class ReferenceScreen extends Component {
   render() {
@@ -158,8 +152,8 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = ({ myNavigation }) => {
-  return { ...myNavigation };
+const mapStateToProps = ({ myNavigationReducer }) => {
+  return { ...myNavigationReducer };
 };
 
 export default compose(

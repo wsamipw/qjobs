@@ -1,1 +1,3 @@
 export const SET_MAIN_NAVIGATION = "set_main_navigation";
+export const SAVE_MULTIPLE_POST_JOB_SCREENS_STATE =
+  "SAVE_MULTIPLE_POST_JOB_SCREENS_STATE";

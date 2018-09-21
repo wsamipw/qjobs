@@ -3,21 +3,14 @@ import { StyleSheet } from "react-native";
 import { Container, Content, Item, Input, DatePicker } from "native-base";
 import { Button } from "react-native-elements";
 import { connect } from "react-redux";
-import { WORK_EXPERIENCE_DETAILS_QUERY } from "./WorkExperienceScreen";
+import {
+  WORK_EXPERIENCE_DETAILS_QUERY,
+  WORK_EXPERIENCE_MUTATION
+} from "../../config/mutations";
 
 import { compose, graphql } from "react-apollo";
-import gql from "graphql-tag";
 
 import { v4 } from "uuid";
-
-export const WORK_EXPERIENCE_MUTATION = gql`
-  mutation WorkExperienceMutation($workExperience: JSONString!) {
-    updateUser(workExperience: $workExperience) {
-      msg
-      status
-    }
-  }
-`;
 
 class WorkExperienceFormScreen extends Component {
   state = {
@@ -61,7 +54,6 @@ class WorkExperienceFormScreen extends Component {
         <Content scrollEnabled contentContainerStyle={styles.contentStyle}>
           <Item rounded>
             <Input
-              selectionColor="rgba(255,255,255,0.5)"
               placeholder="Organisation Name"
               value={this.state.organisationName}
               onChangeText={val => this.onChange("organisationName", val)}
@@ -69,7 +61,6 @@ class WorkExperienceFormScreen extends Component {
           </Item>
           <Item rounded>
             <Input
-              selectionColor="rgba(255,255,255,0.5)"
               placeholder="Location"
               value={this.state.location}
               onChangeText={val => this.onChange("location", val)}
@@ -77,7 +68,6 @@ class WorkExperienceFormScreen extends Component {
           </Item>
           <Item rounded>
             <Input
-              selectionColor="rgba(255,255,255,0.5)"
               placeholder="Field"
               value={this.state.field}
               onChangeText={val => this.onChange("field", val)}
@@ -85,7 +75,6 @@ class WorkExperienceFormScreen extends Component {
           </Item>
           <Item rounded>
             <Input
-              selectionColor="rgba(255,255,255,0.5)"
               placeholder="Designation"
               value={this.state.designation}
               onChangeText={val => this.onChange("designation", val)}
@@ -189,8 +178,8 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = ({ myNavigation }) => {
-  return { ...myNavigation };
+const mapStateToProps = ({ myNavigationReducer }) => {
+  return { ...myNavigationReducer };
 };
 
 export default compose(

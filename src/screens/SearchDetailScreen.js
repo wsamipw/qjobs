@@ -1,0 +1,46 @@
+import React, { Component } from "react";
+import { StyleSheet, Text, View, Dimensions } from "react-native";
+
+class SearchDetailScreen extends Component {
+  render() {
+    const item = this.props.navigation.getParam("item", null);
+
+    return (
+      <View>
+        <Text>Id: {item.id}</Text>
+        <Text>Name: {item.name}</Text>
+        <Text>Type of Job: {item.typeOfJob}</Text>
+      </View>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  contentStyle: {
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "center"
+  },
+  mainWrapper: {
+    flex: 1,
+    marginTop: Dimensions.get("window").height * 0.1,
+    width: Dimensions.get("screen").width * 0.8,
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "center"
+  },
+  logo: {
+    height: 80,
+    width: 80,
+    resizeMode: "contain",
+    marginBottom: 26
+  },
+  inputStyles: {
+    paddingLeft: 15,
+    flex: 1
+    // borderRadius: 50
+  }
+});
+
+export default SearchDetailScreen;
