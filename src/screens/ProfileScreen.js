@@ -4,10 +4,9 @@ import {
   StatusBar,
   ToolbarAndroid,
   View,
-  ScrollView,
   Text,
-  RefreshControl,
-  FlatList
+  FlatList,
+  TouchableOpacity
 } from "react-native";
 import { getStatusBarHeight } from "react-native-status-bar-height";
 
@@ -86,11 +85,20 @@ class ProfileScreen extends Component {
                     keyExtractor={item => item.id}
                     renderItem={({ item }) => {
                       return (
-                        <Card key={item.id}>
-                          <Text>Id: {item.id}</Text>
-                          <Text>Name: {item.name}</Text>
-                          <Text>Type of Job: {item.typeOfJob}</Text>
-                        </Card>
+                        <TouchableOpacity
+                          onPress={() =>
+                            this.props.navigation.navigate("searchDetail", {
+                              item
+                            })
+                          }
+                          key={item.id}
+                        >
+                          <Card>
+                            <Text>Id: {item.id}</Text>
+                            <Text>Name: {item.name}</Text>
+                            <Text>Type of Job: {item.typeOfJob}</Text>
+                          </Card>
+                        </TouchableOpacity>
                       );
                     }}
                   />

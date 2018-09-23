@@ -54,6 +54,20 @@ export const LOGIN_MUTATION = gql`
   }
 `;
 
+export const REGISTER_MUTATION = gql`
+  mutation RegisterMutation(
+    $email: String!
+    $password: String!
+    $username: String!
+  ) {
+    createUser(email: $email, password: $password, username: $username) {
+      token
+      msg
+      status
+    }
+  }
+`;
+
 export const EDUCATION_DETAILS_QUERY = gql`
   {
     me {

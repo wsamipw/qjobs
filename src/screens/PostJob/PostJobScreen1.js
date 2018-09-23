@@ -112,7 +112,6 @@ class PostJobScreen1 extends Component {
                       }))
                     : []
                 }
-                initial={0}
                 onPress={typeOfJob => {
                   this.setState({ typeOfJob });
                 }}

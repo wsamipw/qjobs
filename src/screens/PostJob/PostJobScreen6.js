@@ -5,16 +5,16 @@ import { Item, Input } from "native-base";
 import { connect } from "react-redux";
 import { Button } from "react-native-elements";
 import { MapView } from "expo";
+import { compose, graphql, withApollo } from "react-apollo";
 
 import { deleteMultiplePostJobScreensState } from "../../actions/";
+import { _retrieveData } from "../../config/utils";
 
-import { compose, graphql, withApollo } from "react-apollo";
 import { JOBS_QUERY, POST_JOB_MUTATION } from "../../config/mutations";
+import { LOCATION } from "../../config/CONSTANTS";
 
 class PostJobScreen6 extends Component {
   state = {
-    latitude: "27.1158989",
-    longitude: "85.1545589",
     timeOut: "",
     extraQuestion: ["what is your question"]
   };
@@ -50,7 +50,7 @@ class PostJobScreen6 extends Component {
         <Button
           backgroundColor="#3F51B5"
           title="Publish"
-          onPress={() => {
+          onPress={async () => {
             console.log("porp6: ", this.props.postJobState);
             const {
               customJobTitle,
@@ -67,9 +67,16 @@ class PostJobScreen6 extends Component {
               shiftAvailability
             } = this.props.postJobState;
 
-            const { latitude, longitude, timeOut, extraQuestion } = this.state;
+            const { timeOut, extraQuestion } = this.state;
 
             const timeout = Number(timeOut);
+
+            const location = JSON.parse(await _retrieveData(LOCATION));
+
+            const latitude = location ? location.coords.latitude : undefined;
+            const longitude = location ? location.coords.longitude : undefined;
+
+            console.log("latitude: ", latitude, " longiidf: ", longitude);
 
             this.props
               .createJob(
@@ -90,11 +97,11 @@ class PostJobScreen6 extends Component {
                 timeout,
                 extraQuestion
               )
-              .then(({ data }) => {
-                console.log("job post data: ", data);
-                if (data.createJob.msg === "success") {
+              .then(response => {
+                console.log("job post data: ", response);
+                if (response.data.createJob.msg === "success") {
                   this.props.navigation.navigate("profile");
-                } else throw new Error(response.msg);
+                } else throw new Error(response);
               })
               .catch(error => {
                 console.log("job post errror: ", error);
@@ -113,8 +120,8 @@ class PostJobScreen6 extends Component {
   }
 }
 
-const mapStateToProps = ({ myNavigation, postJobReducer }) => {
-  return { ...myNavigation, ...postJobReducer };
+const mapStateToProps = ({ myNavigation, postJobReducer, extraReducer }) => {
+  return { ...myNavigation, ...postJobReducer, ...extraReducer };
 };
 
 export default compose(

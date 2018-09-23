@@ -1,1 +1,2 @@
-export const JWT_AUTH_TOKEN = "jwt_auth_token";
+export const JWT_AUTH_TOKEN = "JWT_AUTH_TOKEN";
+export const LOCATION = "LOCATION";
