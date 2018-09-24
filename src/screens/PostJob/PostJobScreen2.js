@@ -5,7 +5,8 @@ import {
   View,
   Picker,
   ScrollView,
-  TextInput
+  TextInput,
+  Alert
 } from "react-native";
 import { connect } from "react-redux";
 import { Button } from "react-native-elements";
@@ -19,10 +20,10 @@ import { SALARY_TIME_QUERY } from "../../config/mutations";
 
 class PostJobScreen2 extends Component {
   state = {
-    salaryTime: "",
+    salaryTime: "0",
     salary: "",
     hires: "",
-    hireBy: new Date().toISOString()
+    hireBy: ""
   };
 
   onChange = (key, val) => this.setState({ [key]: val });
@@ -44,21 +45,22 @@ class PostJobScreen2 extends Component {
                   value={this.state.salary}
                   onChangeText={val => this.onChange("salary", val)}
                 />
-                <Picker
-                  selectedValue={this.state.salaryTime}
-                  style={styles.pickerStyle}
-                  onValueChange={salaryTime => this.setState({ salaryTime })}
-                >
-                  {data.perTime &&
-                    data.perTime.map(eachPerTime => (
-                      <Picker.Item
-                        key={eachPerTime.id}
-                        label={eachPerTime.name}
-                        value={eachPerTime.name}
-                      />
-                    ))}
-                </Picker>
               </Item>
+              <Picker
+                selectedValue={this.state.salaryTime}
+                style={styles.pickerStyle}
+                onValueChange={salaryTime => this.setState({ salaryTime })}
+              >
+                <Picker.Item label="Select an option ..." value="0" />
+                {data.perTime &&
+                  data.perTime.map(eachPerTime => (
+                    <Picker.Item
+                      key={eachPerTime.id}
+                      label={eachPerTime.name}
+                      value={eachPerTime.name}
+                    />
+                  ))}
+              </Picker>
 
               <Text>How many hires do you want to make?</Text>
               <Item>
@@ -91,12 +93,25 @@ class PostJobScreen2 extends Component {
                 backgroundColor="#3F51B5"
                 title="Next"
                 onPress={() => {
-                  this.props.saveMultiplePostJobScreensState({
-                    ...this.state,
-                    salary: Number(this.state.salary),
-                    hires: Number(this.state.hires)
-                  });
-                  this.props.navigation.navigate("postJob3");
+                  if (
+                    this.state.hires &&
+                    this.state.hireBy &&
+                    this.state.salaryTime !== "0" &&
+                    this.state.salary
+                  ) {
+                    this.props.saveMultiplePostJobScreensState({
+                      ...this.state,
+                      salary: Number(this.state.salary),
+                      hires: Number(this.state.hires)
+                    });
+                    this.props.navigation.navigate("postJob3");
+                  } else {
+                    Alert.alert(
+                      "Fill all data",
+                      "Please select an option and other values",
+                      [{ text: "OK" }]
+                    );
+                  }
                 }}
               />
             </ScrollView>

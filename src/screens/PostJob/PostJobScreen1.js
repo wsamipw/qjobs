@@ -1,9 +1,20 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, View, Picker, ScrollView } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Picker,
+  ScrollView,
+  Alert
+} from "react-native";
 import { connect } from "react-redux";
 import { Button } from "react-native-elements";
 import { Item, Input } from "native-base";
-import RadioForm from "react-native-simple-radio-button";
+import RadioForm, {
+  RadioButton,
+  RadioButtonInput,
+  RadioButtonLabel
+} from "react-native-simple-radio-button";
 
 import { Query } from "react-apollo";
 
@@ -112,16 +123,28 @@ class PostJobScreen1 extends Component {
                       }))
                     : []
                 }
+                initial={this.state.typeOfJob}
                 onPress={typeOfJob => {
                   this.setState({ typeOfJob });
                 }}
               />
+
               <Button
                 backgroundColor="#3F51B5"
                 title="Next"
                 onPress={() => {
-                  this.props.saveMultiplePostJobScreensState({ ...this.state });
-                  this.props.navigation.navigate("postJob2");
+                  if (this.state.typeOfJob && this.state.customJobTitle) {
+                    this.props.saveMultiplePostJobScreensState({
+                      ...this.state
+                    });
+                    this.props.navigation.navigate("postJob2");
+                  } else {
+                    Alert.alert(
+                      "Title or Type of Job Empty",
+                      "Please give title and type of job!",
+                      [{ text: "OK" }]
+                    );
+                  }
                 }}
               />
             </ScrollView>

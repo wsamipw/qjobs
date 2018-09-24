@@ -22,8 +22,6 @@ class PostJobScreen6 extends Component {
   onChange = (key, val) => this.setState({ [key]: val });
 
   render() {
-    // console.log("port 6 props: ", this.props);
-
     return (
       <ScrollView scrollEnabled>
         <MapView

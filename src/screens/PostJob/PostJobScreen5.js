@@ -96,7 +96,7 @@ class PostJobScreen5 extends Component {
             { label: "Required", value: "Required" },
             { label: "Preferred", value: "Preferred" }
           ]}
-          initial={0}
+          initial={this.state.backgroundCheck}
           onPress={value => {
             this.setState({
               backgroundCheck: value === "Required" ? true : false
@@ -110,7 +110,7 @@ class PostJobScreen5 extends Component {
             { label: "Yes", value: "Yes" },
             { label: "No", value: "No" }
           ]}
-          initial={0}
+          initial={this.state.jobLocation}
           onPress={value => {
             this.setState({
               jobLocation: value === "Yes" ? true : false

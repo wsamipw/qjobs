@@ -15,10 +15,10 @@ class RegisterScreen extends Component {
   state = {
     hidePass: true,
 
-    username: "Dudeeee",
-    password: "asdf1234567",
-    confirm_password: "asdf1234567",
-    email: "apq@asda.adasd",
+    username: "",
+    password: "",
+    confirm_password: "",
+    email: "",
 
     errorUsername: "",
     errorPassword: "",
