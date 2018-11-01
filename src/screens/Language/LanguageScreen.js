@@ -6,10 +6,9 @@ import { Button } from "react-native-elements";
 
 import { compose, graphql, withApollo, Query } from "react-apollo";
 import { Card } from "react-native-elements";
-import {
-  LANGUAGE_MUTATION,
-  LANGUAGE_DETAILS_QUERY
-} from "../../config/mutations";
+import { LANGUAGE_MUTATION } from "../../config/mutations";
+
+import { LANGUAGE_DETAILS_QUERY } from "../../config/queries";
 
 class LanguageScreen extends Component {
   render() {

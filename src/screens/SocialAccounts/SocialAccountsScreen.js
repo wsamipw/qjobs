@@ -6,10 +6,9 @@ import { Button } from "react-native-elements";
 
 import { compose, graphql, withApollo, Query } from "react-apollo";
 import { Card } from "react-native-elements";
-import {
-  SOCIAL_ACCOUNTS_MUTATION,
-  SOCIAL_ACCOUNTS_DETAILS_QUERY
-} from "../../config/mutations";
+import { SOCIAL_ACCOUNTS_MUTATION } from "../../config/mutations";
+
+import { SOCIAL_ACCOUNTS_DETAILS_QUERY } from "../../config/queries";
 
 class SocialAccountsScreen extends Component {
   render() {

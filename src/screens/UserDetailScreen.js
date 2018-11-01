@@ -7,7 +7,8 @@ import { compose, graphql, withApollo } from "react-apollo";
 
 import styles from "../Styles/LoginRegisterStyles";
 
-import { USER_DETAILS_QUERY, UPDATE_USER_MUTATION } from "../config/mutations";
+import { UPDATE_USER_MUTATION } from "../config/mutations";
+import { USER_DETAILS_QUERY } from "../config/queries";
 
 class UserDetailScreen extends Component {
   static navigationOptions = { header: null };
@@ -25,10 +26,10 @@ class UserDetailScreen extends Component {
     currentAddress: "",
     permanentAddress: "",
     gender: "Male",
-    nationality: "",
-    religion: "",
-    dateOfBirth: new Date().toJSON().slice(0, 10),
-    disability: false
+    // nationality: "",
+    // religion: "",
+    dateOfBirth: new Date().toJSON().slice(0, 10)
+    // disability: false
   };
 
   componentDidMount() {
@@ -51,10 +52,10 @@ class UserDetailScreen extends Component {
           currentAddress,
           permanentAddress,
           gender,
-          nationality,
-          religion,
-          dateOfBirth,
-          disability
+          // nationality,
+          // religion,
+          dateOfBirth
+          // disability
         } = response.data.me;
 
         this.setState({
@@ -66,17 +67,17 @@ class UserDetailScreen extends Component {
           currentAddress,
           permanentAddress,
           gender,
-          nationality,
-          religion,
-          dateOfBirth,
-          disability
+          // nationality,
+          // religion,
+          dateOfBirth
+          // disability
         });
 
         // A Callback function to change ``refreshing`` state status ...
         if (callback) callback();
       })
       .catch(error => {
-        console.log("error fetchting data: ", error);
+        console.log("error fetchting data: ", JSON.stringify(error));
         this.setState({ loading: false, fetchError: true });
 
         // A Callback function to change ``refreshing`` state status ...
@@ -100,6 +101,8 @@ class UserDetailScreen extends Component {
 
     if (this.state.fetchError) {
       // Display Error Message PopUp or Something ...
+      console.log("fetch errror: ", this.state.fetchError);
+      return null;
     } else
       return (
         <ScrollView scrollEnabled>
@@ -131,13 +134,13 @@ class UserDetailScreen extends Component {
                     this.onChange("dateOfBirth", val.toJSON().slice(0, 10))
                   }
                 />
-                <CheckBox
+                {/* <CheckBox
                   title="Disability: "
                   checked={this.state.disability}
                   onPress={() =>
                     this.setState({ disability: !this.state.disability })
                   }
-                />
+                /> */}
                 {/* <Item rounded style={styles.inputWrapper}>
                 <Input
                   placeholder="First Name"
@@ -189,20 +192,20 @@ class UserDetailScreen extends Component {
                 onChangeText={val => this.onChange("gender", val)}
               />
             </Item> */}
-                <Item rounded style={styles.inputWrapper}>
+                {/* <Item rounded style={styles.inputWrapper}>
                   <Input
                     placeholder="Nationality"
                     value={this.state.nationality}
                     onChangeText={val => this.onChange("nationality", val)}
                   />
-                </Item>
-                <Item rounded style={styles.inputWrapper}>
+                </Item> */}
+                {/* <Item rounded style={styles.inputWrapper}>
                   <Input
                     placeholder="Religion"
                     value={this.state.religion}
                     onChangeText={val => this.onChange("religion", val)}
                   />
-                </Item>
+                </Item> */}
                 <Button
                   backgroundColor="#3F51B5"
                   containerViewStyle={styles.loginButtton}
@@ -215,10 +218,10 @@ class UserDetailScreen extends Component {
                       currentAddress,
                       permanentAddress,
                       gender,
-                      nationality,
-                      religion,
-                      dateOfBirth,
-                      disability
+                      //nationality,
+                      //religion,
+                      dateOfBirth
+                      //disability
                     } = this.state;
 
                     console.log("date: ", dateOfBirth);
@@ -229,10 +232,10 @@ class UserDetailScreen extends Component {
                         currentAddress,
                         permanentAddress,
                         gender,
-                        nationality,
-                        religion,
-                        dateOfBirth,
-                        disability
+                        //nationality,
+                        //religion,
+                        dateOfBirth
+                        //disability
                       )
                       .then(({ data }) => {
                         console.log("update dat:", data);
@@ -243,10 +246,10 @@ class UserDetailScreen extends Component {
                             currentAddress,
                             permanentAddress,
                             gender,
-                            nationality,
-                            religion,
-                            dateOfBirth,
-                            disability
+                            //nationality,
+                            //religion,
+                            dateOfBirth
+                            //disability
                           } = data.updateUser.user;
 
                           this.setState({
@@ -255,10 +258,10 @@ class UserDetailScreen extends Component {
                             currentAddress,
                             permanentAddress,
                             gender,
-                            nationality,
-                            religion,
-                            dateOfBirth,
-                            disability
+                            //nationality,
+                            //religion,
+                            dateOfBirth
+                            //disability
                           });
                         } else throw new Error(data.updateUser.msg);
                       })
@@ -295,10 +298,10 @@ export default compose(
         currentAddress,
         permanentAddress,
         gender,
-        nationality,
-        religion,
-        dateOfBirth,
-        disability
+        //nationality,
+        //religion,
+        dateOfBirth
+        //disability
       ) =>
         mutate({
           variables: {
@@ -307,10 +310,10 @@ export default compose(
             currentAddress,
             permanentAddress,
             gender,
-            nationality,
-            religion,
-            dateOfBirth,
-            disability
+            //nationality,
+            //religion,
+            dateOfBirth
+            //disability
           }
         })
     })

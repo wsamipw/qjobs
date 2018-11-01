@@ -3,10 +3,9 @@ import { StyleSheet } from "react-native";
 import { Container, Content, Item, Input, DatePicker } from "native-base";
 import { Button } from "react-native-elements";
 import { connect } from "react-redux";
-import {
-  WORK_EXPERIENCE_DETAILS_QUERY,
-  WORK_EXPERIENCE_MUTATION
-} from "../../config/mutations";
+import { WORK_EXPERIENCE_MUTATION } from "../../config/mutations";
+
+import { WORK_EXPERIENCE_DETAILS_QUERY } from "../../config/queries";
 
 import { compose, graphql } from "react-apollo";
 

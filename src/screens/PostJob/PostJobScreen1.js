@@ -20,7 +20,7 @@ import { Query } from "react-apollo";
 
 import { saveMultiplePostJobScreensState } from "../../actions/";
 
-import { TYPES_OF_JOB_QUERY } from "../../config/mutations";
+import { TYPES_OF_JOB_QUERY } from "../../config/queries";
 
 const industries = ["IT", "PLUMBER", "PHARMACY", "ENGINEERING"];
 const categories = ["cat1", "cat2", "cat3", "cat4"];

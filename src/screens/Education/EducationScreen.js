@@ -6,10 +6,9 @@ import { Button } from "react-native-elements";
 
 import { compose, graphql, withApollo, Query } from "react-apollo";
 import { Card } from "react-native-elements";
-import {
-  EDUCATION_MUTATION,
-  EDUCATION_DETAILS_QUERY
-} from "../../config/mutations";
+import { EDUCATION_MUTATION } from "../../config/mutations";
+
+import { EDUCATION_DETAILS_QUERY } from "../../config/queries";
 
 class EducationScreen extends Component {
   render() {

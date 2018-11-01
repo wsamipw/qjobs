@@ -1,47 +1,18 @@
 import gql from "graphql-tag";
 
-export const MY_JOBS_QUERY = gql`
-  query MyJobsQuery {
-    me {
-      jobSet {
-        id
-        name
-        typeOfJob
-      }
-    }
-  }
-`;
-
-export const JOBS_QUERY = gql`
-  query JobsListQuery($page: Int!, $rows: Int!, $query: String!) {
-    jobs(page: $page, rows: $rows, query: $query) {
-      data {
-        id
-        name
-        typeOfJob
-      }
-      page
-      rows
-      rowCount
-      pages
-    }
-  }
-`;
-
-export const TYPES_OF_JOB_QUERY = gql`
-  {
-    typeOfJob {
-      id
-      name
-    }
-  }
-`;
-
-export const SALARY_TIME_QUERY = gql`
-  {
-    perTime {
-      id
-      name
+export const CREATE_USER_PRO_MUTATION = gql`
+  mutation CreateUserProMutation(
+    $jobTitle: ID!
+    $verifyingDoc1Base64: String!
+    $verifyingDoc2Base64: String!
+  ) {
+    createUserpro(
+      jobTitle: $jobTitle
+      verifyingDoc1: $verifyingDoc1Base64
+      verifyingDoc2: $verifyingDoc2Base64
+    ) {
+      msg
+      status
     }
   }
 `;
@@ -68,27 +39,11 @@ export const REGISTER_MUTATION = gql`
   }
 `;
 
-export const EDUCATION_DETAILS_QUERY = gql`
-  {
-    me {
-      education
-    }
-  }
-`;
-
 export const EDUCATION_MUTATION = gql`
   mutation EducationMutation($education: JSONString!) {
     updateUser(education: $education) {
       msg
       status
-    }
-  }
-`;
-
-export const LANGUAGE_DETAILS_QUERY = gql`
-  {
-    me {
-      language
     }
   }
 `;
@@ -102,27 +57,11 @@ export const LANGUAGE_MUTATION = gql`
   }
 `;
 
-export const REFERENCE_DETAILS_QUERY = gql`
-  {
-    me {
-      reference
-    }
-  }
-`;
-
 export const REFERENCE_MUTATION = gql`
   mutation ReferenceMutation($reference: JSONString!) {
     updateUser(reference: $reference) {
       msg
       status
-    }
-  }
-`;
-
-export const SOCIAL_ACCOUNTS_DETAILS_QUERY = gql`
-  {
-    me {
-      socialAccounts
     }
   }
 `;
@@ -136,14 +75,6 @@ export const SOCIAL_ACCOUNTS_MUTATION = gql`
   }
 `;
 
-export const TRAINING_DETAILS_QUERY = gql`
-  {
-    me {
-      training
-    }
-  }
-`;
-
 export const TRAINING_MUTATION = gql`
   mutation TrainingMutation($training: JSONString!) {
     updateUser(training: $training) {
@@ -153,35 +84,11 @@ export const TRAINING_MUTATION = gql`
   }
 `;
 
-export const WORK_EXPERIENCE_DETAILS_QUERY = gql`
-  {
-    me {
-      workExperience
-    }
-  }
-`;
-
 export const WORK_EXPERIENCE_MUTATION = gql`
   mutation WorkExperienceMutation($workExperience: JSONString!) {
     updateUser(workExperience: $workExperience) {
       msg
       status
-    }
-  }
-`;
-
-export const USER_DETAILS_QUERY = gql`
-  {
-    me {
-      firstName
-      lastName
-      currentAddress
-      permanentAddress
-      gender
-      nationality
-      religion
-      dateOfBirth
-      disability
     }
   }
 `;

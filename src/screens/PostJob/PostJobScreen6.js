@@ -10,7 +10,8 @@ import { compose, graphql, withApollo } from "react-apollo";
 import { deleteMultiplePostJobScreensState } from "../../actions/";
 import { _retrieveData } from "../../config/utils";
 
-import { JOBS_QUERY, POST_JOB_MUTATION } from "../../config/mutations";
+import { POST_JOB_MUTATION } from "../../config/mutations";
+import { JOBS_QUERY } from "../../config/queries";
 import { LOCATION } from "../../config/CONSTANTS";
 
 class PostJobScreen6 extends Component {

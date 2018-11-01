@@ -13,7 +13,7 @@ import { Button, Card } from "react-native-elements";
 
 import { Query, compose, withApollo, graphql } from "react-apollo";
 
-import { JOBS_QUERY } from "../config/mutations";
+import { JOBS_QUERY } from "../config/queries";
 
 class SearchResultScreen extends Component {
   static navigationOptions = {
@@ -53,7 +53,10 @@ class SearchResultScreen extends Component {
               }) => {
                 console.log("data: ", data);
                 console.log("loading: ", loading);
-                if (error) return <Text>Error Fetching Data !</Text>;
+                if (error) {
+                  console.log("error search job: ", JSON.stringify(error));
+                  return <Text>Error Fetching Data !</Text>;
+                }
 
                 if (data && data.jobs && data.jobs.data.length) {
                   return (

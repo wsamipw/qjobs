@@ -19,7 +19,7 @@ import { JWT_AUTH_TOKEN } from "../config/CONSTANTS";
 import { Query, compose } from "react-apollo";
 
 import { PostJobStack } from "../config/routes";
-import { MY_JOBS_QUERY } from "../config/mutations";
+import { MY_JOBS_QUERY } from "../config/queries";
 import { Container, Content } from "native-base";
 
 class ProfileScreen extends Component {
@@ -86,11 +86,12 @@ class ProfileScreen extends Component {
                     renderItem={({ item }) => {
                       return (
                         <TouchableOpacity
-                          onPress={() =>
+                          onPress={() => {
+                            console.log("clicked");
                             this.props.navigation.navigate("searchDetail", {
                               item
-                            })
-                          }
+                            });
+                          }}
                           key={item.id}
                         >
                           <Card>

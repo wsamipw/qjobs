@@ -29,8 +29,16 @@ import {
   PostJobScreen5,
   PostJobScreen6,
   // SubPart
-  PostJobScreen41
+  PostJobScreen41,
+  Accounts
 } from "../screens";
+
+export const AccountsStack = createSwitchNavigator(
+  {
+    accounts: Accounts
+  },
+  { initialRouteName: "accounts" }
+);
 
 export const ProfileStack = createStackNavigator(
   {
@@ -64,7 +72,10 @@ export const ProfileStack = createStackNavigator(
     postJob5: PostJobScreen5,
     postJob6: PostJobScreen6,
 
-    postJob41: PostJobScreen41
+    postJob41: PostJobScreen41,
+
+    searchDetail: SearchDetailScreen
+    // accounts: Accounts
   },
   { initialRouteName: "profile" }
 );
@@ -81,8 +92,8 @@ export const PostJobStack = createSwitchNavigator(
 export const SearchStack = createStackNavigator(
   {
     search: SearchJobScreen,
-    result: SearchResultScreen,
-    searchDetail: SearchDetailScreen
+    result: SearchResultScreen
+    // searchDetail: SearchDetailScreen
   },
   { initialRouteName: "search" }
 );

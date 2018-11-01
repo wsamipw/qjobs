@@ -20,7 +20,7 @@ import { JWT_AUTH_TOKEN } from "../config/CONSTANTS";
 import { Query, compose, withApollo, graphql } from "react-apollo";
 
 import { PostJobStack } from "../config/routes";
-import { JOBS_QUERY } from "../config/mutations";
+import { JOBS_QUERY } from "../config/queries";
 
 class ProfileScreen extends Component {
   state = {

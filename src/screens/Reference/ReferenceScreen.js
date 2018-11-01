@@ -6,10 +6,9 @@ import { Button } from "react-native-elements";
 
 import { compose, graphql, withApollo, Query } from "react-apollo";
 import { Card } from "react-native-elements";
-import {
-  REFERENCE_MUTATION,
-  REFERENCE_DETAILS_QUERY
-} from "../../config/mutations";
+import { REFERENCE_MUTATION } from "../../config/mutations";
+
+import { REFERENCE_DETAILS_QUERY } from "../../config/queries";
 
 class ReferenceScreen extends Component {
   render() {

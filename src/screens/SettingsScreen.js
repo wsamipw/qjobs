@@ -1,14 +1,16 @@
 import React, { Component } from "react";
 import { StyleSheet, Text, FlatList, ListView } from "react-native";
-import { Container, Content, View } from "native-base";
+import { Container, Content, View, Button } from "native-base";
 import { connect } from "react-redux";
+import { AccountsStack } from "../config/routes";
 
 class SettingsScreen extends Component {
   render() {
+    console.log("typeofo: ", typeof AccountsStack);
     return (
       <Container>
         <Content contentContainerStyle={styles.contentStyle}>
-          <FlatList
+          {/* <FlatList
             data={[
               { title: "Education", key: "education" },
               { title: "Language", key: "language" },
@@ -31,7 +33,16 @@ class SettingsScreen extends Component {
                 </View>
               );
             }}
-          />
+          /> */}
+
+          <Button
+            //style={styles.searchButtton}
+            rounded
+            block
+            onPress={AccountsStack}
+          >
+            <Text uppercase={false}>Accounts</Text>
+          </Button>
         </Content>
       </Container>
     );

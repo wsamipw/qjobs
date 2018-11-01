@@ -30,6 +30,7 @@ import TrainingScreen from "./Training/TrainingScreen";
 import TrainingFormScreen from "./Training/TrainingFormScreen";
 
 import SettingsScreen from "./SettingsScreen";
+import Accounts from "./Accounts/Accounts";
 
 import {
   PostJobScreen1,
@@ -74,5 +75,6 @@ export {
   PostJobScreen6,
   // Subpart
   PostJobScreen41,
-  PostJobScreen51
+  PostJobScreen51,
+  Accounts
 };
