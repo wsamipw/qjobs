@@ -4,12 +4,14 @@ import HomeScreen from "./HomeScreen";
 
 import UserDetailScreen from "./UserDetailScreen";
 
-import ProfileScreen from "./ProfileScreen";
-import ProfileDetailScreen from "./ProfileDetailScreen";
+// Profile Related Screens
+import ProfileScreen from "./Profile/ProfileScreen";
+import ProfileDetailScreen from "./Profile/ProfileDetailScreen";
 
-import SearchJobScreen from "./SearchJobScreen";
-import SearchResultScreen from "./SearchResultScreen";
-import SearchDetailScreen from "./SearchDetailScreen";
+// Search Related Screens
+import SearchJobScreen from "./Search/SearchJobScreen";
+import SearchResultScreen from "./Search/SearchResultScreen";
+import SearchDetailScreen from "./Search/SearchDetailScreen";
 
 import EducationScreen from "./Education/EducationScreen";
 import EducationFormScreen from "./Education/EducationFormScreen";
@@ -31,6 +33,7 @@ import TrainingFormScreen from "./Training/TrainingFormScreen";
 
 import SettingsScreen from "./SettingsScreen";
 import Accounts from "./Accounts/Accounts";
+import ApplyJob from "./ApplyJob";
 
 import {
   PostJobScreen1,
@@ -76,5 +79,6 @@ export {
   // Subpart
   PostJobScreen41,
   PostJobScreen51,
-  Accounts
+  Accounts,
+  ApplyJob
 };

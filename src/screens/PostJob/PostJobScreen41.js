@@ -1,14 +1,18 @@
 import React, { Component } from "react";
-import { Text, ScrollView } from "react-native";
+import { Text, ScrollView, Alert } from "react-native";
 import { connect } from "react-redux";
 import { Button } from "react-native-elements";
 import { Item, Input } from "native-base";
 
 import { saveMultiplePostJobScreensState } from "../../actions";
 
+/*
+ * This Screen/Page is changed from `experience` to `extraQuestion`
+ * currently from date: 2075/07/15
+*/
+
 class PostJobScreen41 extends Component {
   state = {
-    time: "",
     name: ""
   };
 
@@ -17,21 +21,12 @@ class PostJobScreen41 extends Component {
   render() {
     return (
       <ScrollView scrollEnabled>
-        <Text style={{ fontWeight: "bold" }}>Experience</Text>
+        <Text style={{ fontWeight: "bold" }}>Extra Questions</Text>
         <Item>
           <Input
-            placeholder="Field (Eg. iOS Programming}"
+            placeholder="What is your experience in JAVA?"
             value={this.state.name}
             onChangeText={val => this.onChange("name", val)}
-          />
-        </Item>
-
-        <Item>
-          <Input
-            placeholder="Number of Years"
-            keyboardType="numeric"
-            value={this.state.time}
-            onChangeText={val => this.onChange("time", val)}
           />
         </Item>
 
@@ -39,17 +34,26 @@ class PostJobScreen41 extends Component {
           backgroundColor="#3F51B5"
           title="Add"
           onPress={() => {
-            const experience =
-              this.props.postJobState && this.props.postJobState.experience;
+            if (this.state.name) {
+              const extraQuestion =
+                this.props.postJobState &&
+                this.props.postJobState.extraQuestion;
 
-            experience && experience.length
-              ? this.props.saveMultiplePostJobScreensState({
-                  experience: [...experience, this.state]
-                })
-              : this.props.saveMultiplePostJobScreensState({
-                  experience: [this.state]
-                });
-            this.props.navigation.goBack();
+              extraQuestion && extraQuestion.length
+                ? this.props.saveMultiplePostJobScreensState({
+                    extraQuestion: [...extraQuestion, this.state.name]
+                  })
+                : this.props.saveMultiplePostJobScreensState({
+                    extraQuestion: [this.state.name]
+                  });
+              this.props.navigation.goBack();
+            } else {
+              Alert.alert(
+                "Question is Empty!",
+                "Please type a question or press Back Button",
+                [{ text: "OK" }]
+              );
+            }
           }}
         />
       </ScrollView>

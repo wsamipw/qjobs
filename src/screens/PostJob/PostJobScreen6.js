@@ -16,13 +16,15 @@ import { LOCATION } from "../../config/CONSTANTS";
 
 class PostJobScreen6 extends Component {
   state = {
-    timeOut: "",
-    extraQuestion: ["what is your question"]
+    timeOut: ""
   };
 
   onChange = (key, val) => this.setState({ [key]: val });
 
   render() {
+    console.log("this. props: ", this.props.postJobState);
+    console.log("this. props: ", this.props.loading);
+    console.log("this. props: ", this.props.error);
     return (
       <ScrollView scrollEnabled>
         <MapView
@@ -52,21 +54,14 @@ class PostJobScreen6 extends Component {
           onPress={async () => {
             console.log("porp6: ", this.props.postJobState);
             const {
-              customJobTitle,
+              jobTitle,
               typeOfJob,
-              salaryTime,
-              salary,
-              hires,
               hireBy,
               description,
-              experience,
-              workAuthorization,
-              backgroundCheck,
-              jobLocation,
-              shiftAvailability
+              extraQuestion
             } = this.props.postJobState;
 
-            const { timeOut, extraQuestion } = this.state;
+            const { timeOut } = this.state;
 
             const timeout = Number(timeOut);
 
@@ -77,33 +72,66 @@ class PostJobScreen6 extends Component {
 
             console.log("latitude: ", latitude, " longiidf: ", longitude);
 
+            console.log(
+              "reuquesDAt: ",
+              jobTitle,
+              typeOfJob,
+              hireBy,
+              description,
+              latitude,
+              longitude,
+              timeout,
+              extraQuestion
+            );
+
+            {
+              /* const response = await this.props.createJob(
+              jobTitle,
+              typeOfJob,
+              hireBy,
+              description,
+              latitude,
+              longitude,
+              timeout,
+              extraQuestion
+            ); */
+            }
+
+            {
+              /* const {
+              data: {
+                createJob: { msg, status }
+              }
+            } = response;
+
+            if (status === 200 && msg === "success") {
+              console.log("success: ", response);
+              this.props.navigation.navigate("profile");
+            } else {
+              console.log("error: ", response);
+            } */
+            }
+
             this.props
               .createJob(
-                customJobTitle,
+                jobTitle,
                 typeOfJob,
-                salaryTime,
-                salary,
-                hires,
                 hireBy,
                 description,
-                experience,
-                workAuthorization,
-                backgroundCheck,
-                jobLocation,
-                shiftAvailability,
                 latitude,
                 longitude,
                 timeout,
                 extraQuestion
               )
               .then(response => {
-                console.log("job post data: ", response);
                 if (response.data.createJob.msg === "success") {
+                  console.log("success: ", response);
+
                   this.props.navigation.navigate("profile");
                 } else throw new Error(response);
               })
               .catch(error => {
-                console.log("job post errror: ", error);
+                console.log("job post errror: ", JSON.stringify(error));
               });
           }}
         />
@@ -119,8 +147,8 @@ class PostJobScreen6 extends Component {
   }
 }
 
-const mapStateToProps = ({ myNavigation, postJobReducer, extraReducer }) => {
-  return { ...myNavigation, ...postJobReducer, ...extraReducer };
+const mapStateToProps = ({ myNavigation, postJobReducer }) => {
+  return { ...myNavigation, ...postJobReducer };
 };
 
 export default compose(
@@ -132,18 +160,10 @@ export default compose(
   graphql(POST_JOB_MUTATION, {
     props: ({ mutate }) => ({
       createJob: (
-        customJobTitle,
+        jobTitle,
         typeOfJob,
-        salaryTime,
-        salary,
-        hires,
         hireBy,
         description,
-        experience,
-        workAuthorization,
-        backgroundCheck,
-        jobLocation,
-        shiftAvailability,
         latitude,
         longitude,
         timeout,
@@ -151,18 +171,10 @@ export default compose(
       ) =>
         mutate({
           variables: {
-            customJobTitle,
+            jobTitle,
             typeOfJob,
-            salaryTime,
-            salary,
-            hires,
             hireBy,
             description,
-            experience,
-            workAuthorization,
-            backgroundCheck,
-            jobLocation,
-            shiftAvailability,
             latitude,
             longitude,
             timeout,

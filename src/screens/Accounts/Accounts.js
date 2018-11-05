@@ -15,11 +15,13 @@ import { CREATE_USER_PRO_MUTATION } from "../../config/mutations";
 
 import { TYPES_OF_JOB_QUERY } from "../../config/queries";
 
-const jobTitles = ["IT", "PLUMBER", "PHARMACY", "ENGINEERING"];
+import { SELECT_A_JOB_TITLE } from "../../config/CONSTANTS";
+
+const jobTitles = ["job1", "job2", "job3", "job4"];
 
 class Accounts extends Component {
   state = {
-    jobTitle: "Select a Job Title",
+    jobTitle: SELECT_A_JOB_TITLE,
     verifyingDoc1Image: null,
     verifyingDoc2Image: null,
     verifyingDoc1Base64: "",
@@ -56,7 +58,7 @@ class Accounts extends Component {
                 } = this.state;
 
                 if (
-                  (jobTitle !== "Select a Job Title" && verifyingDoc1Base64,
+                  (jobTitle !== SELECT_A_JOB_TITLE && verifyingDoc1Base64,
                   verifyingDoc2Base64)
                 ) {
                   this.props
@@ -85,7 +87,7 @@ class Accounts extends Component {
             <Query query={TYPES_OF_JOB_QUERY}>
               {({ loading, error, data }) => {
                 {
-                  /* const jobTitles = ["Select a Job Title", ...data]; */
+                  /* const jobTitles = [SELECT_A_JOB_TITLE, ...data]; */
                 }
 
                 if (loading) return <Text>Fetching Data ...</Text>;

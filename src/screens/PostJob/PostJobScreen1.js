@@ -20,11 +20,11 @@ import { Query } from "react-apollo";
 
 import { saveMultiplePostJobScreensState } from "../../actions/";
 
-import { TYPES_OF_JOB_QUERY } from "../../config/queries";
+import { JOB_TITLES_QUERY, TYPES_OF_JOB_QUERY } from "../../config/queries";
 
-const industries = ["IT", "PLUMBER", "PHARMACY", "ENGINEERING"];
-const categories = ["cat1", "cat2", "cat3", "cat4"];
-const jobTitles = ["job1", "job2", "job3", "job4"];
+import { SELECT_A_JOB_TITLE } from "../../config/CONSTANTS";
+
+// const jobTitles = ["job1", "job2", "job3", "job4"];
 
 // const typesOfJob = [
 //   { label: "Full Time", value: "Full Time" },
@@ -37,119 +37,97 @@ const jobTitles = ["job1", "job2", "job3", "job4"];
 
 class PostJobScreen1 extends Component {
   state = {
-    industry: "",
-    category: "",
-    jobTitle: "",
-    customJobTitle: "",
+    jobTitle: SELECT_A_JOB_TITLE,
     typeOfJob: ""
   };
 
   onChange = (key, val) => this.setState({ [key]: val });
 
   render() {
+    console.log("this state:", this.state);
     return (
-      <Query query={TYPES_OF_JOB_QUERY} fetchPolicy="cache-and-network">
-        {({ loading, error, data }) => {
-          if (loading) return <Text>Fetching Data ...</Text>;
-          if (error) return <Text>Error Fetching Data !</Text>;
+      <Query query={JOB_TITLES_QUERY} fetchPolicy="cache-and-network">
+        {({
+          loading: loadingJobTitles,
+          error: errorJobTitles,
+          data: dataJobTitles
+        }) => (
+          <Query query={TYPES_OF_JOB_QUERY}>
+            {({
+              loading: loadingJobTypes,
+              error: errorJobTypes,
+              data: dataJobTypes
+            }) => {
+              if (loadingJobTitles || loadingJobTypes)
+                return <Text>Fetching Data ...</Text>;
+              if (errorJobTitles || errorJobTypes)
+                return <Text>Error Fetching Data !</Text>;
 
-          return (
-            <ScrollView scrollEnabled>
-              {/* Industry */}
-              <Picker
-                selectedValue={this.state.industry}
-                style={styles.pickerStyle}
-                onValueChange={industry => this.setState({ industry })}
-              >
-                {industries &&
-                  industries.map(industry => (
-                    <Picker.Item
-                      key={industry}
-                      label={industry}
-                      value={industry}
-                    />
-                  ))}
-              </Picker>
+              const jobTitles = [
+                { id: SELECT_A_JOB_TITLE, name: SELECT_A_JOB_TITLE },
+                ...dataJobTitles.jobTitle
+              ];
 
-              {/* Category*/}
-              <Picker
-                selectedValue={this.state.category}
-                style={styles.pickerStyle}
-                onValueChange={category => this.setState({ category })}
-              >
-                {categories &&
-                  categories.map(category => (
-                    <Picker.Item
-                      key={category}
-                      label={category}
-                      value={category}
-                    />
-                  ))}
-              </Picker>
+              return (
+                <ScrollView scrollEnabled>
+                  {/* Job Titles */}
+                  <Picker
+                    selectedValue={this.state.jobTitle}
+                    style={styles.pickerStyle}
+                    onValueChange={jobTitle => this.setState({ jobTitle })}
+                  >
+                    {jobTitles &&
+                      jobTitles.map(jobTitle => (
+                        <Picker.Item
+                          key={jobTitle.id}
+                          label={jobTitle.name}
+                          value={jobTitle.id}
+                        />
+                      ))}
+                  </Picker>
 
-              {/* Job Titles */}
-              <Picker
-                selectedValue={this.state.jobTitle}
-                style={styles.pickerStyle}
-                onValueChange={jobTitle => this.setState({ jobTitle })}
-              >
-                {jobTitles &&
-                  jobTitles.map(jobTitle => (
-                    <Picker.Item
-                      key={jobTitle}
-                      label={jobTitle}
-                      value={jobTitle}
-                    />
-                  ))}
-              </Picker>
-              <Text>
-                ------------------------------- OR
-                -------------------------------
-              </Text>
-              <Item>
-                <Input
-                  placeholder="Give your own Job Title"
-                  value={this.state.customJobTitle}
-                  onChangeText={val => this.onChange("customJobTitle", val)}
-                />
-              </Item>
-              <Text>What type of job is it?</Text>
-              <RadioForm
-                radio_props={
-                  data.typeOfJob
-                    ? data.typeOfJob.map(eachType => ({
-                        label: eachType.name,
-                        value: eachType.name
-                      }))
-                    : []
-                }
-                initial={this.state.typeOfJob}
-                onPress={typeOfJob => {
-                  this.setState({ typeOfJob });
-                }}
-              />
+                  <Text>What type of job is it?</Text>
+                  <RadioForm
+                    radio_props={
+                      dataJobTypes.typeOfJob
+                        ? dataJobTypes.typeOfJob.map(eachType => ({
+                            label: eachType.name,
+                            value: eachType.name
+                          }))
+                        : []
+                    }
+                    initial={this.state.typeOfJob}
+                    onPress={typeOfJob => {
+                      this.setState({ typeOfJob });
+                    }}
+                  />
 
-              <Button
-                backgroundColor="#3F51B5"
-                title="Next"
-                onPress={() => {
-                  if (this.state.typeOfJob && this.state.customJobTitle) {
-                    this.props.saveMultiplePostJobScreensState({
-                      ...this.state
-                    });
-                    this.props.navigation.navigate("postJob2");
-                  } else {
-                    Alert.alert(
-                      "Title or Type of Job Empty",
-                      "Please give title and type of job!",
-                      [{ text: "OK" }]
-                    );
-                  }
-                }}
-              />
-            </ScrollView>
-          );
-        }}
+                  <Button
+                    backgroundColor="#3F51B5"
+                    title="Next"
+                    onPress={() => {
+                      if (
+                        this.state.typeOfJob &&
+                        this.state.jobTitle !== SELECT_A_JOB_TITLE
+                      ) {
+                        this.props.saveMultiplePostJobScreensState({
+                          ...this.state
+                        });
+                        this.props.navigation.navigate("postJob2");
+                      } else {
+                        Alert.alert(
+                          "Title or Type of Job Empty",
+                          "Please give title and type of job!",
+                          [{ text: "OK" }]
+                        );
+                      }
+                    }}
+                  />
+                </ScrollView>
+              );
+            }}
+          </Query>
+        )}
       </Query>
     );
   }

@@ -6,8 +6,30 @@ export const MY_JOBS_QUERY = gql`
       jobSet {
         id
         name
+        jobTitle {
+          id
+          name
+        }
         typeOfJob
+        hireBy
+        description
+        extraQuestion
+        timeout
+        location {
+          type
+          coordinates
+        }
+        active
       }
+    }
+  }
+`;
+
+export const JOB_TITLES_QUERY = gql`
+  query JobTitlesQuery($name: String) {
+    jobTitle(name: $name) {
+      id
+      name
     }
   }
 `;

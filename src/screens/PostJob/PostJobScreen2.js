@@ -12,17 +12,12 @@ import { connect } from "react-redux";
 import { Button } from "react-native-elements";
 import { Item, Input, DatePicker } from "native-base";
 
-import { Query } from "react-apollo";
-
 import { saveMultiplePostJobScreensState } from "../../actions/";
 
 import { SALARY_TIME_QUERY } from "../../config/queries";
 
 class PostJobScreen2 extends Component {
   state = {
-    salaryTime: "0",
-    salary: "",
-    hires: "",
     hireBy: ""
   };
 
@@ -30,94 +25,42 @@ class PostJobScreen2 extends Component {
 
   render() {
     return (
-      <Query query={SALARY_TIME_QUERY} fetchPolicy="cache-and-network">
-        {({ loading, error, data }) => {
-          if (loading) return <Text>Fetching Data ...</Text>;
-          if (error) return <Text>Error Fetching Data !</Text>;
+      <ScrollView scrollEnabled>
+        <Text>How urgently do you need to make a hire?</Text>
+        <DatePicker
+          defaultDate={new Date()}
+          minimumDate={new Date(1951, 1, 1)}
+          maximumDate={new Date(2051, 12, 31)}
+          locale={"en"}
+          timeZoneOffsetInMinutes={undefined}
+          modalTransparent={false}
+          animationType={"fade"}
+          androidMode={"default"}
+          placeHolderText="Select date"
+          textStyle={{ color: "green" }}
+          placeHolderTextStyle={{ color: "#d3d3d3" }}
+          onDateChange={val => this.onChange("hireBy", val.toISOString())}
+        />
 
-          return (
-            <ScrollView scrollEnabled>
-              <Item>
-                <Text>$</Text>
-                <TextInput
-                  keyboardType="numeric"
-                  placeholder="Eg. 10"
-                  value={this.state.salary}
-                  onChangeText={val => this.onChange("salary", val)}
-                />
-              </Item>
-              <Picker
-                selectedValue={this.state.salaryTime}
-                style={styles.pickerStyle}
-                onValueChange={salaryTime => this.setState({ salaryTime })}
-              >
-                <Picker.Item label="Select an option ..." value="0" />
-                {data.perTime &&
-                  data.perTime.map(eachPerTime => (
-                    <Picker.Item
-                      key={eachPerTime.id}
-                      label={eachPerTime.name}
-                      value={eachPerTime.name}
-                    />
-                  ))}
-              </Picker>
-
-              <Text>How many hires do you want to make?</Text>
-              <Item>
-                <TextInput
-                  style={{ width: "50%" }}
-                  keyboardType="numeric"
-                  placeholder="Give your own Job Title"
-                  value={this.state.hires}
-                  onChangeText={val => this.onChange("hires", val)}
-                />
-              </Item>
-
-              <Text>How urgently do you need to make a hire?</Text>
-              <DatePicker
-                defaultDate={new Date()}
-                minimumDate={new Date(1951, 1, 1)}
-                maximumDate={new Date(2051, 12, 31)}
-                locale={"en"}
-                timeZoneOffsetInMinutes={undefined}
-                modalTransparent={false}
-                animationType={"fade"}
-                androidMode={"default"}
-                placeHolderText="Select date"
-                textStyle={{ color: "green" }}
-                placeHolderTextStyle={{ color: "#d3d3d3" }}
-                onDateChange={val => this.onChange("hireBy", val.toISOString())}
-              />
-
-              <Button
-                backgroundColor="#3F51B5"
-                title="Next"
-                onPress={() => {
-                  if (
-                    this.state.hires &&
-                    this.state.hireBy &&
-                    this.state.salaryTime !== "0" &&
-                    this.state.salary
-                  ) {
-                    this.props.saveMultiplePostJobScreensState({
-                      ...this.state,
-                      salary: Number(this.state.salary),
-                      hires: Number(this.state.hires)
-                    });
-                    this.props.navigation.navigate("postJob3");
-                  } else {
-                    Alert.alert(
-                      "Fill all data",
-                      "Please select an option and other values",
-                      [{ text: "OK" }]
-                    );
-                  }
-                }}
-              />
-            </ScrollView>
-          );
-        }}
-      </Query>
+        <Button
+          backgroundColor="#3F51B5"
+          title="Next"
+          onPress={() => {
+            if (this.state.hireBy) {
+              this.props.saveMultiplePostJobScreensState({
+                ...this.state
+              });
+              this.props.navigation.navigate("postJob3");
+            } else {
+              Alert.alert(
+                "Fill all data",
+                "Please select an option and other values",
+                [{ text: "OK" }]
+              );
+            }
+          }}
+        />
+      </ScrollView>
     );
   }
 }

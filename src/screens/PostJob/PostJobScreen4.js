@@ -9,6 +9,11 @@ import {
 import { connect } from "react-redux";
 import { Button, Card } from "react-native-elements";
 
+/*
+ * This Screen/Page is changed from `experience` to `extraquestion`
+ * currently from date: 2075/07/15
+*/
+
 class PostJobScreen4 extends Component {
   onActionSelected = position => {
     if (position === 0) {
@@ -22,7 +27,7 @@ class PostJobScreen4 extends Component {
         <ToolbarAndroid
           style={styles.toolbar}
           //logo={require("../static/img/logoIcon.png")}
-          title="Add Experience"
+          title="Add Extra Questions"
           actions={[
             {
               title: "Add",
@@ -35,19 +40,20 @@ class PostJobScreen4 extends Component {
 
         <ScrollView scrollEnabled>
           {this.props.postJobState &&
-            this.props.postJobState.experience &&
-            this.props.postJobState.experience.map((eachExperience, index) => (
-              <Card key={index}>
-                <Text>Name: {eachExperience.name}</Text>
-                <Text>Time: {eachExperience.time}</Text>
-              </Card>
-            ))}
+            this.props.postJobState.extraQuestion &&
+            this.props.postJobState.extraQuestion.map(
+              (eachExtraQuestion, index) => (
+                <Card key={index}>
+                  <Text>Name: {eachExtraQuestion}</Text>
+                </Card>
+              )
+            )}
 
           <Button
             backgroundColor="#3F51B5"
             title="Next"
             onPress={() => {
-              this.props.navigation.navigate("postJob5");
+              this.props.navigation.navigate("postJob6");
             }}
           />
         </ScrollView>

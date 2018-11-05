@@ -14,13 +14,13 @@ import { getStatusBarHeight } from "react-native-status-bar-height";
 import { connect } from "react-redux";
 import { Button, Card } from "react-native-elements";
 
-import { _removeData } from "../config/utils";
-import { JWT_AUTH_TOKEN } from "../config/CONSTANTS";
+import { _removeData } from "../../config/utils";
+import { JWT_AUTH_TOKEN } from "../../config/CONSTANTS";
 
 import { Query, compose, withApollo, graphql } from "react-apollo";
 
-import { PostJobStack } from "../config/routes";
-import { JOBS_QUERY } from "../config/queries";
+import { PostJobStack } from "../../config/routes";
+import { JOBS_QUERY } from "../../config/queries";
 
 class ProfileScreen extends Component {
   state = {

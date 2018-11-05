@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { StyleSheet, Text, View, Dimensions } from "react-native";
+import { Button } from "native-base";
 
 class SearchDetailScreen extends Component {
   render() {
@@ -10,6 +11,14 @@ class SearchDetailScreen extends Component {
         <Text>Id: {item.id}</Text>
         <Text>Name: {item.name}</Text>
         <Text>Type of Job: {item.typeOfJob}</Text>
+
+        <Button
+          rounded
+          block
+          onPress={() => this.props.navigation.navigate("applyJob", { item })}
+        >
+          <Text>Apply Job</Text>
+        </Button>
       </View>
     );
   }

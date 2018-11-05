@@ -1,5 +1,33 @@
 import gql from "graphql-tag";
 
+export const APPLY_JOB_MUTATION = gql`
+  mutation ApplyJobMutation(
+    $job: ID
+    $backgroundCheck: Boolean
+    $description: String
+    $hourlyRate: Float!
+    $extraQuestion: [ApplyJobQuestionsInputType]
+    $shiftAvailability: String!
+  ) {
+    applyJob(
+      job: $job
+      backgroundCheck: $backgroundCheck
+      description: $description
+      hourlyRate: $hourlyRate
+      extraQuestion: $extraQuestion
+      shiftAvailability: $shiftAvailability
+    ) {
+      msg
+      status
+      applyJob {
+        id
+        status
+        description
+      }
+    }
+  }
+`;
+
 export const CREATE_USER_PRO_MUTATION = gql`
   mutation CreateUserProMutation(
     $jobTitle: ID!
@@ -135,61 +163,35 @@ export const UPDATE_USER_MUTATION = gql`
 
 export const POST_JOB_MUTATION = gql`
   mutation PostJobMutation(
-    $customJobTitle: String
+    $jobTitle: ID
     $typeOfJob: String!
-    $salaryTime: String!
-    $salary: Float!
-    $hires: Int!
     $hireBy: DateTime!
     $description: String
-    $experience: [JobExperienceInputType]
-    $workAuthorization: [WorkAuthorizationInputType]
-    $backgroundCheck: Boolean
-    $jobLocation: Boolean
-    $shiftAvailability: String!
-    $latitude: String!
-    $longitude: String!
-    $timeout: Int!
+    $latitude: String
+    $longitude: String
+    $timeout: Int
     $extraQuestion: [String]
   ) {
     createJob(
-      name: $customJobTitle
+      jobTitle: $jobTitle
       typeOfJob: $typeOfJob
-      salaryTime: $salaryTime
-      salary: $salary
-      hires: $hires
       hireBy: $hireBy
       description: $description
-      experience: $experience
-      workAuthorization: $workAuthorization
-      backgroundCheck: $backgroundCheck
-      jobLocation: $jobLocation
-      shiftAvailability: $shiftAvailability
       latitude: $latitude
       longitude: $longitude
       timeout: $timeout
       extraQuestion: $extraQuestion
     ) {
       job {
-        name
+        id
+        jobTitle {
+          id
+          name
+        }
         typeOfJob
-        salaryTime
-        salary
-        hires
         hireBy
         description
         timeout
-        jobexperienceSet {
-          id
-          name
-          time
-        }
-        jobworkauthorizationSet {
-          id
-          name
-        }
-        backgroundCheck
-        shiftAvailability
         location {
           type
           coordinates

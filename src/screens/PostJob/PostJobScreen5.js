@@ -11,6 +11,11 @@ import { saveMultiplePostJobScreensState } from "../../actions";
 
 const shiftTimes = ["None", "Any Time", "Max 2 hrs", "Limited"];
 
+/*
+ * This Screen/Page is not in use
+ * currently from date: 2075/07/15
+*/
+
 class PostJobScreen5 extends Component {
   state = {
     workAuthorization: [] /* This is actually sent to server */,

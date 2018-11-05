@@ -37,7 +37,7 @@ export default class SearchJobScreen extends Component {
         <Content contentContainerStyle={styles.contentStyle}>
           <View style={styles.mainWrapper}>
             <Image
-              source={require("../static/img/logoIcon.png")}
+              source={require("../../static/img/logoIcon.png")}
               style={styles.logo}
             />
             <Item rounded>

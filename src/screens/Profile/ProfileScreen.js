@@ -11,16 +11,16 @@ import {
 import { getStatusBarHeight } from "react-native-status-bar-height";
 
 import { connect } from "react-redux";
-import { Button, Card, List } from "react-native-elements";
+import { Button, Card } from "react-native-elements";
 
-import { _removeData } from "../config/utils";
-import { JWT_AUTH_TOKEN } from "../config/CONSTANTS";
+import { _removeData } from "../../config/utils";
+import { JWT_AUTH_TOKEN } from "../../config/CONSTANTS";
 
 import { Query, compose } from "react-apollo";
 
-import { PostJobStack } from "../config/routes";
-import { MY_JOBS_QUERY } from "../config/queries";
-import { Container, Content } from "native-base";
+import { MY_JOBS_QUERY } from "../../config/queries";
+
+import { createMaterialTopTabNavigator } from "react-navigation";
 
 class ProfileScreen extends Component {
   static navigationOptions = { header: null };
@@ -42,17 +42,17 @@ class ProfileScreen extends Component {
         <StatusBar backgroundColor="rgb(122,77,246)" barStyle="light-content" />
         <ToolbarAndroid
           style={styles.toolbar}
-          logo={require("../static/img/logoIcon.png")}
+          logo={require("../../static/img/logoIcon.png")}
           title="AwesomeApp"
           actions={[
             {
               title: "Settings",
-              icon: require("../static/img/settings.png"),
+              icon: require("../../static/img/settings.png"),
               show: "always"
             },
             {
               title: "Logout",
-              icon: require("../static/img/logout.png"),
+              icon: require("../../static/img/logout.png"),
               show: "always"
             }
           ]}
@@ -87,7 +87,6 @@ class ProfileScreen extends Component {
                       return (
                         <TouchableOpacity
                           onPress={() => {
-                            console.log("clicked");
                             this.props.navigation.navigate("searchDetail", {
                               item
                             });

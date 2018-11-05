@@ -2,11 +2,9 @@ import React, { Component } from "react";
 import { StyleSheet, Text, FlatList, ListView } from "react-native";
 import { Container, Content, View, Button } from "native-base";
 import { connect } from "react-redux";
-import { AccountsStack } from "../config/routes";
 
 class SettingsScreen extends Component {
   render() {
-    console.log("typeofo: ", typeof AccountsStack);
     return (
       <Container>
         <Content contentContainerStyle={styles.contentStyle}>
@@ -39,7 +37,9 @@ class SettingsScreen extends Component {
             //style={styles.searchButtton}
             rounded
             block
-            onPress={AccountsStack}
+            onPress={() => {
+              this.props.navigation.navigate("accounts");
+            }}
           >
             <Text uppercase={false}>Accounts</Text>
           </Button>
