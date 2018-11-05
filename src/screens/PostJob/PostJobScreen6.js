@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Text, ScrollView } from "react-native";
+import { Text, ScrollView, ActivityIndicator } from "react-native";
 import { Item, Input } from "native-base";
 
 import { connect } from "react-redux";
@@ -11,12 +11,13 @@ import { deleteMultiplePostJobScreensState } from "../../actions/";
 import { _retrieveData } from "../../config/utils";
 
 import { POST_JOB_MUTATION } from "../../config/mutations";
-import { JOBS_QUERY } from "../../config/queries";
+import { MY_JOBS_QUERY } from "../../config/queries";
 import { LOCATION } from "../../config/CONSTANTS";
 
 class PostJobScreen6 extends Component {
   state = {
-    timeOut: ""
+    timeOut: "",
+    loading: false
   };
 
   onChange = (key, val) => this.setState({ [key]: val });
@@ -25,6 +26,9 @@ class PostJobScreen6 extends Component {
     console.log("this. props: ", this.props.postJobState);
     console.log("this. props: ", this.props.loading);
     console.log("this. props: ", this.props.error);
+    if (this.state.loading)
+      return <ActivityIndicator size="large" color="#ff6347" />;
+
     return (
       <ScrollView scrollEnabled>
         <MapView
@@ -52,6 +56,9 @@ class PostJobScreen6 extends Component {
           backgroundColor="#3F51B5"
           title="Publish"
           onPress={async () => {
+            this.setState({
+              loading: true
+            });
             console.log("porp6: ", this.props.postJobState);
             const {
               jobTitle,
@@ -106,7 +113,7 @@ class PostJobScreen6 extends Component {
 
             if (status === 200 && msg === "success") {
               console.log("success: ", response);
-              this.props.navigation.navigate("profile");
+              this.props.navigation.navigate("Profile");
             } else {
               console.log("error: ", response);
             } */
@@ -125,12 +132,15 @@ class PostJobScreen6 extends Component {
               )
               .then(response => {
                 if (response.data.createJob.msg === "success") {
+                  this.setState({ loading: false });
                   console.log("success: ", response);
 
                   this.props.navigation.navigate("profile");
                 } else throw new Error(response);
               })
               .catch(error => {
+                this.setState({ loading: false });
+
                 console.log("job post errror: ", JSON.stringify(error));
               });
           }}
@@ -180,7 +190,7 @@ export default compose(
             timeout,
             extraQuestion
           },
-          refetchQueries: [{ query: JOBS_QUERY }]
+          refetchQueries: [{ query: MY_JOBS_QUERY }]
         })
     })
   })

@@ -52,8 +52,12 @@ class LoginScreen extends Component {
     } else {
       console.log("granted");
 
-      let location = await Location.getCurrentPositionAsync({});
-      _storeData(LOCATION, JSON.stringify(location));
+      try {
+        let location = await Location.getCurrentPositionAsync({});
+        _storeData(LOCATION, JSON.stringify(location));
+      } catch (error) {
+        console.log("error location fetch login screen: ", error);
+      }
     }
   };
 

@@ -25,6 +25,26 @@ export const MY_JOBS_QUERY = gql`
   }
 `;
 
+export const APPLIED_JOBS_QUERY = gql`
+  query AppliedJobsQuery($page: Int!, $rows: Int!) {
+    appliedJobs(page: $page, rows: $rows) {
+      id
+      job {
+        id
+        name
+        typeOfJob
+        description
+        active
+      }
+      backgroundCheck
+      hourlyRate
+      applied
+      description
+      status
+    }
+  }
+`;
+
 export const JOB_TITLES_QUERY = gql`
   query JobTitlesQuery($name: String) {
     jobTitle(name: $name) {

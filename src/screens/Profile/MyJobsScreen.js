@@ -1,20 +1,19 @@
 import React, { Component } from "react";
 import {
-  StyleSheet,
   View,
   Text,
   FlatList,
-  TouchableOpacity
+  TouchableOpacity,
+  ActivityIndicator
 } from "react-native";
 
-import { connect } from "react-redux";
 import { Card } from "react-native-elements";
 
-import { Query, compose } from "react-apollo";
+import { Query } from "react-apollo";
 
 import { MY_JOBS_QUERY } from "../../config/queries";
 
-class AppliedJobs extends Component {
+class MyJobScreen extends Component {
   render() {
     return (
       <View>
@@ -24,9 +23,12 @@ class AppliedJobs extends Component {
           notifyOnNetworkStatusChange
         >
           {({ loading, error, data, refetch, networkStatus }) => {
-            if (networkStatus === 4) return <Text>Refetching!</Text>;
-            if (loading) return <Text>Loading ...</Text>;
+            if (networkStatus === 4)
+              return <ActivityIndicator size="large" color="#ff6347" />;
+            if (loading)
+              return <ActivityIndicator size="large" color="#ff6347" />;
             if (error) return <Text>Error Fetching Data !</Text>;
+
             return (
               <View>
                 <FlatList
@@ -38,15 +40,18 @@ class AppliedJobs extends Component {
                     return (
                       <TouchableOpacity
                         onPress={() => {
-                          this.props.navigation.navigate("searchDetail", {
-                            item
+                          this.props.route.navigation.navigate("searchDetail", {
+                            item,
+                            key: this.props.route.key
                           });
                         }}
                         key={item.id}
                       >
                         <Card>
                           <Text>Id: {item.id}</Text>
-                          <Text>Name: {item.name}</Text>
+                          <Text>
+                            Name: {item.jobTitle && item.jobTitle.name}
+                          </Text>
                           <Text>Type of Job: {item.typeOfJob}</Text>
                         </Card>
                       </TouchableOpacity>
@@ -62,8 +67,4 @@ class AppliedJobs extends Component {
   }
 }
 
-const mapStateToProps = ({ myNavigationReducer }) => {
-  return { ...myNavigationReducer };
-};
-
-export default compose(connect(mapStateToProps))(AppliedJobs);
+export default MyJobScreen;

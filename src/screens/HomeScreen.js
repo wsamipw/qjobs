@@ -6,6 +6,11 @@ import { connect } from "react-redux";
 import { ProfileStack, SearchStack, PostStack } from "../config/routes";
 import { setMainNavigation } from "../actions";
 
+/*
+ * !!!!! CAUTION !!!!!!
+ * Currently this file is NOT in USE
+ * from the date: 2075/07/19
+*/
 class HomeScreen extends Component {
   state = { activePage: 1 };
 

@@ -1,135 +1,109 @@
 import React, { Component } from "react";
-import {
-  StyleSheet,
-  StatusBar,
-  ToolbarAndroid,
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity
-} from "react-native";
-import { getStatusBarHeight } from "react-native-status-bar-height";
+import { View, Image } from "react-native";
+import { TabView, TabBar, SceneMap } from "react-native-tab-view";
 
-import { connect } from "react-redux";
-import { Button, Card } from "react-native-elements";
+import Ionicons from "react-native-vector-icons/MaterialCommunityIcons";
+import HeaderButtons, {
+  HeaderButton,
+  Item
+} from "react-navigation-header-buttons";
+
+import { Button } from "react-native-elements";
 
 import { _removeData } from "../../config/utils";
 import { JWT_AUTH_TOKEN } from "../../config/CONSTANTS";
+import MyJobsScreen from "./MyJobsScreen";
+import AppliedJobsScreen from "./AppliedJobsScreen";
 
-import { Query, compose } from "react-apollo";
-
-import { MY_JOBS_QUERY } from "../../config/queries";
-
-import { createMaterialTopTabNavigator } from "react-navigation";
+const IoniconsHeaderButton = passMeFurther => (
+  // the `passMeFurther` variable here contains props from <Item .../> as well as <HeaderButtons ... />
+  // and it is important to pass those props to `HeaderButton`
+  // then you may add some information like icon size or color (if you use icons)
+  <HeaderButton
+    {...passMeFurther}
+    IconComponent={Ionicons}
+    iconSize={23}
+    color="black"
+  />
+);
 
 class ProfileScreen extends Component {
-  static navigationOptions = { header: null };
+  /* Below navigationOptions need not be called or passed
+   * It is static and automatically used by react-navigation
+   * For details refer: https://reactnavigation.org/docs/en/headers.html
+  */
+  static navigationOptions = ({ navigation }) => {
+    return {
+      // `headerLeft` needed to align `headerTitle` exactly at center
+      headerLeft: <View />,
+      headerTitle: (
+        <View
+          style={{ flex: 1, flexDirection: "row", justifyContent: "center" }}
+        >
+          <Image
+            source={require("../../static/img/logoIcon.png")}
+            style={{
+              width: 50,
+              height: 50,
+              resizeMode: "contain",
+              alignSelf: "center"
+            }}
+          />
+        </View>
+      ),
+      headerRight: (
+        <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
+          <Item
+            title="Add Job"
+            iconName="plus-circle"
+            onPress={() => {
+              navigation.navigate("postJob1");
+            }}
+          />
+          <Item
+            title="settings"
+            iconName="settings"
+            onPress={() => {
+              navigation.navigate("settings");
+            }}
+          />
+          <Item
+            title="logout"
+            iconName="logout"
+            onPress={async () => {
+              await _removeData(JWT_AUTH_TOKEN);
+              navigation.navigate("login");
+            }}
+          />
+        </HeaderButtons>
+      )
+    };
+  };
 
-  onActionSelected = async position => {
-    console.log("postioon: ", position);
-
-    if (position === 0) {
-      this.props.navigation.navigate("settings");
-    } else if (position === 1) {
-      await _removeData(JWT_AUTH_TOKEN);
-      this.props.mainNavigation.navigate("login");
-    }
+  state = {
+    index: 0,
+    routes: [
+      { key: "myJobs", title: "My Jobs", navigation: this.props.navigation },
+      {
+        key: "appliedJobs",
+        title: "Applied Jobs",
+        navigation: this.props.navigation
+      }
+    ]
   };
 
   render() {
     return (
-      <View>
-        <StatusBar backgroundColor="rgb(122,77,246)" barStyle="light-content" />
-        <ToolbarAndroid
-          style={styles.toolbar}
-          logo={require("../../static/img/logoIcon.png")}
-          title="AwesomeApp"
-          actions={[
-            {
-              title: "Settings",
-              icon: require("../../static/img/settings.png"),
-              show: "always"
-            },
-            {
-              title: "Logout",
-              icon: require("../../static/img/logout.png"),
-              show: "always"
-            }
-          ]}
-          onActionSelected={this.onActionSelected}
-        />
-
-        <View>
-          <Button
-            backgroundColor="#3F51B5"
-            title="Post A Job"
-            onPress={() => {
-              this.props.navigation.navigate("postJob1");
-            }}
-          />
-          <Query
-            query={MY_JOBS_QUERY}
-            fetchPolicy="cache-and-network"
-            notifyOnNetworkStatusChange
-          >
-            {({ loading, error, data, refetch, networkStatus }) => {
-              if (networkStatus === 4) return <Text>Refetching!</Text>;
-              if (loading) return <Text>Loading ...</Text>;
-              if (error) return <Text>Error Fetching Data !</Text>;
-              return (
-                <View>
-                  <FlatList
-                    data={data.me.jobSet}
-                    refreshing={networkStatus === 4}
-                    onRefresh={() => refetch()}
-                    keyExtractor={item => item.id}
-                    renderItem={({ item }) => {
-                      return (
-                        <TouchableOpacity
-                          onPress={() => {
-                            this.props.navigation.navigate("searchDetail", {
-                              item
-                            });
-                          }}
-                          key={item.id}
-                        >
-                          <Card>
-                            <Text>Id: {item.id}</Text>
-                            <Text>Name: {item.name}</Text>
-                            <Text>Type of Job: {item.typeOfJob}</Text>
-                          </Card>
-                        </TouchableOpacity>
-                      );
-                    }}
-                  />
-                </View>
-              );
-            }}
-          </Query>
-        </View>
-      </View>
+      <TabView
+        navigationState={this.state}
+        onIndexChange={index => this.setState({ index })}
+        renderScene={SceneMap({
+          myJobs: MyJobsScreen,
+          appliedJobs: AppliedJobsScreen
+        })}
+      />
     );
   }
 }
 
-const styles = StyleSheet.create({
-  containerToolbar: {
-    flex: 1,
-    //justifyContent: 'center',
-    justifyContent: "flex-start",
-    // https://github.com/facebook/react-native/issues/2957#event-417214498
-    alignItems: "stretch",
-    backgroundColor: "#F5FCFF"
-  },
-  toolbar: {
-    backgroundColor: "#95a2b2",
-    marginTop: getStatusBarHeight(),
-    height: 30 + getStatusBarHeight()
-  }
-});
-
-const mapStateToProps = ({ myNavigationReducer }) => {
-  return { ...myNavigationReducer };
-};
-
-export default compose(connect(mapStateToProps))(ProfileScreen);
+export default ProfileScreen;

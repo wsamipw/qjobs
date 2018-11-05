@@ -14,8 +14,6 @@ import { Item, Input, DatePicker } from "native-base";
 
 import { saveMultiplePostJobScreensState } from "../../actions/";
 
-import { SALARY_TIME_QUERY } from "../../config/queries";
-
 class PostJobScreen2 extends Component {
   state = {
     hireBy: ""

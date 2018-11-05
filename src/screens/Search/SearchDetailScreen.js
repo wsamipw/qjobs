@@ -5,20 +5,23 @@ import { Button } from "native-base";
 class SearchDetailScreen extends Component {
   render() {
     const item = this.props.navigation.getParam("item", null);
-
+    const key = this.props.navigation.getParam("key", null);
+    console.log('key, ", ', key);
     return (
       <View>
         <Text>Id: {item.id}</Text>
         <Text>Name: {item.name}</Text>
         <Text>Type of Job: {item.typeOfJob}</Text>
 
-        <Button
-          rounded
-          block
-          onPress={() => this.props.navigation.navigate("applyJob", { item })}
-        >
-          <Text>Apply Job</Text>
-        </Button>
+        {key !== "myJobs" && (
+          <Button
+            rounded
+            block
+            onPress={() => this.props.navigation.navigate("applyJob", { item })}
+          >
+            <Text>Apply Job</Text>
+          </Button>
+        )}
       </View>
     );
   }

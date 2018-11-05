@@ -11,11 +11,11 @@ import { Container, Content, View, Button } from "native-base";
 import { ImagePicker } from "expo";
 import { connect } from "react-redux";
 import { Query, compose, graphql } from "react-apollo";
-import { CREATE_USER_PRO_MUTATION } from "../../config/mutations";
+import { CREATE_USER_PRO_MUTATION } from "../../../config/mutations";
 
-import { TYPES_OF_JOB_QUERY } from "../../config/queries";
+import { TYPES_OF_JOB_QUERY } from "../../../config/queries";
 
-import { SELECT_A_JOB_TITLE } from "../../config/CONSTANTS";
+import { SELECT_A_JOB_TITLE } from "../../../config/CONSTANTS";
 
 const jobTitles = ["job1", "job2", "job3", "job4"];
 

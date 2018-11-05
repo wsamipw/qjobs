@@ -1,7 +1,15 @@
 import React, { Component } from "react";
-import { View, Picker, RefreshControl, ScrollView, Text } from "react-native";
+import {
+  View,
+  Picker,
+  RefreshControl,
+  ScrollView,
+  Text,
+  Image,
+  ActivityIndicator
+} from "react-native";
 import { Container, Content, Item, Input, DatePicker } from "native-base";
-import { Button, CheckBox } from "react-native-elements";
+import { Button } from "react-native-elements";
 
 import { compose, graphql, withApollo } from "react-apollo";
 
@@ -11,7 +19,32 @@ import { UPDATE_USER_MUTATION } from "../config/mutations";
 import { USER_DETAILS_QUERY } from "../config/queries";
 
 class UserDetailScreen extends Component {
-  static navigationOptions = { header: null };
+  /* Below navigationOptions need not be called or passed
+   * It is static and automatically used by react-navigation
+   * For details refer: https://reactnavigation.org/docs/en/headers.html
+  */
+  static navigationOptions = ({ navigation }) => {
+    return {
+      // `headerLeft` and `headerRight` needed to align `headerTitle` exactly at center
+      headerLeft: <View />,
+      headerRight: <View />,
+      headerTitle: (
+        <View
+          style={{ flex: 1, flexDirection: "row", justifyContent: "center" }}
+        >
+          <Image
+            source={require("../static/img/logoIcon.png")}
+            style={{
+              width: 50,
+              height: 50,
+              resizeMode: "contain",
+              alignSelf: "center"
+            }}
+          />
+        </View>
+      )
+    };
+  };
 
   state = {
     // loading displayed until the query data is fetched
@@ -92,11 +125,7 @@ class UserDetailScreen extends Component {
   render() {
     if (this.state.loading) {
       console.log("loading ...");
-      return (
-        <View>
-          <Text>Loading ...</Text>
-        </View>
-      );
+      return <ActivityIndicator size="large" color="#ff6347" />;
     }
 
     if (this.state.fetchError) {

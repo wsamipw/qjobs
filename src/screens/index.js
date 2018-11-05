@@ -7,6 +7,8 @@ import UserDetailScreen from "./UserDetailScreen";
 // Profile Related Screens
 import ProfileScreen from "./Profile/ProfileScreen";
 import ProfileDetailScreen from "./Profile/ProfileDetailScreen";
+import AppliedJobsScreen from "./Profile/AppliedJobsScreen";
+import MyJobsScreen from "./Profile/MyJobsScreen";
 
 // Search Related Screens
 import SearchJobScreen from "./Search/SearchJobScreen";
@@ -31,8 +33,10 @@ import WorkExperienceFormScreen from "./WorkExperience/WorkExperienceFormScreen"
 import TrainingScreen from "./Training/TrainingScreen";
 import TrainingFormScreen from "./Training/TrainingFormScreen";
 
-import SettingsScreen from "./SettingsScreen";
-import Accounts from "./Accounts/Accounts";
+// Settings Related Screens
+import SettingsScreen from "./Settings/SettingsScreen";
+import Accounts from "./Settings/Accounts/Accounts";
+
 import ApplyJob from "./ApplyJob";
 
 import {
@@ -53,6 +57,8 @@ export {
   HomeScreen,
   ProfileScreen,
   ProfileDetailScreen,
+  MyJobsScreen,
+  AppliedJobsScreen,
   UserDetailScreen,
   SearchJobScreen,
   SearchResultScreen,

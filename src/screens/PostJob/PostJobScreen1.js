@@ -5,7 +5,8 @@ import {
   View,
   Picker,
   ScrollView,
-  Alert
+  Alert,
+  ActivityIndicator
 } from "react-native";
 import { connect } from "react-redux";
 import { Button } from "react-native-elements";
@@ -59,7 +60,7 @@ class PostJobScreen1 extends Component {
               data: dataJobTypes
             }) => {
               if (loadingJobTitles || loadingJobTypes)
-                return <Text>Fetching Data ...</Text>;
+                return <ActivityIndicator size="large" color="#ff6347" />;
               if (errorJobTitles || errorJobTypes)
                 return <Text>Error Fetching Data !</Text>;
 
