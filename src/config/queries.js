@@ -10,7 +10,7 @@ export const MY_JOBS_QUERY = gql`
           id
           name
         }
-        typeOfJob
+
         hireBy
         description
         extraQuestion
@@ -32,7 +32,7 @@ export const APPLIED_JOBS_QUERY = gql`
       job {
         id
         name
-        typeOfJob
+
         description
         active
       }
@@ -55,12 +55,23 @@ export const JOB_TITLES_QUERY = gql`
 `;
 
 export const JOBS_QUERY = gql`
-  query JobsListQuery($page: Int!, $rows: Int!, $query: String!) {
-    jobs(page: $page, rows: $rows, query: $query) {
+  query JobsListQuery(
+    $page: Int!
+    $rows: Int!
+    $query: String!
+    $latitude: Float
+    $longitude: Float
+  ) {
+    jobs(
+      page: $page
+      rows: $rows
+      query: $query
+      latitude: $latitude
+      longitude: $longitude
+    ) {
       data {
         id
         name
-        typeOfJob
       }
       page
       rows
@@ -70,14 +81,19 @@ export const JOBS_QUERY = gql`
   }
 `;
 
-export const TYPES_OF_JOB_QUERY = gql`
-  {
-    typeOfJob {
-      id
-      name
-    }
-  }
-`;
+/*
+ * This Query is not used
+ * currently from date: 2075/07/25
+ */
+
+// export const TYPES_OF_JOB_QUERY = gql`
+//   {
+//     typeOfJob {
+//       id
+//       name
+//     }
+//   }
+// `;
 
 export const SALARY_TIME_QUERY = gql`
   {

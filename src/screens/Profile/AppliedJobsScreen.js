@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import {
+  Image,
   View,
   Text,
   FlatList,
@@ -98,7 +99,13 @@ class AppliedJobsScreen extends Component {
 
               return (
                 <View>
-                  <Text>{displayText}</Text>
+                  <Image
+                    source={require("../../static/img/noResult.jpg")}
+                    style={{
+                      flex: 1,
+                      resizeMode: "cover"
+                    }}
+                  />
                 </View>
               );
             }

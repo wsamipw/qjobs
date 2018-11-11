@@ -62,7 +62,6 @@ class PostJobScreen6 extends Component {
             console.log("porp6: ", this.props.postJobState);
             const {
               jobTitle,
-              typeOfJob,
               hireBy,
               description,
               extraQuestion
@@ -82,7 +81,6 @@ class PostJobScreen6 extends Component {
             console.log(
               "reuquesDAt: ",
               jobTitle,
-              typeOfJob,
               hireBy,
               description,
               latitude,
@@ -94,7 +92,6 @@ class PostJobScreen6 extends Component {
             {
               /* const response = await this.props.createJob(
               jobTitle,
-              typeOfJob,
               hireBy,
               description,
               latitude,
@@ -122,7 +119,6 @@ class PostJobScreen6 extends Component {
             this.props
               .createJob(
                 jobTitle,
-                typeOfJob,
                 hireBy,
                 description,
                 latitude,
@@ -171,7 +167,6 @@ export default compose(
     props: ({ mutate }) => ({
       createJob: (
         jobTitle,
-        typeOfJob,
         hireBy,
         description,
         latitude,
@@ -182,7 +177,6 @@ export default compose(
         mutate({
           variables: {
             jobTitle,
-            typeOfJob,
             hireBy,
             description,
             latitude,

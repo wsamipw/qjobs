@@ -5,19 +5,21 @@ import {
   ScrollView,
   Picker,
   Image,
-  Alert
+  Alert,
+  ActivityIndicator,
+  Platform
 } from "react-native";
-import { Container, Content, View, Button } from "native-base";
+import { Container, Content, Button } from "native-base";
 import { ImagePicker } from "expo";
 import { connect } from "react-redux";
 import { Query, compose, graphql } from "react-apollo";
 import { CREATE_USER_PRO_MUTATION } from "../../../config/mutations";
 
-import { TYPES_OF_JOB_QUERY } from "../../../config/queries";
+import { JOB_TITLES_QUERY } from "../../../config/queries";
 
 import { SELECT_A_JOB_TITLE } from "../../../config/CONSTANTS";
-
-const jobTitles = ["job1", "job2", "job3", "job4"];
+import CustomToast from "../../../config/CustomToast";
+// const jobTitles = ["job1", "job2", "job3", "job4"];
 
 class Accounts extends Component {
   state = {
@@ -38,6 +40,12 @@ class Accounts extends Component {
     if (!result.cancelled) {
       this.setState({ [image]: result.uri, [base64]: result.base64 });
     }
+  };
+
+  Default_Toast_Bottom = () => {
+    this.refs.defaultToastBottom.ShowToastFunction(
+      "Default Toast Bottom Message."
+    );
   };
 
   render() {
@@ -69,13 +77,19 @@ class Accounts extends Component {
                     )
                     .then(response => {
                       console.log("response use pros: ", response);
+                      if (
+                        (response.data.createUserpro.status === 200) &
+                        (response.data.createUserpro.msg === "success")
+                      ) {
+                        this.Default_Toast_Bottom();
+                      } else throw new Error(response);
                     })
                     .catch(error =>
                       console.log("data error: ", JSON.stringify(error))
                     );
                 } else {
                   Alert.alert(
-                    "JobTitle Empty or Image not Uploaded",
+                    "JobTitle Not Selected or Image not Uploaded",
                     "Please give title and upload both images",
                     [{ text: "OK" }]
                   );
@@ -84,15 +98,16 @@ class Accounts extends Component {
             >
               <Text>Submit</Text>
             </Button>
-            <Query query={TYPES_OF_JOB_QUERY}>
+            <Query query={JOB_TITLES_QUERY}>
               {({ loading, error, data }) => {
-                {
-                  /* const jobTitles = [SELECT_A_JOB_TITLE, ...data]; */
-                }
-
-                if (loading) return <Text>Fetching Data ...</Text>;
+                if (loading)
+                  return <ActivityIndicator size="large" color="#ff6347" />;
                 if (error) return <Text>Error Fetching Data !</Text>;
 
+                const jobTitles = [
+                  { id: SELECT_A_JOB_TITLE, name: SELECT_A_JOB_TITLE },
+                  ...data.jobTitle
+                ];
                 return (
                   <ScrollView scrollEnabled>
                     {/* <Text>asdasdasdsad</Text> */}
@@ -104,9 +119,9 @@ class Accounts extends Component {
                       {jobTitles &&
                         jobTitles.map(jobTitle => (
                           <Picker.Item
-                            key={jobTitle}
-                            label={jobTitle}
-                            value={jobTitle}
+                            key={jobTitle.id}
+                            label={jobTitle.name}
+                            value={jobTitle.id}
                           />
                         ))}
                     </Picker>
@@ -153,12 +168,21 @@ class Accounts extends Component {
             )}
           </Content>
         </Container>
+        <CustomToast ref="defaultToastBottom" position="bottom" />
       </ScrollView>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  // For CustomToast
+  MainContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: Platform.OS == "ios" ? 20 : 0,
+    margin: 10
+  },
   contentStyle: {
     flex: 1,
     flexDirection: "column",

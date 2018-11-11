@@ -1,14 +1,18 @@
 import React, { Component } from "react";
 import { StyleSheet, Text, View, Dimensions } from "react-native";
 import { Button } from "native-base";
+import ParallaxScrollView from "react-native-parallax-scroll-view";
 
 class SearchDetailScreen extends Component {
+  // To disable the default header
+  // static navigationOptions = { header: null };
+
   render() {
     const item = this.props.navigation.getParam("item", null);
     const key = this.props.navigation.getParam("key", null);
     console.log('key, ", ', key);
     return (
-      <View>
+      <View style={{ height: 500 }}>
         <Text>Id: {item.id}</Text>
         <Text>Name: {item.name}</Text>
         <Text>Type of Job: {item.typeOfJob}</Text>

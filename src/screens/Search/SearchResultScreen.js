@@ -6,14 +6,16 @@ import {
   StatusBar,
   Dimensions,
   FlatList,
-  TouchableOpacity
+  TouchableOpacity,
+  ActivityIndicator
 } from "react-native";
-import { Container, Content, Item, Input, Icon } from "native-base";
-import { Button, Card } from "react-native-elements";
+import { Card } from "react-native-elements";
 
-import { Query, compose, withApollo, graphql } from "react-apollo";
+import { Query } from "react-apollo";
 
 import { JOBS_QUERY } from "../../config/queries";
+import { _retrieveData } from "../../config/utils";
+import { LOCATION } from "../../config/CONSTANTS";
 
 class SearchResultScreen extends Component {
   static navigationOptions = {
@@ -27,106 +29,129 @@ class SearchResultScreen extends Component {
     }
   };
 
+  state = { location: null, queryDisable: true };
   val = { page: 1, rows: 4 };
+
+  async componentDidMount() {
+    try {
+      const location = await _retrieveData(LOCATION);
+      console.log("locarioN :;, ", location);
+      location &&
+        this.setState({ location: JSON.parse(location), queryDisable: false });
+    } catch (err) {
+      console.log("error in try catch location: ", err);
+    }
+  }
 
   render() {
     const query = this.props.navigation.getParam("query", undefined);
+    console.log("this ttate: ", this.state);
 
-    return (
-      <Container>
-        <StatusBar barStyle="light-content" backgroundColor="#ecf0f1" />
-        <Content contentContainerStyle={styles.contentStyle}>
-          <View style={styles.mainWrapper}>
-            <Query
-              query={JOBS_QUERY}
-              fetchPolicy="cache-and-network"
-              variables={{ page: this.val.page, rows: this.val.rows, query }}
-              notifyOnNetworkStatusChange
-            >
-              {({
-                loading,
-                error,
-                data,
-                refetch,
-                fetchMore,
-                networkStatus
-              }) => {
-                console.log("data: ", data);
-                console.log("loading: ", loading);
-                let displayText = "";
+    return !this.state.queryDisable ? (
+      <View>
+        <Query
+          query={JOBS_QUERY}
+          variables={{
+            page: this.val.page,
+            rows: this.val.rows,
+            query,
+            latitude:
+              this.state.location &&
+              this.state.location.coords &&
+              this.state.location.coords.latitude
+                ? this.state.location.coords.latitude
+                : undefined,
+            longitude:
+              this.state.location &&
+              this.state.location.coords &&
+              this.state.location.coords.longitude
+                ? this.state.location.coords.longitude
+                : undefined
+          }}
+        >
+          {({ loading, error, data, fetchMore }) => {
+            // This loading will re-render entire page
+            // But we don't want that on Infinite-Scroll page
+            // So it is checked below
+            {
+              /* if (loading)
+              return <ActivityIndicator size="large" color="#ff6347" />; */
+            }
 
-                if (error) {
-                  console.log("error search job: ", JSON.stringify(error));
-                  return <Text>Error Fetching Data !</Text>;
-                }
+            console.log("cnsdfsdjfjsdifjdsf: ", loading);
 
-                if (data && data.jobs && data.jobs.data.length) {
-                  return (
-                    <View>
-                      <FlatList
-                        data={data.jobs.data}
-                        keyExtractor={item => item.id}
-                        onEndReached={() => {
-                          this.val.page += 1;
+            if (error) {
+              console.log("error search job: ", JSON.stringify(error));
+              return <Text>Error Fetching Data !</Text>;
+            }
 
-                          if (this.val.page <= data.jobs.pages) {
-                            fetchMore({
-                              variables: {
-                                page: this.val.page,
-                                rows: this.val.rows
-                              },
-                              updateQuery: (prev, { fetchMoreResult }) => {
-                                if (!fetchMoreResult) return prev;
-                                return Object.assign({}, prev, {
-                                  jobs: {
-                                    ...prev.jobs,
-                                    data: [
-                                      ...prev.jobs.data,
-                                      ...fetchMoreResult.jobs.data
-                                    ]
-                                  }
-                                });
+            if (data && data.jobs && data.jobs.data.length) {
+              return (
+                <View>
+                  <FlatList
+                    data={data.jobs.data}
+                    keyExtractor={item => item.id}
+                    onEndReached={() => {
+                      this.val.page += 1;
+
+                      if (this.val.page <= data.jobs.pages) {
+                        fetchMore({
+                          variables: {
+                            page: this.val.page,
+                            rows: this.val.rows
+                          },
+                          updateQuery: (prev, { fetchMoreResult }) => {
+                            if (!fetchMoreResult) return prev;
+                            return Object.assign({}, prev, {
+                              jobs: {
+                                ...prev.jobs,
+                                data: [
+                                  ...prev.jobs.data,
+                                  ...fetchMoreResult.jobs.data
+                                ]
                               }
                             });
                           }
-                        }}
-                        onEndReachedThreshold={0.1}
-                        renderItem={({ item }) => {
-                          return (
-                            <TouchableOpacity
-                              onPress={() =>
-                                this.props.navigation.navigate("searchDetail", {
-                                  item
-                                })
-                              }
-                              key={item.id}
-                            >
-                              <Card>
-                                <Text>Id: {item.id}</Text>
-                                <Text>Name: {item.name}</Text>
-                                <Text>Type of Job: {item.typeOfJob}</Text>
-                              </Card>
-                            </TouchableOpacity>
-                          );
-                        }}
-                      />
-                    </View>
-                  );
-                } else {
-                  if (loading) displayText = "Loading ...";
-                  else displayText = "No Data Found";
+                        });
+                      }
+                    }}
+                    onEndReachedThreshold={0.1}
+                    renderItem={({ item }) => {
+                      return (
+                        <TouchableOpacity
+                          onPress={() =>
+                            this.props.navigation.navigate("searchDetail", {
+                              item
+                            })
+                          }
+                          key={item.id}
+                        >
+                          <Card>
+                            <Text>Id: {item.id}</Text>
+                            <Text>Name: {item.name}</Text>
+                            <Text>Type of Job: {item.typeOfJob}</Text>
+                          </Card>
+                        </TouchableOpacity>
+                      );
+                    }}
+                  />
+                </View>
+              );
+            } else {
+              if (loading)
+                return <ActivityIndicator size="large" color="#ff6347" />;
 
-                  return (
-                    <View>
-                      <Text>{displayText}</Text>
-                    </View>
-                  );
-                }
-              }}
-            </Query>
-          </View>
-        </Content>
-      </Container>
+              return (
+                <View>
+                  <Text>No Data Found</Text>
+                </View>
+              );
+            }
+          }}
+        </Query>
+      </View>
+    ) : (
+      <ActivityIndicator size="large" color="#ff6347" />
     );
   }
 }

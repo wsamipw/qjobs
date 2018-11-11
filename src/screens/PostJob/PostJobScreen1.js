@@ -10,125 +10,98 @@ import {
 } from "react-native";
 import { connect } from "react-redux";
 import { Button } from "react-native-elements";
-import { Item, Input } from "native-base";
-import RadioForm, {
-  RadioButton,
-  RadioButtonInput,
-  RadioButtonLabel
-} from "react-native-simple-radio-button";
-
+import { Item, Input, DatePicker } from "native-base";
 import { Query } from "react-apollo";
 
 import { saveMultiplePostJobScreensState } from "../../actions/";
 
-import { JOB_TITLES_QUERY, TYPES_OF_JOB_QUERY } from "../../config/queries";
-
+import { JOB_TITLES_QUERY } from "../../config/queries";
 import { SELECT_A_JOB_TITLE } from "../../config/CONSTANTS";
-
-// const jobTitles = ["job1", "job2", "job3", "job4"];
-
-// const typesOfJob = [
-//   { label: "Full Time", value: "Full Time" },
-//   { label: "Part Time", value: "Part Time" },
-//   { label: "Temporary", value: "Temporary" },
-//   { label: "Contract", value: "Contract" },
-//   { label: "Internship", value: "Internship" },
-//   { label: "Commission", value: "Commission" }
-// ];
 
 class PostJobScreen1 extends Component {
   state = {
     jobTitle: SELECT_A_JOB_TITLE,
-    typeOfJob: ""
+    hireBy: ""
   };
 
   onChange = (key, val) => this.setState({ [key]: val });
 
   render() {
-    console.log("this state:", this.state);
     return (
       <Query query={JOB_TITLES_QUERY} fetchPolicy="cache-and-network">
         {({
           loading: loadingJobTitles,
           error: errorJobTitles,
           data: dataJobTitles
-        }) => (
-          <Query query={TYPES_OF_JOB_QUERY}>
-            {({
-              loading: loadingJobTypes,
-              error: errorJobTypes,
-              data: dataJobTypes
-            }) => {
-              if (loadingJobTitles || loadingJobTypes)
-                return <ActivityIndicator size="large" color="#ff6347" />;
-              if (errorJobTitles || errorJobTypes)
-                return <Text>Error Fetching Data !</Text>;
+        }) => {
+          if (loadingJobTitles)
+            return <ActivityIndicator size="large" color="#ff6347" />;
+          if (errorJobTitles) return <Text>Error Fetching Data !</Text>;
 
-              const jobTitles = [
-                { id: SELECT_A_JOB_TITLE, name: SELECT_A_JOB_TITLE },
-                ...dataJobTitles.jobTitle
-              ];
+          const jobTitles = [
+            { id: SELECT_A_JOB_TITLE, name: SELECT_A_JOB_TITLE },
+            ...dataJobTitles.jobTitle
+          ];
 
-              return (
-                <ScrollView scrollEnabled>
-                  {/* Job Titles */}
-                  <Picker
-                    selectedValue={this.state.jobTitle}
-                    style={styles.pickerStyle}
-                    onValueChange={jobTitle => this.setState({ jobTitle })}
-                  >
-                    {jobTitles &&
-                      jobTitles.map(jobTitle => (
-                        <Picker.Item
-                          key={jobTitle.id}
-                          label={jobTitle.name}
-                          value={jobTitle.id}
-                        />
-                      ))}
-                  </Picker>
+          return (
+            <ScrollView scrollEnabled>
+              {/* Job Titles */}
+              <Picker
+                selectedValue={this.state.jobTitle}
+                style={styles.pickerStyle}
+                onValueChange={jobTitle => this.setState({ jobTitle })}
+              >
+                {jobTitles &&
+                  jobTitles.map(jobTitle => (
+                    <Picker.Item
+                      key={jobTitle.id}
+                      label={jobTitle.name}
+                      value={jobTitle.id}
+                    />
+                  ))}
+              </Picker>
 
-                  <Text>What type of job is it?</Text>
-                  <RadioForm
-                    radio_props={
-                      dataJobTypes.typeOfJob
-                        ? dataJobTypes.typeOfJob.map(eachType => ({
-                            label: eachType.name,
-                            value: eachType.name
-                          }))
-                        : []
-                    }
-                    initial={this.state.typeOfJob}
-                    onPress={typeOfJob => {
-                      this.setState({ typeOfJob });
-                    }}
-                  />
+              <Text>How urgently do you need to make a hire?</Text>
+              <DatePicker
+                defaultDate={new Date()}
+                minimumDate={new Date(1951, 1, 1)}
+                maximumDate={new Date(2051, 12, 31)}
+                locale={"en"}
+                timeZoneOffsetInMinutes={undefined}
+                modalTransparent={false}
+                animationType={"fade"}
+                androidMode={"default"}
+                placeHolderText="Select date"
+                textStyle={{ color: "green" }}
+                placeHolderTextStyle={{ color: "#d3d3d3" }}
+                onDateChange={val => this.onChange("hireBy", val.toISOString())}
+              />
 
-                  <Button
-                    backgroundColor="#3F51B5"
-                    title="Next"
-                    onPress={() => {
-                      if (
-                        this.state.typeOfJob &&
-                        this.state.jobTitle !== SELECT_A_JOB_TITLE
-                      ) {
-                        this.props.saveMultiplePostJobScreensState({
-                          ...this.state
-                        });
-                        this.props.navigation.navigate("postJob2");
-                      } else {
-                        Alert.alert(
-                          "Title or Type of Job Empty",
-                          "Please give title and type of job!",
-                          [{ text: "OK" }]
-                        );
-                      }
-                    }}
-                  />
-                </ScrollView>
-              );
-            }}
-          </Query>
-        )}
+              <Button
+                backgroundColor="#3F51B5"
+                title="Next"
+                onPress={() => {
+                  if (
+                    this.state.hireBy &&
+                    this.state.jobTitle !== SELECT_A_JOB_TITLE
+                  ) {
+                    this.props.saveMultiplePostJobScreensState({
+                      ...this.state
+                    });
+                    this.props.navigation.navigate("postJob3");
+                  } else {
+                    Alert.alert(
+                      "Title or Date Empty",
+                      "Please give title and enter the!",
+                      [{ text: "OK" }]
+                    );
+                  }
+                }}
+              />
+            </ScrollView>
+          );
+        }}
+        }
       </Query>
     );
   }
@@ -147,11 +120,12 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = ({ postJobReducer }) => {
-  return { ...postJobReducer };
-};
+// Not Required
+// const mapStateToProps = ({ postJobReducer }) => {
+//   return { ...postJobReducer };
+// };
 
 export default connect(
-  mapStateToProps,
+  null,
   { saveMultiplePostJobScreensState }
 )(PostJobScreen1);

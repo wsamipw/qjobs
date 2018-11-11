@@ -1,5 +1,12 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Image, StatusBar, Dimensions } from "react-native";
+import {
+  Alert,
+  StyleSheet,
+  View,
+  Image,
+  StatusBar,
+  Dimensions
+} from "react-native";
 import {
   Container,
   Content,
@@ -25,6 +32,15 @@ export default class SearchJobScreen extends Component {
 
     query: ""
   };
+
+  componentWillUnmount() {
+    this.setState({
+      dialogShow: false,
+      proximity: 0,
+
+      query: ""
+    });
+  }
 
   showScaleAnimationDialog = () => {
     this.scaleAnimationDialog.show();
@@ -57,7 +73,14 @@ export default class SearchJobScreen extends Component {
                   this.props.navigation.navigate("result", {
                     query: this.state.query
                   });
-                else console.log("query is empty");
+                else {
+                  console.log("query is empty");
+                  Alert.alert(
+                    "Search Field Empty",
+                    "Please enter a keyword in Search Field ",
+                    [{ text: "OK" }]
+                  );
+                }
               }}
             >
               <Text uppercase={false}>Find Job</Text>

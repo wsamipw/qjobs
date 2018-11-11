@@ -14,6 +14,12 @@ import { Item, Input, DatePicker } from "native-base";
 
 import { saveMultiplePostJobScreensState } from "../../actions/";
 
+/*
+ * This Screen/Page is not used and its functionality `hireBy` is migrated
+ * to `PostJobScreen1.js`
+ * currently from date: 2075/07/25
+*/
+
 class PostJobScreen2 extends Component {
   state = {
     hireBy: ""

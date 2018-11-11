@@ -10,7 +10,7 @@ export const _storeData = async (key, data) => {
   }
 };
 
-export const _removeData = async (key, data) => {
+export const _removeData = async key => {
   try {
     await AsyncStorage.removeItem(key);
     console.log("token Deleted Successfully");

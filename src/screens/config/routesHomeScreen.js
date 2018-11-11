@@ -30,16 +30,6 @@ import {
   ApplyJob
 } from "..";
 
-const UserJobsStack = createBottomTabNavigator(
-  {
-    MyJobs: MyJobsScreen,
-    AppliedJobs: AppliedJobsScreen
-  },
-  {
-    initialRouteName: "MyJobs"
-  }
-);
-
 const ProfileStack = createStackNavigator(
   {
     profile: ProfileScreen,
@@ -48,7 +38,10 @@ const ProfileStack = createStackNavigator(
     searchDetail: SearchDetailScreen,
 
     // Post Job Related Pages
-    postJob1: PostJobScreen1,
+    postJob1: {
+      screen: PostJobScreen1,
+      navigationOptions: { tabBarVisible: false }
+    },
     postJob2: PostJobScreen2,
     postJob3: PostJobScreen3,
     postJob4: PostJobScreen4,
@@ -59,9 +52,7 @@ const ProfileStack = createStackNavigator(
 
     // Settings Related Pages
     settings: SettingsScreen,
-    accounts: Accounts,
-
-    userJobsStack: UserJobsStack
+    accounts: Accounts
   },
   {
     initialRouteName: "profile"
