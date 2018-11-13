@@ -1,63 +1,74 @@
 import React, { Component } from "react";
-import {
-  StyleSheet,
-  Text,
-  ScrollView,
-  ToolbarAndroid,
-  View
-} from "react-native";
+import { StyleSheet, Text, ScrollView } from "react-native";
 import { connect } from "react-redux";
 import { Button, Card } from "react-native-elements";
+
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+
+import HeaderButtons, {
+  HeaderButton,
+  Item
+} from "react-navigation-header-buttons";
 
 /*
  * This Screen/Page is changed from `experience` to `extraquestion`
  * currently from date: 2075/07/15
-*/
+ */
 
+const MaterialIconsHeaderButton = passMeFurther => (
+  // the `passMeFurther` variable here contains props from <Item .../> as well as <HeaderButtons ... />
+  // and it is important to pass those props to `HeaderButton`
+  // then you may add some information like icon size or color (if you use icons)
+  <HeaderButton
+    {...passMeFurther}
+    IconComponent={MaterialCommunityIcons}
+    iconSize={23}
+    color="white"
+  />
+);
 class PostJobScreen4 extends Component {
-  onActionSelected = position => {
-    if (position === 0) {
-      this.props.navigation.navigate("postJob41");
-    }
+  static navigationOptions = ({ navigation }) => {
+    return {
+      headerTitle: "Extra Question",
+      headerStyle: {
+        backgroundColor: "#5968ef"
+      },
+      headerTintColor: "#ffffff",
+      headerRight: (
+        <HeaderButtons HeaderButtonComponent={MaterialIconsHeaderButton}>
+          <Item
+            title="Add Job"
+            iconName="plus-circle"
+            onPress={() => {
+              navigation.navigate("postJob41");
+            }}
+          />
+        </HeaderButtons>
+      )
+    };
   };
 
   render() {
     return (
-      <View>
-        <ToolbarAndroid
-          style={styles.toolbar}
-          //logo={require("../static/img/logoIcon.png")}
-          title="Add Extra Questions"
-          actions={[
-            {
-              title: "Add",
-              icon: require("../../static/img/add.png"),
-              show: "always"
-            }
-          ]}
-          onActionSelected={this.onActionSelected}
+      <ScrollView scrollEnabled>
+        {this.props.postJobState &&
+          this.props.postJobState.extraQuestion &&
+          this.props.postJobState.extraQuestion.map(
+            (eachExtraQuestion, index) => (
+              <Card key={index}>
+                <Text>Name: {eachExtraQuestion}</Text>
+              </Card>
+            )
+          )}
+
+        <Button
+          backgroundColor="#3F51B5"
+          title="Next"
+          onPress={() => {
+            this.props.navigation.navigate("postJob6");
+          }}
         />
-
-        <ScrollView scrollEnabled>
-          {this.props.postJobState &&
-            this.props.postJobState.extraQuestion &&
-            this.props.postJobState.extraQuestion.map(
-              (eachExtraQuestion, index) => (
-                <Card key={index}>
-                  <Text>Name: {eachExtraQuestion}</Text>
-                </Card>
-              )
-            )}
-
-          <Button
-            backgroundColor="#3F51B5"
-            title="Next"
-            onPress={() => {
-              this.props.navigation.navigate("postJob6");
-            }}
-          />
-        </ScrollView>
-      </View>
+      </ScrollView>
     );
   }
 }

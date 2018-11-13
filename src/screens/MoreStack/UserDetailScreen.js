@@ -13,27 +13,30 @@ import { Button } from "react-native-elements";
 
 import { compose, graphql, withApollo } from "react-apollo";
 
-import styles from "../Styles/LoginRegisterStyles";
+import styles from "../../Styles/LoginRegisterStyles";
 
-import { UPDATE_USER_MUTATION } from "../config/mutations";
-import { USER_DETAILS_QUERY } from "../config/queries";
+import { UPDATE_USER_MUTATION } from "../../config/mutations";
+import { USER_DETAILS_QUERY } from "../../config/queries";
 
 class UserDetailScreen extends Component {
   /* Below navigationOptions need not be called or passed
    * It is static and automatically used by react-navigation
    * For details refer: https://reactnavigation.org/docs/en/headers.html
-  */
+   */
   static navigationOptions = ({ navigation }) => {
     return {
       // `headerLeft` and `headerRight` needed to align `headerTitle` exactly at center
       headerLeft: <View />,
       headerRight: <View />,
+      headerStyle: {
+        backgroundColor: "#5968ef"
+      },
       headerTitle: (
         <View
           style={{ flex: 1, flexDirection: "row", justifyContent: "center" }}
         >
           <Image
-            source={require("../static/img/logoIcon.png")}
+            source={require("../../static/img/logoIconMin.png")}
             style={{
               width: 50,
               height: 50,

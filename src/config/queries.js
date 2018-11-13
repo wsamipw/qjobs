@@ -10,7 +10,13 @@ export const MY_JOBS_QUERY = gql`
           id
           name
         }
-
+        employer {
+          id
+          username
+          firstName
+          lastName
+          email
+        }
         hireBy
         description
         extraQuestion
@@ -19,7 +25,26 @@ export const MY_JOBS_QUERY = gql`
           type
           coordinates
         }
-        active
+        applyjobSet {
+          id
+          description
+          status
+          hourlyRate
+          totalHours
+          totalFee
+          applyjobquestionsSet {
+            id
+            question
+            answer
+          }
+          employee {
+            id
+            username
+            firstName
+            lastName
+            email
+          }
+        }
       }
     }
   }
@@ -28,19 +53,22 @@ export const MY_JOBS_QUERY = gql`
 export const APPLIED_JOBS_QUERY = gql`
   query AppliedJobsQuery($page: Int!, $rows: Int!) {
     appliedJobs(page: $page, rows: $rows) {
-      id
-      job {
+      page
+      rows
+      rowCount
+      pages
+      data {
         id
-        name
-
+        job {
+          id
+          name
+          description
+        }
+        hourlyRate
+        applied
         description
-        active
+        status
       }
-      backgroundCheck
-      hourlyRate
-      applied
-      description
-      status
     }
   }
 `;
@@ -72,6 +100,25 @@ export const JOBS_QUERY = gql`
       data {
         id
         name
+        jobTitle {
+          id
+          name
+        }
+        employer {
+          id
+          username
+        }
+        description
+        hireBy
+        employer {
+          id
+          username
+        }
+        location {
+          type
+          coordinates
+        }
+        extraQuestion
       }
       page
       rows

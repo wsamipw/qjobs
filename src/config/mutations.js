@@ -3,19 +3,15 @@ import gql from "graphql-tag";
 export const APPLY_JOB_MUTATION = gql`
   mutation ApplyJobMutation(
     $job: ID
-    $backgroundCheck: Boolean
     $description: String
     $hourlyRate: Float!
     $extraQuestion: [ApplyJobQuestionsInputType]
-    $shiftAvailability: String!
   ) {
     applyJob(
       job: $job
-      backgroundCheck: $backgroundCheck
       description: $description
       hourlyRate: $hourlyRate
       extraQuestion: $extraQuestion
-      shiftAvailability: $shiftAvailability
     ) {
       msg
       status
@@ -23,7 +19,31 @@ export const APPLY_JOB_MUTATION = gql`
         id
         status
         description
+        hourlyRate
+        applyjobquestionsSet {
+          id
+          question
+          answer
+        }
       }
+    }
+  }
+`;
+
+export const SELECT_APPLY_JOB_MUTATION = gql`
+  mutation SelectApplyJobMutation($id: ID!, $select: Boolean!) {
+    selectApplyjob(id: $id, select: $select) {
+      msg
+      status
+    }
+  }
+`;
+
+export const CONFIRM_APPLY_JOB_MUTATION = gql`
+  mutation ConfirmApplyJobMutation($id: ID!, $confirm: Boolean!) {
+    confirmApplyjob(id: $id, confirm: $confirm) {
+      msg
+      status
     }
   }
 `;
@@ -49,6 +69,13 @@ export const LOGIN_MUTATION = gql`
   mutation LoginMutation($username: String!, $password: String!) {
     tokenAuth(username: $username, password: $password) {
       token
+      user {
+        id
+        username
+        firstName
+        lastName
+        email
+      }
     }
   }
 `;
@@ -164,7 +191,6 @@ export const UPDATE_USER_MUTATION = gql`
 export const POST_JOB_MUTATION = gql`
   mutation PostJobMutation(
     $jobTitle: ID
-    $typeOfJob: String!
     $hireBy: DateTime!
     $description: String
     $latitude: String
@@ -174,7 +200,6 @@ export const POST_JOB_MUTATION = gql`
   ) {
     createJob(
       jobTitle: $jobTitle
-      typeOfJob: $typeOfJob
       hireBy: $hireBy
       description: $description
       latitude: $latitude
@@ -188,7 +213,6 @@ export const POST_JOB_MUTATION = gql`
           id
           name
         }
-        typeOfJob
         hireBy
         description
         timeout

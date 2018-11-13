@@ -13,8 +13,17 @@ import { _retrieveData } from "../../config/utils";
 import { POST_JOB_MUTATION } from "../../config/mutations";
 import { MY_JOBS_QUERY } from "../../config/queries";
 import { LOCATION } from "../../config/CONSTANTS";
+import CustomToast from "../../config/CustomToast";
 
 class PostJobScreen6 extends Component {
+  static navigationOptions = {
+    headerTitle: "Create Job",
+    headerStyle: {
+      backgroundColor: "#5968ef"
+    },
+    headerTintColor: "#ffffff"
+  };
+
   state = {
     timeOut: "",
     loading: false
@@ -22,10 +31,13 @@ class PostJobScreen6 extends Component {
 
   onChange = (key, val) => this.setState({ [key]: val });
 
+  Default_Toast_Bottom = () => {
+    this.refs.defaultToastBottom.ShowToastFunction(
+      "Default Toast Bottom Message."
+    );
+  };
+
   render() {
-    console.log("this. props: ", this.props.postJobState);
-    console.log("this. props: ", this.props.loading);
-    console.log("this. props: ", this.props.error);
     if (this.state.loading)
       return <ActivityIndicator size="large" color="#ff6347" />;
 
@@ -130,7 +142,9 @@ class PostJobScreen6 extends Component {
                 if (response.data.createJob.msg === "success") {
                   this.setState({ loading: false });
                   console.log("success: ", response);
+                  this.props.deleteMultiplePostJobScreensState();
 
+                  this.Default_Toast_Bottom();
                   this.props.navigation.navigate("profile");
                 } else throw new Error(response);
               })
@@ -140,6 +154,11 @@ class PostJobScreen6 extends Component {
                 console.log("job post errror: ", JSON.stringify(error));
               });
           }}
+        />
+        <CustomToast
+          ref="defaultToastBottom"
+          position="bottom"
+          backgroundColor="#FF0000"
         />
         {/* <Button
                 backgroundColor="green"

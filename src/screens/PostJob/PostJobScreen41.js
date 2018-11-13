@@ -9,9 +9,17 @@ import { saveMultiplePostJobScreensState } from "../../actions";
 /*
  * This Screen/Page is changed from `experience` to `extraQuestion`
  * currently from date: 2075/07/15
-*/
+ */
 
 class PostJobScreen41 extends Component {
+  static navigationOptions = {
+    headerTitle: "Add Extra Question",
+    headerStyle: {
+      backgroundColor: "#5968ef"
+    },
+    headerTintColor: "#ffffff"
+  };
+
   state = {
     name: ""
   };

@@ -38,19 +38,21 @@ class AppliedJobsScreen extends Component {
               return <Text>Error Fetching Data !</Text>;
             }
 
-            console.log("applied jobs: ", data);
-            if (data && data.appliedJobs && data.appliedJobs.length) {
+            {
+              /* console.log("applied jobs: ", data); */
+            }
+            if (data && data.appliedJobs && data.appliedJobs.data.length) {
               return (
                 <View>
                   <FlatList
-                    data={data.appliedJobs}
+                    data={data.appliedJobs.data}
                     refreshing={networkStatus === 4}
                     onRefresh={() => refetch()}
                     keyExtractor={item => item.id}
                     onEndReached={() => {
                       this.val.page += 1;
 
-                      if (this.val.page <= data.jobs.pages) {
+                      if (this.val.page <= data.appliedJobs.pages) {
                         fetchMore({
                           variables: {
                             page: this.val.page,
@@ -59,10 +61,13 @@ class AppliedJobsScreen extends Component {
                           updateQuery: (prev, { fetchMoreResult }) => {
                             if (!fetchMoreResult) return prev;
                             return Object.assign({}, prev, {
-                              appliedJobs: [
+                              appliedJobs: {
                                 ...prev.appliedJobs,
-                                ...fetchMoreResult.appliedJobs
-                              ]
+                                data: [
+                                  ...prev.appliedJobs.data,
+                                  ...fetchMoreResult.appliedJobs
+                                ]
+                              }
                             });
                           }
                         });
@@ -84,8 +89,8 @@ class AppliedJobsScreen extends Component {
                         >
                           <Card>
                             <Text>Id: {item.id}</Text>
-                            <Text>Name: {item.name}</Text>
-                            <Text>Type of Job: {item.typeOfJob}</Text>
+                            <Text>Name: {item.job && item.job.name}</Text>
+                            <Text>Hourly Rate: {item.hourlyRate}</Text>
                           </Card>
                         </TouchableOpacity>
                       );

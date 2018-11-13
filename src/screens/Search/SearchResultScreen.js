@@ -3,19 +3,20 @@ import {
   StyleSheet,
   Text,
   View,
-  StatusBar,
   Dimensions,
   FlatList,
   TouchableOpacity,
   ActivityIndicator
 } from "react-native";
+import { Button } from "native-base";
+
 import { Card } from "react-native-elements";
 
 import { Query } from "react-apollo";
 
 import { JOBS_QUERY } from "../../config/queries";
 import { _retrieveData } from "../../config/utils";
-import { LOCATION } from "../../config/CONSTANTS";
+import { LOCATION, USER_DATA } from "../../config/CONSTANTS";
 
 class SearchResultScreen extends Component {
   static navigationOptions = {
@@ -29,15 +30,27 @@ class SearchResultScreen extends Component {
     }
   };
 
-  state = { location: null, queryDisable: true };
+  state = {
+    location: null,
+    queryDisable: true,
+
+    // LoggedIn user
+    user: null
+  };
   val = { page: 1, rows: 4 };
 
   async componentDidMount() {
     try {
+      const obj = {};
       const location = await _retrieveData(LOCATION);
-      console.log("locarioN :;, ", location);
-      location &&
-        this.setState({ location: JSON.parse(location), queryDisable: false });
+      const user = JSON.parse(await _retrieveData(USER_DATA));
+
+      obj.location = location ? JSON.parse(location) : undefined;
+      obj.user = user ? user : undefined;
+
+      console.log("obj: ", obj);
+
+      this.setState({ ...obj, queryDisable: false });
     } catch (err) {
       console.log("error in try catch location: ", err);
     }
@@ -77,8 +90,6 @@ class SearchResultScreen extends Component {
               /* if (loading)
               return <ActivityIndicator size="large" color="#ff6347" />; */
             }
-
-            console.log("cnsdfsdjfjsdifjdsf: ", loading);
 
             if (error) {
               console.log("error search job: ", JSON.stringify(error));
@@ -129,7 +140,21 @@ class SearchResultScreen extends Component {
                           <Card>
                             <Text>Id: {item.id}</Text>
                             <Text>Name: {item.name}</Text>
-                            <Text>Type of Job: {item.typeOfJob}</Text>
+                            <Text>Description {item.description}</Text>
+                            {item.employer &&
+                              this.state.user &&
+                              item.employer.id === this.state.user.id && (
+                                <Button
+                                  style={{
+                                    backgroundColor: "#097c28",
+                                    borderRadius: 8
+                                  }}
+                                  round
+                                  small
+                                >
+                                  <Text style={{ color: "white" }}>My Job</Text>
+                                </Button>
+                              )}
                           </Card>
                         </TouchableOpacity>
                       );

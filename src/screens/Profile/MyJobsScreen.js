@@ -10,6 +10,8 @@ import {
 
 import { Card } from "react-native-elements";
 
+import Icon from "react-native-vector-icons/Ionicons";
+
 import { Query } from "react-apollo";
 
 import { MY_JOBS_QUERY } from "../../config/queries";
@@ -20,34 +22,32 @@ class MyJobScreen extends Component {
       key={item.id}
       style={{
         flex: 1,
-        flexDirection: "row",
-        marginBottom: 3
-        //backgroundColor: "#FF0000"
+        flexDirection: "row"
       }}
       onPress={() => {
         this.props.route.navigation.navigate("searchDetail", {
-          item,
-          key: this.props.route.key
+          item
         });
       }}
     >
       <Image
-        style={{ width: 80, height: 80, margin: 5 }}
+        style={{ width: 50, height: 50, margin: 5 }}
         source={require("../../static/img/user.png")}
       />
       <View style={{ flex: 1, justifyContent: "center", marginLeft: 5 }}>
-        <Text style={{ fontSize: 18, color: "green", marginBottom: 15 }}>
-          {item.typeOfJob}
-        </Text>
-        <Text style={{ fontSize: 16, color: "red" }}>
+        <Text style={{ fontSize: 16, color: "#ff6347" }}>
           {item.jobTitle && item.jobTitle.name}
+        </Text>
+        <Text>{`${item.employer.firstName} ${item.employer.lastName}`}</Text>
+        <Text style={{ color: "#00ACD8" }}>
+          Deadline: {item.hireBy.split("T")[0]}
         </Text>
       </View>
     </TouchableOpacity>
   );
 
   _renderSeparator = () => (
-    <View style={{ height: 1, width: "100%", backgroundColor: "grey" }} />
+    <View style={{ height: 1, width: "100%", backgroundColor: "#b0b7b6" }} />
   );
 
   render() {
@@ -63,7 +63,10 @@ class MyJobScreen extends Component {
               return <ActivityIndicator size="large" color="#ff6347" />;
             if (loading)
               return <ActivityIndicator size="large" color="#ff6347" />;
-            if (error) return <Text>Error Fetching Data !</Text>;
+            if (error) {
+              console.log("error: ", JSON.stringify(error));
+              return <Text>Error Fetching Data !</Text>;
+            }
 
             if (data && data.me && data.me.jobSet && data.me.jobSet.length) {
               return (

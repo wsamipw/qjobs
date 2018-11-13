@@ -10,11 +10,12 @@ import { connect } from "react-redux";
 import { compose, graphql } from "react-apollo";
 
 import { APPLY_JOB_MUTATION } from "../config/mutations";
+import CustomToast from "../config/CustomToast";
 
 class SearchDetailScreen extends Component {
   state = {
     job: "",
-    backgroundCheck: false,
+    // backgroundCheck: false,
     description: "",
     // Below field should be cast into float
     hourlyRate: "",
@@ -37,6 +38,10 @@ class SearchDetailScreen extends Component {
 
   onChange = (key, val) => this.setState({ [key]: val });
 
+  Default_Toast_Bottom = () => {
+    this.refs.defaultToastBottom.ShowToastFunction("Successfully Applied");
+  };
+
   render() {
     return (
       <ScrollView scrollEnabled>
@@ -54,7 +59,7 @@ class SearchDetailScreen extends Component {
             onChangeText={val => this.onChange("description", val)}
           />
         </Item>
-        <Text style={{ fontWeight: "bold" }}>Background Check</Text>
+        {/* <Text style={{ fontWeight: "bold" }}>Background Check</Text>
         <RadioForm
           radio_props={[
             { label: "Required", value: "Required" },
@@ -66,10 +71,12 @@ class SearchDetailScreen extends Component {
               backgroundCheck: value === "Required" ? true : false
             });
           }}
-        />
-        <Text style={{ fontWeight: "bold" }}>Extra Questions</Text>
-        {this.state.extraQuestion.length
-          ? this.state.extraQuestion.map((eachExtraQuestion, index) => {
+        /> */}
+        {this.state.extraQuestion.length ? (
+          <View>
+            <Text style={{ fontWeight: "bold" }}>Extra Questions</Text>
+
+            {this.state.extraQuestion.map((eachExtraQuestion, index) => {
               return (
                 <View key={index}>
                   <Text style={{ fontWeight: "bold" }}>
@@ -96,8 +103,9 @@ class SearchDetailScreen extends Component {
                   </Item>
                 </View>
               );
-            })
-          : null}
+            })}
+          </View>
+        ) : null}
         <Button
           backgroundColor="#3F51B5"
           title="Apply"
@@ -105,23 +113,21 @@ class SearchDetailScreen extends Component {
             console.log("stat: ", this.state);
 
             const hourlyRate = Number(this.state.hourlyRate);
-            const shiftAvailability = "shift available";
 
             const {
               job,
               description,
-              backgroundCheck,
+              //backgroundCheck,
               extraQuestion
             } = this.state;
 
             this.props
               .applyJob(
                 job,
-                backgroundCheck,
+                //backgroundCheck,
                 description,
                 hourlyRate,
-                extraQuestion,
-                shiftAvailability
+                extraQuestion
               )
               .then(response => {
                 console.log("response:", response);
@@ -129,7 +135,8 @@ class SearchDetailScreen extends Component {
                   response.data.applyJob.status === 200 &&
                   response.data.applyJob.msg === "success"
                 ) {
-                  console.log("success apply job: ", response);
+                  console.log("success apply job: ");
+                  this.Default_Toast_Bottom();
                 } else throw new Error(response);
               })
               .catch(error => {
@@ -139,6 +146,7 @@ class SearchDetailScreen extends Component {
         >
           <Text>Apply </Text>
         </Button>
+        <CustomToast ref="defaultToastBottom" position="bottom" />
       </ScrollView>
     );
   }
@@ -182,20 +190,18 @@ export default compose(
     props: ({ mutate }) => ({
       applyJob: (
         job,
-        backgroundCheck,
+        // backgroundCheck,
         description,
         hourlyRate,
-        extraQuestion,
-        shiftAvailability
+        extraQuestion
       ) =>
         mutate({
           variables: {
             job,
-            backgroundCheck,
+            // backgroundCheck,
             description,
             hourlyRate,
-            extraQuestion,
-            shiftAvailability
+            extraQuestion
           }
           // refetchQueries: [{ query: APPLY_JOB_MUTATION }]
         })

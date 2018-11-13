@@ -7,6 +7,14 @@ import { Item, Input } from "native-base";
 import { saveMultiplePostJobScreensState } from "../../actions/";
 
 class PostJobScreen3 extends Component {
+  static navigationOptions = {
+    headerTitle: "Description",
+    headerStyle: {
+      backgroundColor: "#5968ef"
+    },
+    headerTintColor: "#ffffff"
+  };
+
   state = {
     description: ""
   };
@@ -14,6 +22,7 @@ class PostJobScreen3 extends Component {
   onChange = (key, val) => this.setState({ [key]: val });
 
   render() {
+    console.log("props: ", this.props);
     return (
       <ScrollView scrollEnabled>
         <Text>

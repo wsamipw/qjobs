@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { connect } from "react-redux";
 import { Button } from "react-native-elements";
-import { Item, Input, DatePicker } from "native-base";
+import { DatePicker } from "native-base";
 import { Query } from "react-apollo";
 
 import { saveMultiplePostJobScreensState } from "../../actions/";
@@ -19,6 +19,14 @@ import { JOB_TITLES_QUERY } from "../../config/queries";
 import { SELECT_A_JOB_TITLE } from "../../config/CONSTANTS";
 
 class PostJobScreen1 extends Component {
+  static navigationOptions = {
+    headerTitle: "Job Details",
+    headerStyle: {
+      backgroundColor: "#5968ef"
+    },
+    headerTintColor: "#ffffff"
+  };
+
   state = {
     jobTitle: SELECT_A_JOB_TITLE,
     hireBy: ""
@@ -101,7 +109,6 @@ class PostJobScreen1 extends Component {
             </ScrollView>
           );
         }}
-        }
       </Query>
     );
   }

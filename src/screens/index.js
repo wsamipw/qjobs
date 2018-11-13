@@ -2,7 +2,7 @@ import LoginScreen from "./authFlow/LoginScreen";
 import RegisterScreen from "./authFlow/RegisterScreen";
 import HomeScreen from "./HomeScreen";
 
-import UserDetailScreen from "./UserDetailScreen";
+import UserDetailScreen from "./MoreStack/UserDetailScreen";
 
 // Profile Related Screens
 import ProfileScreen from "./Profile/ProfileScreen";

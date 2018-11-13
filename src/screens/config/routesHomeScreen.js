@@ -1,6 +1,9 @@
 import React from "react";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import Entypo from "react-native-vector-icons/Entypo";
+import Feather from "react-native-vector-icons/Feather";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 import {
   createSwitchNavigator,
@@ -56,8 +59,19 @@ const ProfileStack = createStackNavigator(
   },
   {
     initialRouteName: "profile"
+    // navigationOptions: {
+    //   headerStyle: {
+    //     backgroundColor: "#5968ef"
+    //   }
+    // }
   }
 );
+
+ProfileStack.navigationOptions = {
+  headerStyle: {
+    backgroundColor: "#5968ef"
+  }
+};
 
 const SearchStack = createStackNavigator(
   {
@@ -66,12 +80,19 @@ const SearchStack = createStackNavigator(
     applyJob: ApplyJob,
     searchDetail: SearchDetailScreen
   },
-  { initialRouteName: "search" }
+  {
+    initialRouteName: "search"
+  }
 );
 
-const PostStack = createStackNavigator(
+const MoreStack = createStackNavigator(
   {
     userDetail: UserDetailScreen
+    // navigationOptions: {
+    //   headerStyle: {
+    //     backgroundColor: "#5968ef"
+    //   }
+    // }
   },
   { initialRouteName: "userDetail" }
 );
@@ -80,7 +101,7 @@ export default createBottomTabNavigator(
   {
     Profile: ProfileStack,
     Search: SearchStack,
-    Post: PostStack
+    More: MoreStack
   },
   {
     initialRouteName: "Search",
@@ -90,24 +111,46 @@ export default createBottomTabNavigator(
         const { routeName } = navigation.state;
         let iconName;
         if (routeName === "Profile") {
-          iconName = `user`;
+          iconName = `user-o`;
+          return (
+            <FontAwesome
+              name={iconName}
+              size={horizontal ? 20 : 25}
+              color={tintColor}
+            />
+          );
         } else if (routeName === "Search") {
           iconName = `search`;
-        } else if (routeName === "Post") {
-          iconName = `star-o`;
+          return (
+            <FontAwesome
+              name={iconName}
+              size={horizontal ? 20 : 25}
+              color={tintColor}
+            />
+          );
+        } else if (routeName === "More") {
+          iconName = `more-horiz`;
+          return (
+            <MaterialIcons
+              name={iconName}
+              size={horizontal ? 20 : 25}
+              color={tintColor}
+            />
+          );
         }
 
         // You can return any component that you like here! We usually use an
         // icon component from react-native-vector-icons
-        return (
-          <FontAwesome
-            name={iconName}
-            size={horizontal ? 20 : 25}
-            color={tintColor}
-          />
-        );
+        // return (
+        //   <FontAwesome
+        //     name={iconName}
+        //     size={horizontal ? 20 : 25}
+        //     color={tintColor}
+        //   />
+        // );
       }
     }),
+
     tabBarOptions: {
       activeTintColor: "tomato",
       inactiveTintColor: "gray"

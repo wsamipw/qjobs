@@ -15,7 +15,7 @@ import { connect } from "react-redux";
 import { compose, graphql } from "react-apollo";
 
 import styles from "../../Styles/LoginRegisterStyles";
-import { JWT_AUTH_TOKEN, LOCATION } from "../../config/CONSTANTS";
+import { JWT_AUTH_TOKEN, LOCATION, USER_DATA } from "../../config/CONSTANTS";
 import { LOGIN_MUTATION } from "../../config/mutations";
 
 import { _storeData, _retrieveData } from "../../config/utils";
@@ -155,7 +155,12 @@ class LoginScreen extends Component {
                       console.log("data: ", response.data);
 
                       _storeData(JWT_AUTH_TOKEN, response.data.tokenAuth.token);
-                      _retrieveData(JWT_AUTH_TOKEN);
+                      _storeData(
+                        USER_DATA,
+                        JSON.stringify(response.data.tokenAuth.user)
+                      );
+
+                      _retrieveData(USER_DATA);
 
                       this.props.navigation.navigate("home");
                     })

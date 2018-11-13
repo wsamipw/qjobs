@@ -1,12 +1,15 @@
 import React, { Component } from "react";
-import { View, Image } from "react-native";
+import { View, Image, StyleSheet } from "react-native";
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
 
-import Ionicons from "react-native-vector-icons/MaterialCommunityIcons";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import HeaderButtons, {
   HeaderButton,
   Item
 } from "react-navigation-header-buttons";
+
+import ActionButton from "react-native-action-button";
 
 import { Button } from "react-native-elements";
 
@@ -31,17 +34,20 @@ class ProfileScreen extends Component {
   /* Below navigationOptions need not be called or passed
    * It is static and automatically used by react-navigation
    * For details refer: https://reactnavigation.org/docs/en/headers.html
-  */
+   */
   static navigationOptions = ({ navigation }) => {
     return {
       // `headerLeft` needed to align `headerTitle` exactly at center
-      headerLeft: <View />,
+      //headerLeft: <View />,
+      headerStyle: {
+        backgroundColor: "#5968ef"
+      },
       headerTitle: (
         <View
           style={{ flex: 1, flexDirection: "row", justifyContent: "center" }}
         >
           <Image
-            source={require("../../static/img/logoIcon.png")}
+            source={require("../../static/img/logoIconMin.png")}
             style={{
               width: 50,
               height: 50,
@@ -50,33 +56,33 @@ class ProfileScreen extends Component {
             }}
           />
         </View>
-      ),
-      headerRight: (
-        <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
-          <Item
-            title="Add Job"
-            iconName="plus-circle"
-            onPress={() => {
-              navigation.navigate("postJob1");
-            }}
-          />
-          <Item
-            title="settings"
-            iconName="settings"
-            onPress={() => {
-              navigation.navigate("settings");
-            }}
-          />
-          <Item
-            title="logout"
-            iconName="logout"
-            onPress={async () => {
-              await _removeData(JWT_AUTH_TOKEN);
-              navigation.navigate("login");
-            }}
-          />
-        </HeaderButtons>
       )
+      // headerRight: (
+      //   <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
+      //     <Item
+      //       title="Add Job"
+      //       iconName="plus-circle"
+      //       onPress={() => {
+      //         navigation.navigate("postJob1");
+      //       }}
+      //     />
+      //     <Item
+      //       title="settings"
+      //       iconName="settings"
+      //       onPress={() => {
+      //         navigation.navigate("settings");
+      //       }}
+      //     />
+      //     <Item
+      //       title="logout"
+      //       iconName="logout"
+      //       onPress={async () => {
+      //         await _removeData(JWT_AUTH_TOKEN);
+      //         navigation.navigate("login");
+      //       }}
+      //     />
+      //   </HeaderButtons>
+      // )
     };
   };
 
@@ -94,16 +100,47 @@ class ProfileScreen extends Component {
 
   render() {
     return (
-      <TabView
-        navigationState={this.state}
-        onIndexChange={index => this.setState({ index })}
-        renderScene={SceneMap({
-          myJobs: MyJobsScreen,
-          appliedJobs: AppliedJobsScreen
-        })}
-      />
+      <View style={styles.container}>
+        <TabView
+          navigationState={this.state}
+          onIndexChange={index => this.setState({ index })}
+          renderScene={SceneMap({
+            myJobs: MyJobsScreen,
+            appliedJobs: AppliedJobsScreen
+          })}
+          renderTabBar={props => (
+            <TabBar
+              {...props}
+              indicatorStyle={{ backgroundColor: "pink" }}
+              style={{ backgroundColor: "#1abc9c" }}
+            />
+          )}
+        />
+
+        <ActionButton buttonColor="#ef3ea2">
+          <ActionButton.Item
+            buttonColor="#1abc9c"
+            title="Create Job"
+            onPress={() => this.props.navigation.navigate("postJob1")}
+          >
+            <MaterialIcons name="work" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+        </ActionButton>
+      </View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff"
+  },
+  actionButtonIcon: {
+    fontSize: 20,
+    height: 22,
+    color: "white"
+  }
+});
 
 export default ProfileScreen;

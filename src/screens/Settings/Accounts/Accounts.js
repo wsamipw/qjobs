@@ -30,6 +30,33 @@ class Accounts extends Component {
     verifyingDoc2Base64: ""
   };
 
+  componentWillUnmount() {
+    this.setState({
+      jobTitle: SELECT_A_JOB_TITLE,
+      verifyingDoc1Image: null,
+      verifyingDoc2Image: null,
+      verifyingDoc1Base64: "",
+      verifyingDoc2Base64: ""
+    });
+  }
+
+  _getImageExtension = uri => {
+    let name;
+    let extension;
+
+    try {
+      [name, extension] = uri
+        .split("/")
+        .pop()
+        .split(".");
+    } catch (error) {
+      name = "image";
+      extension = "jpeg";
+    }
+
+    return extension;
+  };
+
   _pickImage = async (image, base64) => {
     let result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
@@ -38,7 +65,12 @@ class Accounts extends Component {
     });
 
     if (!result.cancelled) {
-      this.setState({ [image]: result.uri, [base64]: result.base64 });
+      const extension = this._getImageExtension(result.uri);
+      console.log("extension: ", extension);
+      this.setState({
+        [image]: result.uri,
+        [base64]: `data:image/${extension};base64,${result.base64}`
+      });
     }
   };
 

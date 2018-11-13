@@ -23,6 +23,7 @@ export const _removeData = async key => {
 export const _retrieveData = async key => {
   try {
     const value = await AsyncStorage.getItem(key);
+    // console.log("value: ", value);
     return value;
   } catch (error) {
     // Error retrieving data
