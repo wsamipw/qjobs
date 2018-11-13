@@ -26,7 +26,8 @@ class MyJobScreen extends Component {
       }}
       onPress={() => {
         this.props.route.navigation.navigate("searchDetail", {
-          item
+          item,
+          key: this.props.route.key
         });
       }}
     >

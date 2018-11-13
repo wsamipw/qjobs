@@ -22,6 +22,14 @@ import CustomToast from "../../../config/CustomToast";
 // const jobTitles = ["job1", "job2", "job3", "job4"];
 
 class Accounts extends Component {
+  static navigationOptions = {
+    headerTitle: "Pro User",
+    headerStyle: {
+      backgroundColor: "#5968ef"
+    },
+    headerTintColor: "#ffffff"
+  };
+
   state = {
     jobTitle: SELECT_A_JOB_TITLE,
     verifyingDoc1Image: null,

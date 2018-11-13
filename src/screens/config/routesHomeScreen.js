@@ -30,7 +30,8 @@ import {
   // SubPart
   PostJobScreen41,
   Accounts,
-  ApplyJob
+  ApplyJob,
+  More
 } from "..";
 
 const ProfileStack = createStackNavigator(
@@ -51,11 +52,7 @@ const ProfileStack = createStackNavigator(
     postJob5: PostJobScreen5,
     postJob6: PostJobScreen6,
 
-    postJob41: PostJobScreen41,
-
-    // Settings Related Pages
-    settings: SettingsScreen,
-    accounts: Accounts
+    postJob41: PostJobScreen41
   },
   {
     initialRouteName: "profile"
@@ -87,14 +84,21 @@ const SearchStack = createStackNavigator(
 
 const MoreStack = createStackNavigator(
   {
-    userDetail: UserDetailScreen
+    more: More,
+    userDetail: UserDetailScreen,
+
+    // Settings Related Pages
+
+    //Not used currently
+    //settings: SettingsScreen,
+    accounts: Accounts
     // navigationOptions: {
     //   headerStyle: {
     //     backgroundColor: "#5968ef"
     //   }
     // }
   },
-  { initialRouteName: "userDetail" }
+  { initialRouteName: "more" }
 );
 
 export default createBottomTabNavigator(

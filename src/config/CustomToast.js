@@ -51,7 +51,7 @@ export default class CustomToast extends Component {
             styles.animatedToastView,
             {
               opacity: this.animateOpacityValue,
-              top: this.props.position == "top" ? "10%" : "90%",
+              top: this.props.position == "top" ? "10%" : "80%",
               backgroundColor: this.props.backgroundColor
             }
           ]}

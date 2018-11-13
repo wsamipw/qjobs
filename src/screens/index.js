@@ -39,6 +39,8 @@ import Accounts from "./Settings/Accounts/Accounts";
 
 import ApplyJob from "./ApplyJob";
 
+import More from "./MoreStack/More";
+
 import {
   PostJobScreen1,
   PostJobScreen2,
@@ -86,5 +88,6 @@ export {
   PostJobScreen41,
   PostJobScreen51,
   Accounts,
-  ApplyJob
+  ApplyJob,
+  More
 };

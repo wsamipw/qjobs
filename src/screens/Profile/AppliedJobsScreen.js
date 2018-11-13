@@ -17,6 +17,40 @@ import { APPLIED_JOBS_QUERY } from "../../config/queries";
 class AppliedJobsScreen extends Component {
   val = { page: 1, rows: 4 };
 
+  _renderItem = ({ item }) => (
+    <TouchableOpacity
+      key={item.id}
+      style={{
+        flex: 1,
+        flexDirection: "row"
+      }}
+      onPress={() => {
+        this.props.route.navigation.navigate("searchDetail", {
+          item,
+          key: this.props.route.key
+        });
+      }}
+    >
+      <Image
+        style={{ width: 50, height: 50, margin: 5 }}
+        source={require("../../static/img/user.png")}
+      />
+      <View style={{ flex: 1, justifyContent: "center", marginLeft: 5 }}>
+        <Text style={{ fontSize: 16, color: "#ff6347" }}>
+          {item.job && item.job.name}
+        </Text>
+        <Text style={{ color: "grey" }}>
+          {item.job && item.job.employer && item.job.employer.username}
+        </Text>
+        <Text style={{ color: "#00ACD8" }}>Hourly Rate: {item.hourlyRate}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+
+  _renderSeparator = () => (
+    <View style={{ height: 1, width: "100%", backgroundColor: "#b0b7b6" }} />
+  );
+
   render() {
     return (
       <View>
@@ -38,9 +72,6 @@ class AppliedJobsScreen extends Component {
               return <Text>Error Fetching Data !</Text>;
             }
 
-            {
-              /* console.log("applied jobs: ", data); */
-            }
             if (data && data.appliedJobs && data.appliedJobs.data.length) {
               return (
                 <View>
@@ -74,27 +105,8 @@ class AppliedJobsScreen extends Component {
                       }
                     }}
                     onEndReachedThreshold={0.1}
-                    renderItem={({ item }) => {
-                      return (
-                        <TouchableOpacity
-                          onPress={() => {
-                            this.props.route.navigation.navigate(
-                              "searchDetail",
-                              {
-                                item
-                              }
-                            );
-                          }}
-                          key={item.id}
-                        >
-                          <Card>
-                            <Text>Id: {item.id}</Text>
-                            <Text>Name: {item.job && item.job.name}</Text>
-                            <Text>Hourly Rate: {item.hourlyRate}</Text>
-                          </Card>
-                        </TouchableOpacity>
-                      );
-                    }}
+                    renderItem={this._renderItem}
+                    ItemSeparatorComponent={this._renderSeparator}
                   />
                 </View>
               );
@@ -104,13 +116,14 @@ class AppliedJobsScreen extends Component {
 
               return (
                 <View>
-                  <Image
+                  <Text> {displayText}</Text>
+                  {/* <Image
                     source={require("../../static/img/noResult.jpg")}
                     style={{
                       flex: 1,
                       resizeMode: "cover"
                     }}
-                  />
+                  /> */}
                 </View>
               );
             }

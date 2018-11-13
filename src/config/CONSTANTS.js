@@ -12,3 +12,4 @@ export const CONFIRMED = "CONFIRMED";
 export const REVOKED = "REVOKED";
 export const TIMEOUT = "TIMEOUT";
 export const COMPLETED = "COMPLETED";
+export const UNCOMPLETED = "UNCOMPLETED";

@@ -63,6 +63,12 @@ export const APPLIED_JOBS_QUERY = gql`
           id
           name
           description
+          employer {
+            id
+            username
+            firstName
+            lastName
+          }
         }
         hourlyRate
         applied
@@ -119,7 +125,15 @@ export const JOBS_QUERY = gql`
           coordinates
         }
         extraQuestion
+        applyjobSet {
+          status
+          employee {
+            id
+            username
+          }
+        }
       }
+
       page
       rows
       rowCount

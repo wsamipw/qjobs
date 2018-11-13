@@ -104,8 +104,10 @@ class SearchResultScreen extends Component {
                     keyExtractor={item => item.id}
                     onEndReached={() => {
                       this.val.page += 1;
-
-                      if (this.val.page <= data.jobs.pages) {
+                      console.log("val: ", this.val);
+                      console.log("pages: ", data.jobs.pages);
+                      console.log("data length: ", data.jobs.data.length);
+                      if (data.jobs.data.length < data.jobs.rowCount) {
                         fetchMore({
                           variables: {
                             page: this.val.page,

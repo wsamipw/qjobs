@@ -11,6 +11,7 @@ import { compose, graphql } from "react-apollo";
 
 import { APPLY_JOB_MUTATION } from "../config/mutations";
 import CustomToast from "../config/CustomToast";
+import { JOBS_QUERY, APPLIED_JOBS_QUERY } from "../config/queries";
 
 class SearchDetailScreen extends Component {
   state = {
@@ -137,6 +138,7 @@ class SearchDetailScreen extends Component {
                 ) {
                   console.log("success apply job: ");
                   this.Default_Toast_Bottom();
+                  this.props.navigation.navigate("profile");
                 } else throw new Error(response);
               })
               .catch(error => {
@@ -202,8 +204,17 @@ export default compose(
             description,
             hourlyRate,
             extraQuestion
-          }
-          // refetchQueries: [{ query: APPLY_JOB_MUTATION }]
+          },
+          refetchQueries: [
+            {
+              query: APPLIED_JOBS_QUERY,
+              variables: {
+                //awaitRefetchQueries: true,
+                page: 1,
+                rows: 4
+              }
+            }
+          ]
         })
     })
   })

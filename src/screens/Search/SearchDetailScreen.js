@@ -5,7 +5,8 @@ import {
   View,
   Dimensions,
   FlatList,
-  TouchableOpacity
+  TouchableOpacity,
+  ScrollView
 } from "react-native";
 import { Button } from "native-base";
 import { Card } from "react-native-elements";
@@ -24,11 +25,16 @@ import {
   CONFIRMED,
   REVOKED,
   TIMEOUT,
-  COMPLETED
+  COMPLETED,
+  UNCOMPLETED
 } from "../../config/CONSTANTS";
 
-import { SELECT_APPLY_JOB_MUTATION } from "../../config/mutations";
-import { MY_JOBS_QUERY } from "../../config/queries";
+import {
+  SELECT_APPLY_JOB_MUTATION,
+  COMPLETE_APPLY_JOB_MUTATION,
+  CONFIRM_APPLY_JOB_MUTATION
+} from "../../config/mutations";
+import { MY_JOBS_QUERY, APPLIED_JOBS_QUERY } from "../../config/queries";
 
 class SearchDetailScreen extends Component {
   // To disable the default header
@@ -69,6 +75,7 @@ class SearchDetailScreen extends Component {
                     response.data.selectApplyjob.msg === "success"
                   ) {
                     console.log("success close");
+                    this.props.navigation.goBack();
                   } else throw new Error(response);
                 })
                 .catch(error => {
@@ -90,6 +97,7 @@ class SearchDetailScreen extends Component {
                     response.data.selectApplyjob.msg === "success"
                   ) {
                     console.log("success tick");
+                    this.props.navigation.goBack();
                   } else throw new Error(response);
                 })
                 .catch(error => {
@@ -105,6 +113,87 @@ class SearchDetailScreen extends Component {
           <Text style={{ color: "white" }}>REJECTED</Text>
         </Button>
       );
+    } else if (item.status === CONFIRMED) {
+      return (
+        <View>
+          <Text>
+            <Icon name="md-checkmark-circle" size={30} color="#00FF00" />
+          </Text>
+          <View style={{ height: 10 }} />
+
+          <Button
+            block
+            onPress={() => {
+              this.props
+                .completeApplyjob(item.id, true, 10.0)
+                .then(response => {
+                  console.log("resp_confirm: ", response);
+                  if (
+                    response.data.completeApplyjob.status === 200 &&
+                    response.data.completeApplyjob.msg === "success"
+                  ) {
+                    console.log("success close");
+                    this.props.navigation.goBack();
+                  } else throw new Error(response);
+                })
+                .catch(error => {
+                  console.log("erro: ", JSON.stringify(error));
+                });
+            }}
+          >
+            <Text style={{ color: "white" }}>COMPLETE</Text>
+          </Button>
+          <Button
+            style={{ backgroundColor: "red" }}
+            block
+            onPress={() => {
+              this.props
+                .completeApplyjob(item.id, false, 10.0)
+                .then(response => {
+                  console.log("resp_confirm: ", response);
+                  if (
+                    response.data.completeApplyjob.status === 200 &&
+                    response.data.completeApplyjob.msg === "success"
+                  ) {
+                    console.log("success close");
+                    this.props.navigation.goBack();
+                  } else throw new Error(response);
+                })
+                .catch(error => {
+                  console.log("erro: ", JSON.stringify(error));
+                });
+            }}
+          >
+            <Text style={{ color: "white" }}>CANCEL</Text>
+          </Button>
+        </View>
+      );
+    } else if (item.status === COMPLETED) {
+      return (
+        <Button
+          round
+          small
+          style={{
+            backgroundColor: "green",
+            borderRadius: 8
+          }}
+        >
+          <Text style={{ color: "white" }}> COMPLETED</Text>
+        </Button>
+      );
+    } else if (item.status === UNCOMPLETED) {
+      return (
+        <Button
+          round
+          small
+          style={{
+            backgroundColor: "red",
+            borderRadius: 8
+          }}
+        >
+          <Text style={{ color: "white" }}> UNCOMPLETED</Text>
+        </Button>
+      );
     }
   };
 
@@ -112,16 +201,64 @@ class SearchDetailScreen extends Component {
   renderStatus = item => {
     if (item.status === ACCEPTED) {
       return (
-        <Button
-          round
-          small
-          style={{
-            backgroundColor: "#097c28",
-            borderRadius: 8
-          }}
-        >
-          <Text style={{ color: "white" }}> ACCEPTED</Text>
-        </Button>
+        <View>
+          <Button
+            round
+            small
+            style={{
+              backgroundColor: "#097c28",
+              borderRadius: 8
+            }}
+          >
+            <Text style={{ color: "white" }}> ACCEPTED</Text>
+          </Button>
+          <View style={{ height: 10 }} />
+          <Button
+            block
+            onPress={() => {
+              this.props
+                .confirmApplyjob(item.id, true)
+                .then(response => {
+                  console.log("resp_confirm: ", response);
+                  if (
+                    response.data.confirmApplyjob.status === 200 &&
+                    response.data.confirmApplyjob.msg === "success"
+                  ) {
+                    console.log("success confirm ");
+                    this.props.navigation.goBack();
+                  } else throw new Error(response);
+                })
+                .catch(error => {
+                  console.log("erro: ", JSON.stringify(error));
+                });
+            }}
+          >
+            <Text style={{ color: "white" }}>CONFIRM</Text>
+          </Button>
+          <Button
+            block
+            style={{ backgroundColor: "red" }}
+            onPress={() => {
+              this.props
+                .confirmApplyjob(item.id, false)
+                .then(response => {
+                  console.log("resp_revoke: ", response);
+                  if (
+                    response.data.confirmApplyjob.status === 200 &&
+                    response.data.confirmApplyjob.msg === "success"
+                  ) {
+                    console.log("success close revoke");
+                    this.props.navigation.goBack();
+                  } else throw new Error(response);
+                })
+                .catch(error => {
+                  console.log("erro: ", JSON.stringify(error));
+                });
+            }}
+          >
+            <Text style={{ color: "white" }}>REVOKE</Text>
+          </Button>
+        </View>
       );
     } else if (item.status === REJECTED) {
       return (
@@ -146,7 +283,7 @@ class SearchDetailScreen extends Component {
             borderRadius: 8
           }}
         >
-          <Text style={{ color: "white" }}>APPLIED</Text>
+          <Text style={{ color: "blue" }}>APPLIED</Text>
         </Button>
       );
     } else if (item.status === CONFIRMED) {
@@ -159,7 +296,7 @@ class SearchDetailScreen extends Component {
             borderRadius: 8
           }}
         >
-          <Text style={{ color: "white" }}>CONFIRMED</Text>
+          <Text style={{ color: "blue" }}>CONFIRMED</Text>
         </Button>
       );
     } else if (item.status === REVOKED) {
@@ -172,7 +309,7 @@ class SearchDetailScreen extends Component {
             borderRadius: 8
           }}
         >
-          <Text style={{ color: "white" }}>REVOKED</Text>
+          <Text style={{ color: "blue" }}>REVOKED</Text>
         </Button>
       );
     } else if (item.status === TIMEOUT) {
@@ -185,7 +322,7 @@ class SearchDetailScreen extends Component {
             borderRadius: 8
           }}
         >
-          <Text style={{ color: "white" }}>TIMEOUT</Text>
+          <Text style={{ color: "blue" }}>TIMEOUT</Text>
         </Button>
       );
     } else if (item.status === COMPLETED) {
@@ -198,7 +335,7 @@ class SearchDetailScreen extends Component {
             borderRadius: 8
           }}
         >
-          <Text style={{ color: "white" }}>COMPLETED</Text>
+          <Text style={{ color: "blue" }}>COMPLETED</Text>
         </Button>
       );
     }
@@ -206,7 +343,30 @@ class SearchDetailScreen extends Component {
 
   render() {
     const eachItem = this.props.navigation.getParam("item", null);
+    const key = this.props.navigation.getParam("key", null);
     console.log('eachItem, ", ', eachItem);
+    console.log('key, ", ', key);
+
+    // Checks whether the job creater and applier are same
+    // Also checks if the status is set i.e if status is set
+    // then it should return false
+    // Return True if they are different
+    const condition1 =
+      !eachItem.status &&
+      (eachItem.employer && eachItem.employer.id !== this.state.id);
+
+    // Checks whether the person has already applied for the job
+    // Inner conditions returns True if found
+    // and outer negation `!` negates it and returns false to
+    // determine whether to display the `Apply Job` button
+    const condition2 = !(eachItem.applyjobSet && eachItem.applyjobSet.length
+      ? eachItem.applyjobSet.find(
+          eachApplyJobSet =>
+            eachApplyJobSet.employee &&
+            eachApplyJobSet.employee.id === this.state.id
+        )
+      : false);
+
     return eachItem ? (
       <View style={{ height: 500 }}>
         <Text>Id: {eachItem.id}</Text>
@@ -227,9 +387,8 @@ class SearchDetailScreen extends Component {
           </View>
         ) : null}
 
-        {/* Used whether it is eligible to Apply Job*/}
-        {!eachItem.status &&
-          (eachItem.employer && eachItem.employer.id !== this.state.id) && (
+        {condition1 &&
+          condition2 && (
             <Button
               rounded
               block
@@ -244,8 +403,10 @@ class SearchDetailScreen extends Component {
         {this.renderStatus(eachItem)}
 
         {/* Used when it came from My Jobs */}
-        {eachItem.applyjobSet && eachItem.applyjobSet.length ? (
-          <View>
+        {key === "myJobs" &&
+        eachItem.applyjobSet &&
+        eachItem.applyjobSet.length ? (
+          <ScrollView scrollEnabled>
             <Text style={{ fontWeight: "bold" }}>Applications</Text>
 
             <FlatList
@@ -271,7 +432,7 @@ class SearchDetailScreen extends Component {
                 );
               }}
             />
-          </View>
+          </ScrollView>
         ) : null}
       </View>
     ) : null;
@@ -316,6 +477,31 @@ export default compose(
             select
           },
           refetchQueries: [{ query: MY_JOBS_QUERY }]
+        })
+    })
+  }),
+  graphql(COMPLETE_APPLY_JOB_MUTATION, {
+    props: ({ mutate }) => ({
+      completeApplyjob: (id, complete, totalHours) =>
+        mutate({
+          variables: {
+            id,
+            complete,
+            totalHours
+          },
+          refetchQueries: [{ query: MY_JOBS_QUERY }]
+        })
+    })
+  }),
+  graphql(CONFIRM_APPLY_JOB_MUTATION, {
+    props: ({ mutate }) => ({
+      confirmApplyjob: (id, confirm) =>
+        mutate({
+          variables: {
+            id,
+            confirm
+          },
+          refetchQueries: [{ query: APPLIED_JOBS_QUERY }]
         })
     })
   })

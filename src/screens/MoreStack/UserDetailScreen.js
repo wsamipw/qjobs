@@ -134,7 +134,7 @@ class UserDetailScreen extends Component {
     if (this.state.fetchError) {
       // Display Error Message PopUp or Something ...
       console.log("fetch errror: ", this.state.fetchError);
-      return null;
+      return <Text>Error Fetching Data !</Text>;
     } else
       return (
         <ScrollView scrollEnabled>

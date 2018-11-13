@@ -48,6 +48,19 @@ export const CONFIRM_APPLY_JOB_MUTATION = gql`
   }
 `;
 
+export const COMPLETE_APPLY_JOB_MUTATION = gql`
+  mutation CompleteApplyJobMutation(
+    $id: ID!
+    $complete: Boolean!
+    $totalHours: Float!
+  ) {
+    completeApplyjob(id: $id, complete: $complete, totalHours: $totalHours) {
+      msg
+      status
+    }
+  }
+`;
+
 export const CREATE_USER_PRO_MUTATION = gql`
   mutation CreateUserProMutation(
     $jobTitle: ID!
