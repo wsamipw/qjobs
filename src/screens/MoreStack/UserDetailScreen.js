@@ -11,12 +11,13 @@ import {
 import { Container, Content, Item, Input, DatePicker } from "native-base";
 import { Button } from "react-native-elements";
 
-import { compose, graphql, withApollo } from "react-apollo";
+import { compose, graphql } from "react-apollo";
 
 import styles from "../../Styles/LoginRegisterStyles";
 
 import { UPDATE_USER_MUTATION } from "../../config/mutations";
-import { USER_DETAILS_QUERY } from "../../config/queries";
+import { USER_DATA } from "../../config/CONSTANTS";
+import { _retrieveData, _storeData } from "../../config/utils";
 
 class UserDetailScreen extends Component {
   /* Below navigationOptions need not be called or passed
@@ -25,289 +26,177 @@ class UserDetailScreen extends Component {
    */
   static navigationOptions = ({ navigation }) => {
     return {
-      // `headerLeft` and `headerRight` needed to align `headerTitle` exactly at center
-      headerLeft: <View />,
-      headerRight: <View />,
       headerStyle: {
         backgroundColor: "#5968ef"
       },
-      headerTitle: (
-        <View
-          style={{ flex: 1, flexDirection: "row", justifyContent: "center" }}
-        >
-          <Image
-            source={require("../../static/img/logoIconMin.png")}
-            style={{
-              width: 50,
-              height: 50,
-              resizeMode: "contain",
-              alignSelf: "center"
-            }}
-          />
-        </View>
-      )
+      headerTitle: "User Detail",
+      headerTintColor: "#ffffff"
     };
   };
 
   state = {
-    // loading displayed until the query data is fetched
-    loading: true,
-    fetchError: true,
-
-    // used when user manually refreshes the data
-    refreshing: false,
+    loading: false,
 
     firstName: "",
     lastName: "",
     currentAddress: "",
     permanentAddress: "",
     gender: "Male",
-    // nationality: "",
-    // religion: "",
     dateOfBirth: new Date().toJSON().slice(0, 10)
-    // disability: false
   };
 
-  componentDidMount() {
-    this.onQueryFetch();
+  async componentDidMount() {
+    try {
+      const user = JSON.parse(await _retrieveData(USER_DATA));
+
+      user &&
+        this.setState({
+          firstName: user.firstName ? user.firstName : "",
+          lastName: user.lastName ? user.lastName : "",
+          currentAddress: user.currentAddress ? user.currentAddress : "",
+          permanentAddress: user.permanentAddress ? user.permanentAddress : "",
+          gender: user.gender ? user.gender : this.state.gender,
+          dateOfBirth: user.dateOfBirth
+            ? user.dateOfBirth
+            : this.state.dateOfBirth
+        });
+    } catch (err) {
+      console.log("user fetch async error userdetailscreen.js: ", err);
+    }
   }
 
   onChange = (key, val) => this.setState({ [key]: val });
 
-  onQueryFetch = callback =>
-    this.props.client
-      .query({
-        query: USER_DETAILS_QUERY,
-        fetchPolicy: "no-cache"
-      })
-      .then(response => {
-        console.log("data: ", response);
-        const {
-          firstName,
-          lastName,
-          currentAddress,
-          permanentAddress,
-          gender,
-          // nationality,
-          // religion,
-          dateOfBirth
-          // disability
-        } = response.data.me;
-
-        this.setState({
-          loading: false,
-          fetchError: false,
-
-          firstName,
-          lastName,
-          currentAddress,
-          permanentAddress,
-          gender,
-          // nationality,
-          // religion,
-          dateOfBirth
-          // disability
-        });
-
-        // A Callback function to change ``refreshing`` state status ...
-        if (callback) callback();
-      })
-      .catch(error => {
-        console.log("error fetchting data: ", JSON.stringify(error));
-        this.setState({ loading: false, fetchError: true });
-
-        // A Callback function to change ``refreshing`` state status ...
-        if (callback) callback();
-      });
-
-  _onRefresh = () => {
-    this.setState({ refreshing: true });
-    this.onQueryFetch(() => this.setState({ refreshing: false }));
-  };
-
   render() {
-    if (this.state.loading) {
-      console.log("loading ...");
-      return <ActivityIndicator size="large" color="#ff6347" />;
-    }
+    return (
+      <ScrollView scrollEnabled>
+        <Container>
+          <Content scrollEnabled contentContainerStyle={styles.contentStyle}>
+            <View style={styles.mainContent}>
+              <DatePicker
+                defaultDate={new Date(this.state.dateOfBirth)}
+                minimumDate={new Date(1951, 1, 1)}
+                maximumDate={new Date(2051, 12, 31)}
+                locale={"en"}
+                timeZoneOffsetInMinutes={undefined}
+                modalTransparent={false}
+                animationType={"fade"}
+                androidMode={"default"}
+                placeHolderText="Select date"
+                textStyle={{ color: "green" }}
+                placeHolderTextStyle={{ color: "#d3d3d3" }}
+                onDateChange={val =>
+                  this.onChange("dateOfBirth", val.toJSON().slice(0, 10))
+                }
+              />
 
-    if (this.state.fetchError) {
-      // Display Error Message PopUp or Something ...
-      console.log("fetch errror: ", this.state.fetchError);
-      return <Text>Error Fetching Data !</Text>;
-    } else
-      return (
-        <ScrollView scrollEnabled>
-          <Container>
-            <Content
-              refreshControl={
-                <RefreshControl
-                  refreshing={this.state.refreshing}
-                  onRefresh={this._onRefresh}
-                />
-              }
-              scrollEnabled
-              contentContainerStyle={styles.contentStyle}
-            >
-              <View style={styles.mainContent}>
-                <DatePicker
-                  defaultDate={new Date(this.state.dateOfBirth)}
-                  minimumDate={new Date(1951, 1, 1)}
-                  maximumDate={new Date(2051, 12, 31)}
-                  locale={"en"}
-                  timeZoneOffsetInMinutes={undefined}
-                  modalTransparent={false}
-                  animationType={"fade"}
-                  androidMode={"default"}
-                  placeHolderText="Select date"
-                  textStyle={{ color: "green" }}
-                  placeHolderTextStyle={{ color: "#d3d3d3" }}
-                  onDateChange={val =>
-                    this.onChange("dateOfBirth", val.toJSON().slice(0, 10))
-                  }
-                />
-                {/* <CheckBox
-                  title="Disability: "
-                  checked={this.state.disability}
-                  onPress={() =>
-                    this.setState({ disability: !this.state.disability })
-                  }
-                /> */}
-                {/* <Item rounded style={styles.inputWrapper}>
+              <Item rounded style={styles.inputWrapper}>
                 <Input
                   placeholder="First Name"
                   value={this.state.firstName}
                   onChangeText={val => this.onChange("firstName", val)}
                 />
-              </Item> */}
-                <Item rounded style={styles.inputWrapper}>
-                  <Input
-                    placeholder="Last Name"
-                    value={this.state.lastName}
-                    onChangeText={val => this.onChange("lastName", val)}
-                  />
-                </Item>
-                <Picker
-                  selectedValue={this.state.gender}
-                  style={{ height: 50, width: 200 }}
-                  onValueChange={gender => this.setState({ gender })}
-                >
-                  <Picker.Item label="Male" value="Male" />
-                  <Picker.Item label="Female" value="Female" />
-                  <Picker.Item label="Other" value="Other" />
-                </Picker>
-                <Item rounded style={styles.inputWrapper}>
-                  <Input
-                    placeholder="Current Address"
-                    value={this.state.currentAddress}
-                    onChangeText={val => this.onChange("currentAddress", val)}
-                  />
-                </Item>
-                <Item rounded style={styles.inputWrapper}>
-                  <Input
-                    placeholder="Permanent Address"
-                    value={this.state.permanentAddress}
-                    onChangeText={val => this.onChange("permanentAddress", val)}
-                  />
-                </Item>
-                {/* <Item rounded style={styles.inputWrapper}>
-              <Input
-                placeholder="Contact Number"
-                value={this.state.contactNumber}
-                onChangeText={val => this.onChange("contactNumber", val)}
-              />
-            </Item> */}
-                {/* <Item rounded style={styles.inputWrapper}>
-              <Input
-                placeholder="Gender"
-                value={this.state.gender}
-                onChangeText={val => this.onChange("gender", val)}
-              />
-            </Item> */}
-                {/* <Item rounded style={styles.inputWrapper}>
-                  <Input
-                    placeholder="Nationality"
-                    value={this.state.nationality}
-                    onChangeText={val => this.onChange("nationality", val)}
-                  />
-                </Item> */}
-                {/* <Item rounded style={styles.inputWrapper}>
-                  <Input
-                    placeholder="Religion"
-                    value={this.state.religion}
-                    onChangeText={val => this.onChange("religion", val)}
-                  />
-                </Item> */}
-                <Button
-                  backgroundColor="#3F51B5"
-                  containerViewStyle={styles.loginButtton}
-                  rounded
-                  title="Update"
-                  onPress={() => {
-                    const {
+              </Item>
+              <Item rounded style={styles.inputWrapper}>
+                <Input
+                  placeholder="Last Name"
+                  value={this.state.lastName}
+                  onChangeText={val => this.onChange("lastName", val)}
+                />
+              </Item>
+              <Picker
+                selectedValue={this.state.gender}
+                style={{ height: 50, width: 200 }}
+                onValueChange={gender => this.setState({ gender })}
+              >
+                <Picker.Item label="Male" value="Male" />
+                <Picker.Item label="Female" value="Female" />
+                <Picker.Item label="Other" value="Other" />
+              </Picker>
+              <Item rounded style={styles.inputWrapper}>
+                <Input
+                  placeholder="Current Address"
+                  value={this.state.currentAddress}
+                  onChangeText={val => this.onChange("currentAddress", val)}
+                />
+              </Item>
+              <Item rounded style={styles.inputWrapper}>
+                <Input
+                  placeholder="Permanent Address"
+                  value={this.state.permanentAddress}
+                  onChangeText={val => this.onChange("permanentAddress", val)}
+                />
+              </Item>
+
+              <Button
+                backgroundColor="#3F51B5"
+                containerViewStyle={styles.loginButtton}
+                disabled={this.state.loading}
+                rounded
+                title="Update"
+                onPress={() => {
+                  const {
+                    firstName,
+                    lastName,
+                    currentAddress,
+                    permanentAddress,
+                    gender,
+
+                    dateOfBirth
+                  } = this.state;
+
+                  this.setState({ loading: true });
+
+                  this.props
+                    .updateUser(
                       firstName,
                       lastName,
                       currentAddress,
                       permanentAddress,
                       gender,
-                      //nationality,
-                      //religion,
+
                       dateOfBirth
-                      //disability
-                    } = this.state;
+                    )
+                    .then(async ({ data }) => {
+                      if (data.updateUser.msg === "success") {
+                        const {
+                          firstName,
+                          lastName,
+                          currentAddress,
+                          permanentAddress,
+                          gender,
+                          dateOfBirth
+                        } = data.updateUser.user;
 
-                    console.log("date: ", dateOfBirth);
-                    this.props
-                      .updateUser(
-                        firstName,
-                        lastName,
-                        currentAddress,
-                        permanentAddress,
-                        gender,
-                        //nationality,
-                        //religion,
-                        dateOfBirth
-                        //disability
-                      )
-                      .then(({ data }) => {
-                        console.log("update dat:", data);
-                        if (data.updateUser.msg === "success") {
-                          const {
-                            firstName,
-                            lastName,
-                            currentAddress,
-                            permanentAddress,
-                            gender,
-                            //nationality,
-                            //religion,
-                            dateOfBirth
-                            //disability
-                          } = data.updateUser.user;
+                        this.setState({
+                          loading: false,
+                          firstName,
+                          lastName,
+                          currentAddress,
+                          permanentAddress,
+                          gender,
+                          dateOfBirth
+                        });
 
-                          this.setState({
-                            firstName,
-                            lastName,
-                            currentAddress,
-                            permanentAddress,
-                            gender,
-                            //nationality,
-                            //religion,
-                            dateOfBirth
-                            //disability
-                          });
-                        } else throw new Error(data.updateUser.msg);
-                      })
-                      .catch(error => {
-                        console.log("update error: ", error);
-                        // Display Update Error box here i.e PopUp or Something ...
-                      });
-                  }}
-                />
-              </View>
-            </Content>
-          </Container>
-        </ScrollView>
-      );
+                        await _storeData(
+                          USER_DATA,
+                          JSON.stringify(data.updateUser.user)
+                        );
+                        this.props.navigation.state.params.refresh();
+                      } else throw new Error(data.updateUser.msg);
+                    })
+                    .catch(error => {
+                      this.setState({ loading: false });
+                      console.log("update error: ", JSON.stringify(error));
+                      // Display Update Error box here i.e PopUp or Something ...
+                    });
+                }}
+              />
+            </View>
+          </Content>
+        </Container>
+      </ScrollView>
+    );
   }
 }
 
@@ -321,7 +210,6 @@ class UserDetailScreen extends Component {
 // });
 
 export default compose(
-  withApollo,
   graphql(UPDATE_USER_MUTATION, {
     props: ({ mutate }) => ({
       updateUser: (
@@ -330,10 +218,7 @@ export default compose(
         currentAddress,
         permanentAddress,
         gender,
-        //nationality,
-        //religion,
         dateOfBirth
-        //disability
       ) =>
         mutate({
           variables: {
@@ -342,10 +227,7 @@ export default compose(
             currentAddress,
             permanentAddress,
             gender,
-            //nationality,
-            //religion,
             dateOfBirth
-            //disability
           }
         })
     })

@@ -222,6 +222,7 @@ export const WORK_EXPERIENCE_DETAILS_QUERY = gql`
   }
 `;
 
+// Not used since it's work is done during login and stored in cookie/asyncStorage
 export const USER_DETAILS_QUERY = gql`
   {
     me {

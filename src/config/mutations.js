@@ -88,6 +88,10 @@ export const LOGIN_MUTATION = gql`
         firstName
         lastName
         email
+        currentAddress
+        permanentAddress
+        gender
+        dateOfBirth
       }
     }
   }
@@ -168,10 +172,7 @@ export const UPDATE_USER_MUTATION = gql`
     $currentAddress: String!
     $permanentAddress: String!
     $gender: String!
-    $nationality: String!
-    $religion: String!
     $dateOfBirth: Date!
-    $disability: Boolean!
   ) {
     updateUser(
       firstName: $firstName
@@ -179,21 +180,18 @@ export const UPDATE_USER_MUTATION = gql`
       currentAddress: $currentAddress
       permanentAddress: $permanentAddress
       gender: $gender
-      nationality: $nationality
-      religion: $religion
       dateOfBirth: $dateOfBirth
-      disability: $disability
     ) {
       user {
+        id
+        username
+        email
         firstName
         lastName
         currentAddress
         permanentAddress
         gender
-        nationality
-        religion
         dateOfBirth
-        disability
       }
       msg
       status
