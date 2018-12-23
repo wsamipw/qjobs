@@ -56,6 +56,37 @@ class SearchResultScreen extends Component {
     }
   }
 
+  _displayJobStatus = item => {
+      if (
+        item.employer &&
+        this.state.user &&
+        item.employer.id === this.state.user.id) {
+        return <Button
+          style={{
+            backgroundColor: "#097c28",
+            borderRadius: 8
+          }}
+          round
+          small
+        >
+          <Text style={{ color: "white" }}>My Job</Text>
+        </Button>
+      } else {
+        const appliedJob = item.applyjobSet && item.applyjobSet.length ? item.applyjobSet.find(eachjobSet => eachjobSet.employee.id === this.state.user.id) : null;
+        return appliedJob ? <Button
+        style={{
+          backgroundColor: "blue",
+          borderRadius: 8
+        }}
+        round
+        small
+      >
+        <Text style={{ color: "white" }}>{appliedJob.status}</Text>
+      </Button> : null
+
+      }
+  }
+
   render() {
     const query = this.props.navigation.getParam("query", undefined);
     console.log("this ttate: ", this.state);
@@ -143,20 +174,7 @@ class SearchResultScreen extends Component {
                             <Text>Id: {item.id}</Text>
                             <Text>Name: {item.name}</Text>
                             <Text>Description {item.description}</Text>
-                            {item.employer &&
-                              this.state.user &&
-                              item.employer.id === this.state.user.id && (
-                                <Button
-                                  style={{
-                                    backgroundColor: "#097c28",
-                                    borderRadius: 8
-                                  }}
-                                  round
-                                  small
-                                >
-                                  <Text style={{ color: "white" }}>My Job</Text>
-                                </Button>
-                              )}
+                            {this._displayJobStatus(item)}
                           </Card>
                         </TouchableOpacity>
                       );

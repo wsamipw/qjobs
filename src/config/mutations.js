@@ -64,8 +64,8 @@ export const COMPLETE_APPLY_JOB_MUTATION = gql`
 export const CREATE_USER_PRO_MUTATION = gql`
   mutation CreateUserProMutation(
     $jobTitle: ID!
-    $verifyingDoc1Base64: String!
-    $verifyingDoc2Base64: String!
+    $verifyingDoc1Base64: String
+    $verifyingDoc2Base64: String
   ) {
     createUserpro(
       jobTitle: $jobTitle

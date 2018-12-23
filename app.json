@@ -12,6 +12,9 @@
           "apiKey": "AIzaSyDhf_MVoLfC8nEoxgSRsDLr3DxcbTO9aqA"
         }
       }
+    },
+    "ios": {
+      "bundleIdentifier": "np.com.techkunja.qjobs"
     }
   }
 }

@@ -106,8 +106,8 @@ class Accounts extends Component {
                 } = this.state;
 
                 if (
-                  (jobTitle !== SELECT_A_JOB_TITLE && verifyingDoc1Base64,
-                  verifyingDoc2Base64)
+                  (jobTitle !== SELECT_A_JOB_TITLE && (verifyingDoc1Base64 || 
+                  verifyingDoc2Base64))
                 ) {
                   this.props
                     .createUserPro(

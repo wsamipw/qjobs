@@ -226,6 +226,7 @@ export const WORK_EXPERIENCE_DETAILS_QUERY = gql`
 export const USER_DETAILS_QUERY = gql`
   {
     me {
+      id
       firstName
       lastName
       currentAddress

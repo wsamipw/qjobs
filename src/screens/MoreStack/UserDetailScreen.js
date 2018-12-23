@@ -183,6 +183,7 @@ class UserDetailScreen extends Component {
                           JSON.stringify(data.updateUser.user)
                         );
                         this.props.navigation.state.params.refresh();
+                        this.props.navigation.goBack();
                       } else throw new Error(data.updateUser.msg);
                     })
                     .catch(error => {
