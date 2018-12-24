@@ -6,9 +6,10 @@ import {
   Dimensions,
   FlatList,
   TouchableOpacity,
+  StatusBar,
   ActivityIndicator
 } from "react-native";
-import { Button } from "native-base";
+import { Button, Icon } from "native-base";
 
 import { Card } from "react-native-elements";
 
@@ -37,7 +38,6 @@ class SearchResultScreen extends Component {
     // LoggedIn user
     user: null
   };
-  val = { page: 1, rows: 4 };
 
   async componentDidMount() {
     try {
@@ -46,7 +46,7 @@ class SearchResultScreen extends Component {
       const user = JSON.parse(await _retrieveData(USER_DATA));
 
       obj.location = location ? JSON.parse(location) : undefined;
-      obj.user = user ? user : undefined;
+      obj.user = user || undefined;
 
       console.log("obj: ", obj);
 
@@ -55,13 +55,16 @@ class SearchResultScreen extends Component {
       console.log("error in try catch location: ", err);
     }
   }
+  val = { page: 1, rows: 4 };
 
   _displayJobStatus = item => {
-      if (
-        item.employer &&
-        this.state.user &&
-        item.employer.id === this.state.user.id) {
-        return <Button
+    if (
+      item.employer &&
+      this.state.user &&
+      item.employer.id === this.state.user.id
+    ) {
+      return (
+        <Button
           style={{
             backgroundColor: "#097c28",
             borderRadius: 8
@@ -71,9 +74,16 @@ class SearchResultScreen extends Component {
         >
           <Text style={{ color: "white" }}>My Job</Text>
         </Button>
-      } else {
-        const appliedJob = item.applyjobSet && item.applyjobSet.length ? item.applyjobSet.find(eachjobSet => eachjobSet.employee.id === this.state.user.id) : null;
-        return appliedJob ? <Button
+      );
+    }
+    const appliedJob =
+      item.applyjobSet && item.applyjobSet.length
+        ? item.applyjobSet.find(
+            eachjobSet => eachjobSet.employee.id === this.state.user.id
+          )
+        : null;
+    return appliedJob ? (
+      <Button
         style={{
           backgroundColor: "blue",
           borderRadius: 8
@@ -82,10 +92,9 @@ class SearchResultScreen extends Component {
         small
       >
         <Text style={{ color: "white" }}>{appliedJob.status}</Text>
-      </Button> : null
-
-      }
-  }
+      </Button>
+    ) : null;
+  };
 
   render() {
     const query = this.props.navigation.getParam("query", undefined);
@@ -93,6 +102,7 @@ class SearchResultScreen extends Component {
 
     return !this.state.queryDisable ? (
       <View>
+        <StatusBar barStyle="light-content" backgroundColor="#ecf0f1" />
         <Query
           query={JOBS_QUERY}
           variables={{
@@ -117,10 +127,6 @@ class SearchResultScreen extends Component {
             // This loading will re-render entire page
             // But we don't want that on Infinite-Scroll page
             // So it is checked below
-            {
-              /* if (loading)
-              return <ActivityIndicator size="large" color="#ff6347" />; */
-            }
 
             if (error) {
               console.log("error search job: ", JSON.stringify(error));
@@ -160,38 +166,37 @@ class SearchResultScreen extends Component {
                       }
                     }}
                     onEndReachedThreshold={0.1}
-                    renderItem={({ item }) => {
-                      return (
-                        <TouchableOpacity
-                          onPress={() =>
-                            this.props.navigation.navigate("searchDetail", {
-                              item
-                            })
-                          }
-                          key={item.id}
-                        >
-                          <Card>
-                            <Text>Id: {item.id}</Text>
-                            <Text>Name: {item.name}</Text>
-                            <Text>Description {item.description}</Text>
-                            {this._displayJobStatus(item)}
-                          </Card>
-                        </TouchableOpacity>
-                      );
-                    }}
+                    renderItem={({ item }) => (
+                      <TouchableOpacity
+                        onPress={() =>
+                          this.props.navigation.navigate("searchDetail", {
+                            item
+                          })
+                        }
+                        key={item.id}
+                      >
+                        <Card>
+                          <Text>Id: {item.id}</Text>
+                          <Text>Name: {item.name}</Text>
+                          <Text>Description {item.description}</Text>
+                          {this._displayJobStatus(item)}
+                        </Card>
+                      </TouchableOpacity>
+                    )}
                   />
                 </View>
               );
-            } else {
-              if (loading)
-                return <ActivityIndicator size="large" color="#ff6347" />;
-
-              return (
-                <View>
-                  <Text>No Data Found</Text>
-                </View>
-              );
             }
+            if (loading) {
+              return <ActivityIndicator size="large" color="#ff6347" />;
+            }
+            return (
+              <View>
+                <StatusBar barStyle="light-content" backgroundColor="#ecf0f1" />
+                <Text>No Data Found</Text>
+                <Text>j hps </Text>
+              </View>
+            );
           }}
         </Query>
       </View>

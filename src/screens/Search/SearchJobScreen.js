@@ -29,7 +29,6 @@ export default class SearchJobScreen extends Component {
   state = {
     dialogShow: false,
     proximity: 0,
-
     query: ""
   };
 
@@ -37,7 +36,6 @@ export default class SearchJobScreen extends Component {
     this.setState({
       dialogShow: false,
       proximity: 0,
-
       query: ""
     });
   }
