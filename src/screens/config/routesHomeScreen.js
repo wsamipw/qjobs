@@ -15,8 +15,8 @@ import {
   SearchJobScreen,
   SearchDetailScreen,
   UserDetailScreen,
-  ProfileScreen,
-  ProfileDetailScreen,
+  JobsScreen,
+  JobsDetailScreen,
   MyJobsScreen,
   AppliedJobsScreen,
   SearchResultScreen,
@@ -33,11 +33,12 @@ import {
   ApplyJob,
   More
 } from "..";
+import { ACCENT_COLOR } from "../../config/CONSTANTS";
 
-const ProfileStack = createStackNavigator(
+const JobsStack = createStackNavigator(
   {
-    profile: ProfileScreen,
-    profileDetail: ProfileDetailScreen,
+    jobs: JobsScreen,
+    jobsDetail: JobsDetailScreen,
 
     searchDetail: SearchDetailScreen,
 
@@ -55,7 +56,7 @@ const ProfileStack = createStackNavigator(
     postJob41: PostJobScreen41
   },
   {
-    initialRouteName: "profile"
+    initialRouteName: "jobs"
     // navigationOptions: {
     //   headerStyle: {
     //     backgroundColor: "#5968ef"
@@ -64,7 +65,7 @@ const ProfileStack = createStackNavigator(
   }
 );
 
-ProfileStack.navigationOptions = {
+JobsStack.navigationOptions = {
   headerStyle: {
     backgroundColor: "#5968ef"
   }
@@ -103,7 +104,7 @@ const MoreStack = createStackNavigator(
 
 export default createBottomTabNavigator(
   {
-    Profile: ProfileStack,
+    Jobs: JobsStack,
     Search: SearchStack,
     More: MoreStack
   },
@@ -114,8 +115,8 @@ export default createBottomTabNavigator(
       tabBarIcon: ({ focused, horizontal, tintColor }) => {
         const { routeName } = navigation.state;
         let iconName;
-        if (routeName === "Profile") {
-          iconName = `user-o`;
+        if (routeName === "Jobs") {
+          iconName = `briefcase`;
           return (
             <FontAwesome
               name={iconName}
@@ -156,7 +157,7 @@ export default createBottomTabNavigator(
     }),
 
     tabBarOptions: {
-      activeTintColor: "tomato",
+      activeTintColor: ACCENT_COLOR,
       inactiveTintColor: "gray"
     }
   }

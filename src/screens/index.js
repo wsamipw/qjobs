@@ -4,11 +4,11 @@ import HomeScreen from "./HomeScreen";
 
 import UserDetailScreen from "./MoreStack/UserDetailScreen";
 
-// Profile Related Screens
-import ProfileScreen from "./Profile/ProfileScreen";
-import ProfileDetailScreen from "./Profile/ProfileDetailScreen";
-import AppliedJobsScreen from "./Profile/AppliedJobsScreen";
-import MyJobsScreen from "./Profile/MyJobsScreen";
+// Jobs Related Screens
+import JobsScreen from "./Jobs/JobsScreen";
+import JobsDetailScreen from "./Jobs/JobsDetailScreen";
+import AppliedJobsScreen from "./Jobs/AppliedJobsScreen";
+import MyJobsScreen from "./Jobs/MyJobsScreen";
 
 // Search Related Screens
 import SearchJobScreen from "./Search/SearchJobScreen";
@@ -57,8 +57,8 @@ export {
   LoginScreen,
   RegisterScreen,
   HomeScreen,
-  ProfileScreen,
-  ProfileDetailScreen,
+  JobsScreen,
+  JobsDetailScreen,
   MyJobsScreen,
   AppliedJobsScreen,
   UserDetailScreen,

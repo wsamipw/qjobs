@@ -22,7 +22,7 @@
 // import { JOBS_QUERY } from "../../config/queries";
 // import { Content } from "native-base";
 
-// class ProfileScreen extends Component {
+// class JobsScreen extends Component {
 //   state = {
 //     page: 1,
 //     rows: 5
@@ -176,4 +176,4 @@
 //   return { ...myNavigationReducer };
 // };
 
-// export default connect(mapStateToProps)(ProfileScreen);
+// export default connect(mapStateToProps)(JobsScreen);

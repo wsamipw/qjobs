@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { StyleSheet, Text } from "react-native";
 import { Container, Content, Button } from "native-base";
 
-export default class ProfileDetailScreen extends Component {
+export default class JobsDetailScreen extends Component {
   render() {
     return (
       <Container>

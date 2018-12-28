@@ -22,7 +22,7 @@ import { Query, compose, withApollo, graphql } from "react-apollo";
 import { PostJobStack } from "../../config/routes";
 import { JOBS_QUERY } from "../../config/queries";
 
-class ProfileScreen extends Component {
+class JobsScreen extends Component {
   state = {
     page: 1,
     rows: 5,
@@ -178,4 +178,4 @@ export default compose(
       fetchPolicy: "no-cache"
     })
   })
-)(ProfileScreen);
+)(JobsScreen);

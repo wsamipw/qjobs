@@ -122,7 +122,7 @@ class PostJobScreen6 extends Component {
 
             if (status === 200 && msg === "success") {
               console.log("success: ", response);
-              this.props.navigation.navigate("Profile");
+              this.props.navigation.navigate("jobs");
             } else {
               console.log("error: ", response);
             } */
@@ -145,7 +145,7 @@ class PostJobScreen6 extends Component {
                   this.props.deleteMultiplePostJobScreensState();
 
                   this.Default_Toast_Bottom();
-                  this.props.navigation.navigate("profile");
+                  this.props.navigation.navigate("jobs");
                 } else throw new Error(response);
               })
               .catch(error => {

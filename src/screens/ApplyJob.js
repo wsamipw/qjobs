@@ -89,14 +89,13 @@ class SearchDetailScreen extends Component {
                       value={eachExtraQuestion.answer}
                       onChangeText={val =>
                         this.setState({
-                          extraQuestion: this.state.extraQuestion.map(
-                            each =>
-                              each.question === eachExtraQuestion.question
-                                ? {
-                                    ...each,
-                                    answer: val
-                                  }
-                                : each
+                          extraQuestion: this.state.extraQuestion.map(each =>
+                            each.question === eachExtraQuestion.question
+                              ? {
+                                  ...each,
+                                  answer: val
+                                }
+                              : each
                           )
                         })
                       }
@@ -138,7 +137,7 @@ class SearchDetailScreen extends Component {
                 ) {
                   console.log("success apply job: ");
                   this.Default_Toast_Bottom();
-                  this.props.navigation.navigate("profile");
+                  this.props.navigation.navigate("jobs");
                 } else throw new Error(response);
               })
               .catch(error => {

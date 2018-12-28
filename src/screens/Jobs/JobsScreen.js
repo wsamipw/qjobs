@@ -34,7 +34,7 @@ const IoniconsHeaderButton = passMeFurther => (
   />
 );
 
-class ProfileScreen extends Component {
+class JobsScreen extends Component {
   /* Below navigationOptions need not be called or passed
    * It is static and automatically used by react-navigation
    * For details refer: https://reactnavigation.org/docs/en/headers.html
@@ -163,4 +163,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default ProfileScreen;
+export default JobsScreen;
