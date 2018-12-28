@@ -1,14 +1,13 @@
 import React, { Component } from "react";
 import {
   StyleSheet,
-  Text,
   View,
   Dimensions,
   FlatList,
-  TouchableOpacity,
-  ScrollView
+  ScrollView,
+  StatusBar
 } from "react-native";
-import { Button } from "native-base";
+import { Button, Accordion, ListItem, Text } from "native-base";
 import { Card } from "react-native-elements";
 import { compose, graphql } from "react-apollo";
 
@@ -37,8 +36,19 @@ import {
 import { MY_JOBS_QUERY, APPLIED_JOBS_QUERY } from "../../config/queries";
 
 class SearchDetailScreen extends Component {
-  // To disable the default header
-  // static navigationOptions = { header: null };
+  static navigationOptions = ({ navigation }) => {
+    return {
+      title: `${navigation.state.params.item.name ||
+        navigation.state.params.item.job.name}`,
+      headerStyle: {
+        backgroundColor: "#5968ef"
+      },
+      headerTintColor: "#fff",
+      headerTitleStyle: {
+        fontWeight: "bold"
+      }
+    };
+  };
 
   state = {
     // LoggedIn user id
@@ -60,11 +70,14 @@ class SearchDetailScreen extends Component {
       return <Icon name="md-checkmark-circle" size={30} color="#00FF00" />;
     } else if (item.status === APPLIED) {
       return (
-        <View>
+        <View style={styles.renderCheckmarksWrapper}>
           <Icon
             name="md-close-circle"
             size={30}
             color="#FF0000"
+            style={{
+              marginRight: 10
+            }}
             onPress={() => {
               this.props
                 .selectApplyjob(item.id, false)
@@ -109,8 +122,8 @@ class SearchDetailScreen extends Component {
       );
     } else if (item.status === REJECTED) {
       return (
-        <Button style={{ backgroundColor: "red" }} round small>
-          <Text style={{ color: "white" }}>REJECTED</Text>
+        <Button danger round small style={styles.statusBtnStyles}>
+          <Text>REJECTED</Text>
         </Button>
       );
     } else if (item.status === CONFIRMED) {
@@ -123,6 +136,7 @@ class SearchDetailScreen extends Component {
 
           <Button
             block
+            success
             onPress={() => {
               this.props
                 .completeApplyjob(item.id, true, 10.0)
@@ -141,11 +155,14 @@ class SearchDetailScreen extends Component {
                 });
             }}
           >
-            <Text style={{ color: "white" }}>COMPLETE</Text>
+            <Text>COMPLETE</Text>
           </Button>
           <Button
-            style={{ backgroundColor: "red" }}
             block
+            danger
+            style={{
+              marginVertical: 5
+            }}
             onPress={() => {
               this.props
                 .completeApplyjob(item.id, false, 10.0)
@@ -164,34 +181,20 @@ class SearchDetailScreen extends Component {
                 });
             }}
           >
-            <Text style={{ color: "white" }}>CANCEL</Text>
+            <Text>CANCEL</Text>
           </Button>
         </View>
       );
     } else if (item.status === COMPLETED) {
       return (
-        <Button
-          round
-          small
-          style={{
-            backgroundColor: "green",
-            borderRadius: 8
-          }}
-        >
-          <Text style={{ color: "white" }}> COMPLETED</Text>
+        <Button round small success style={styles.statusBtnStyles}>
+          <Text> COMPLETED</Text>
         </Button>
       );
     } else if (item.status === UNCOMPLETED) {
       return (
-        <Button
-          round
-          small
-          style={{
-            backgroundColor: "red",
-            borderRadius: 8
-          }}
-        >
-          <Text style={{ color: "white" }}> UNCOMPLETED</Text>
+        <Button round small danger style={styles.statusBtnStyles}>
+          <Text> UNCOMPLETED</Text>
         </Button>
       );
     }
@@ -204,17 +207,16 @@ class SearchDetailScreen extends Component {
         <View>
           <Button
             round
-            small
-            style={{
-              backgroundColor: "#097c28",
-              borderRadius: 8
-            }}
+            block
+            primary
+            styles={styles.statusBtnStylesAppliedJobs}
           >
-            <Text style={{ color: "white" }}> ACCEPTED</Text>
+            <Text> ACCEPTED</Text>
           </Button>
-          <View style={{ height: 10 }} />
           <Button
             block
+            success
+            styles={styles.statusBtnStylesAppliedJobs}
             onPress={() => {
               this.props
                 .confirmApplyjob(item.id, true)
@@ -233,11 +235,12 @@ class SearchDetailScreen extends Component {
                 });
             }}
           >
-            <Text style={{ color: "white" }}>CONFIRM</Text>
+            <Text>CONFIRM</Text>
           </Button>
           <Button
             block
-            style={{ backgroundColor: "red" }}
+            danger
+            styles={styles.statusBtnStylesAppliedJobs}
             onPress={() => {
               this.props
                 .confirmApplyjob(item.id, false)
@@ -256,86 +259,44 @@ class SearchDetailScreen extends Component {
                 });
             }}
           >
-            <Text style={{ color: "white" }}>REVOKE</Text>
+            <Text>REVOKE</Text>
           </Button>
         </View>
       );
     } else if (item.status === REJECTED) {
       return (
-        <Button
-          round
-          small
-          style={{
-            backgroundColor: "red",
-            borderRadius: 8
-          }}
-        >
-          <Text style={{ color: "white" }}> REJECTED</Text>
+        <Button round block danger style={styles.statusBtnStylesAppliedJobs}>
+          <Text> REJECTED</Text>
         </Button>
       );
     } else if (item.status === APPLIED) {
       return (
-        <Button
-          round
-          small
-          style={{
-            backgroundColor: "#f4f442",
-            borderRadius: 8
-          }}
-        >
-          <Text style={{ color: "blue" }}>APPLIED</Text>
+        <Button round block primary style={styles.statusBtnStylesAppliedJobs}>
+          <Text>APPLIED</Text>
         </Button>
       );
     } else if (item.status === CONFIRMED) {
       return (
-        <Button
-          round
-          small
-          style={{
-            backgroundColor: "#f4f442",
-            borderRadius: 8
-          }}
-        >
-          <Text style={{ color: "blue" }}>CONFIRMED</Text>
+        <Button round block primary style={styles.statusBtnStylesAppliedJobs}>
+          <Text>CONFIRMED</Text>
         </Button>
       );
     } else if (item.status === REVOKED) {
       return (
-        <Button
-          round
-          small
-          style={{
-            backgroundColor: "#f4f442",
-            borderRadius: 8
-          }}
-        >
-          <Text style={{ color: "blue" }}>REVOKED</Text>
+        <Button round block info style={styles.statusBtnStylesAppliedJobs}>
+          <Text>REVOKED</Text>
         </Button>
       );
     } else if (item.status === TIMEOUT) {
       return (
-        <Button
-          round
-          small
-          style={{
-            backgroundColor: "#f4f442",
-            borderRadius: 8
-          }}
-        >
-          <Text style={{ color: "blue" }}>TIMEOUT</Text>
+        <Button round block warning style={styles.statusBtnStylesAppliedJobs}>
+          <Text>TIMEOUT</Text>
         </Button>
       );
     } else if (item.status === COMPLETED) {
       return (
-        <Button
-          round
-          small
-          style={{
-            backgroundColor: "#f4f442",
-            borderRadius: 8
-          }}
-        >
-          <Text style={{ color: "blue" }}>COMPLETED</Text>
+        <Button round block success style={styles.statusBtnStylesAppliedJobs}>
+          <Text>COMPLETED</Text>
         </Button>
       );
     }
@@ -344,8 +305,6 @@ class SearchDetailScreen extends Component {
   render() {
     const eachItem = this.props.navigation.getParam("item", null);
     const key = this.props.navigation.getParam("key", null);
-    console.log('eachItem, ", ', eachItem);
-    console.log('key, ", ', key);
 
     // Checks whether the job creater and applier are same
     // Also checks if the status is set i.e if status is set
@@ -367,103 +326,129 @@ class SearchDetailScreen extends Component {
         )
       : false);
 
+    const dataArray = [
+      { title: "First Element", content: "Lorem ipsum dolor sit amet" },
+      { title: "Second Element", content: "Lorem ipsum dolor sit amet" },
+      { title: "Third Element", content: "Lorem ipsum dolor sit amet" }
+    ];
+
     return eachItem ? (
-      <View style={{ height: 500 }}>
-        <Text>Id: {eachItem.id}</Text>
-        <Text>Name: {eachItem.name}</Text>
-        <Text>Description: {eachItem.description}</Text>
-
-        {eachItem.extraQuestion && eachItem.extraQuestion.length ? (
-          <View>
-            <Text style={{ fontWeight: "bold" }}>Extra Questions</Text>
-
-            {eachItem.extraQuestion.map((eachExtraQuestion, index) => {
-              return (
-                <View key={index}>
-                  <Text style={{ fontWeight: "200" }}>{eachExtraQuestion}</Text>
-                </View>
-              );
-            })}
-          </View>
-        ) : null}
-
-        {condition1 &&
-          condition2 && (
-            <Button
-              rounded
-              block
-              onPress={() =>
-                this.props.navigation.navigate("applyJob", { item: eachItem })
-              }
-            >
-              <Text>Apply Job</Text>
-            </Button>
+      <ScrollView scrollEnabled>
+        <View style={styles.mainWrapper}>
+          <StatusBar barStyle="light-content" backgroundColor="#ecf0f1" />
+          <Card>
+            {/* <Text>Name: {eachItem.name}</Text> */}
+            <Text style={styles.headingTextStyles}>Description</Text>
+            <Text>{eachItem.description}</Text>
+          </Card>
+          {eachItem.extraQuestion && eachItem.extraQuestion.length > 0 && (
+            <Card>
+              <Text style={styles.headingTextStyles}>Extra Questions</Text>
+              {eachItem.extraQuestion.map((eachExtraQuestion, index, arr) => {
+                return (
+                  <ListItem
+                    key={index}
+                    first={index === 0}
+                    last={index === arr.length - 1}
+                  >
+                    <Text>{eachExtraQuestion}</Text>
+                  </ListItem>
+                );
+              })}
+            </Card>
           )}
 
-        {this.renderStatus(eachItem)}
-
-        {/* Used when it came from My Jobs */}
-        {key === "myJobs" &&
-        eachItem.applyjobSet &&
-        eachItem.applyjobSet.length ? (
-          <ScrollView scrollEnabled>
-            <Text style={{ fontWeight: "bold" }}>Applications</Text>
-
-            <FlatList
-              data={eachItem.applyjobSet}
-              keyExtractor={eachItem => eachItem.id}
-              renderItem={({ item }) => {
-                return (
-                  <View key={item.id}>
-                    <Card>
-                      <Text style={{ fontWeight: "100" }}>
-                        Name:
-                        {item.employee &&
-                          `${item.employee.firstName} ${
-                            item.employee.lastName
-                          }`}
-                      </Text>
-                      <Text>Email: {item.employee && item.employee.email}</Text>
-                      <Text>Hourly Rate: {item.hourlyRate}</Text>
-
-                      {this.renderCheckmarks(item)}
-                    </Card>
-                  </View>
-                );
+          {condition1 && condition2 && (
+            <View
+              style={{
+                marginTop: 10,
+                marginHorizontal: Dimensions.get("screen").width * 0.05
               }}
-            />
-          </ScrollView>
-        ) : null}
-      </View>
+            >
+              <Button
+                rounded
+                block
+                onPress={() =>
+                  this.props.navigation.navigate("applyJob", { item: eachItem })
+                }
+              >
+                <Text>Apply</Text>
+              </Button>
+            </View>
+          )}
+
+          {this.renderStatus(eachItem)}
+          {/* Used when it came from My Jobs */}
+          {key === "myJobs" &&
+          eachItem.applyjobSet &&
+          eachItem.applyjobSet.length ? (
+            <View>
+              <View
+                style={{
+                  marginTop: 10,
+                  marginHorizontal: Dimensions.get("screen").width * 0.05
+                }}
+              >
+                <Text style={styles.headingTextStyles}>Applications</Text>
+              </View>
+              <FlatList
+                data={eachItem.applyjobSet}
+                keyExtractor={eachItem => eachItem.id}
+                renderItem={({ item }) => {
+                  return (
+                    <View key={item.id}>
+                      <Card>
+                        <Text style={{ fontWeight: "100" }}>
+                          Name:
+                          {item.employee &&
+                            `${item.employee.firstName} ${
+                              item.employee.lastName
+                            }`}
+                        </Text>
+                        <Text>
+                          Email: {item.employee && item.employee.email}
+                        </Text>
+                        <Text>Hourly Rate: {item.hourlyRate}</Text>
+
+                        {this.renderCheckmarks(item)}
+                      </Card>
+                    </View>
+                  );
+                }}
+              />
+            </View>
+          ) : null}
+        </View>
+      </ScrollView>
     ) : null;
   }
 }
 
 const styles = StyleSheet.create({
-  contentStyle: {
-    flex: 1,
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    alignItems: "center"
-  },
   mainWrapper: {
     flex: 1,
-    marginTop: Dimensions.get("window").height * 0.1,
-    width: Dimensions.get("screen").width * 0.8,
-    flexDirection: "column",
+    marginBottom: 10
+    // marginTop: Dimensions.get("window").height * 0.05,
+    // marginLeft: Dimensions.get("screen").width * 0.05,
+    // marginRight: Dimensions.get("screen").width * 0.05
+  },
+  headingTextStyles: {
+    fontWeight: "bold",
+    fontSize: 20,
+    marginBottom: 8
+  },
+  renderCheckmarksWrapper: {
+    flex: 1,
+    flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center"
   },
-  logo: {
-    height: 80,
-    width: 80,
-    resizeMode: "contain",
-    marginBottom: 26
+  statusBtnStyles: {
+    marginVertical: 6
   },
-  inputStyles: {
-    paddingLeft: 15,
-    flex: 1
-    // borderRadius: 50
+  statusBtnStylesAppliedJobs: {
+    marginVertical: 6,
+    marginHorizontal: Dimensions.get("screen").width * 0.04
   }
 });
 

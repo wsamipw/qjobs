@@ -1,29 +1,14 @@
 import React, { Component } from "react";
-import {
-  Image,
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  ActivityIndicator
-} from "react-native";
-
-import { Card } from "react-native-elements";
-
-import Icon from "react-native-vector-icons/Ionicons";
+import { View, FlatList, ActivityIndicator } from "react-native";
 
 import { Query } from "react-apollo";
-
+import moment from "moment";
 import { MY_JOBS_QUERY } from "../../config/queries";
+import { ListItem, Right, Body, Text, Icon } from "native-base";
 
 class MyJobScreen extends Component {
   _renderItem = ({ item }) => (
-    <TouchableOpacity
-      key={item.id}
-      style={{
-        flex: 1,
-        flexDirection: "row"
-      }}
+    <ListItem
       onPress={() => {
         this.props.route.navigation.navigate("searchDetail", {
           item,
@@ -31,24 +16,21 @@ class MyJobScreen extends Component {
         });
       }}
     >
-      <Image
-        style={{ width: 50, height: 50, margin: 5 }}
-        source={require("../../static/img/user.png")}
-      />
-      <View style={{ flex: 1, justifyContent: "center", marginLeft: 5 }}>
-        <Text style={{ fontSize: 16, color: "#ff6347" }}>
+      <Body>
+        <Text
+          style={{
+            fontWeight: "bold"
+          }}
+        >
           {item.jobTitle && item.jobTitle.name}
         </Text>
-        <Text>{`${item.employer.firstName} ${item.employer.lastName}`}</Text>
-        <Text style={{ color: "#00ACD8" }}>
-          Deadline: {item.hireBy.split("T")[0]}
-        </Text>
-      </View>
-    </TouchableOpacity>
-  );
-
-  _renderSeparator = () => (
-    <View style={{ height: 1, width: "100%", backgroundColor: "#b0b7b6" }} />
+        <Text note> Deadline: {moment(item.hireBy).fromNow()}</Text>
+      </Body>
+      <Right>
+        <Text note>Applicant: {item.applyJobCount}</Text>
+        <Icon active name="arrow-forward" />
+      </Right>
+    </ListItem>
   );
 
   render() {
@@ -99,7 +81,6 @@ class MyJobScreen extends Component {
                     );
                   }} */
                     renderItem={this._renderItem}
-                    ItemSeparatorComponent={this._renderSeparator}
                   />
                 </View>
               );

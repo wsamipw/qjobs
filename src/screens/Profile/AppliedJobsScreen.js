@@ -1,29 +1,15 @@
 import React, { Component } from "react";
-import {
-  Image,
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  ActivityIndicator
-} from "react-native";
-
-import { Card } from "react-native-elements";
-
+import { View, FlatList, ActivityIndicator } from "react-native";
 import { Query } from "react-apollo";
-
+import moment from "moment";
+import { ListItem, Right, Body, Text, Icon } from "native-base";
 import { APPLIED_JOBS_QUERY } from "../../config/queries";
 
 class AppliedJobsScreen extends Component {
   val = { page: 1, rows: 4 };
 
   _renderItem = ({ item }) => (
-    <TouchableOpacity
-      key={item.id}
-      style={{
-        flex: 1,
-        flexDirection: "row"
-      }}
+    <ListItem
       onPress={() => {
         this.props.route.navigation.navigate("searchDetail", {
           item,
@@ -31,24 +17,24 @@ class AppliedJobsScreen extends Component {
         });
       }}
     >
-      <Image
-        style={{ width: 50, height: 50, margin: 5 }}
-        source={require("../../static/img/user.png")}
-      />
-      <View style={{ flex: 1, justifyContent: "center", marginLeft: 5 }}>
-        <Text style={{ fontSize: 16, color: "#ff6347" }}>
+      <Body>
+        <Text
+          style={{
+            fontWeight: "bold"
+          }}
+        >
           {item.job && item.job.name}
         </Text>
-        <Text style={{ color: "grey" }}>
-          {item.job && item.job.employer && item.job.employer.username}
+        <Text note>
+          By: {item.job && item.job.employer && item.job.employer.username}
         </Text>
-        <Text style={{ color: "#00ACD8" }}>Hourly Rate: {item.hourlyRate}</Text>
-      </View>
-    </TouchableOpacity>
-  );
-
-  _renderSeparator = () => (
-    <View style={{ height: 1, width: "100%", backgroundColor: "#b0b7b6" }} />
+        <Text note> Deadline: {moment(item.job.hireBy).fromNow()}</Text>
+      </Body>
+      <Right>
+        <Text note>Rate: {item.hourlyRate}</Text>
+        <Icon active name="arrow-forward" />
+      </Right>
+    </ListItem>
   );
 
   render() {
@@ -106,7 +92,6 @@ class AppliedJobsScreen extends Component {
                     }}
                     onEndReachedThreshold={0.1}
                     renderItem={this._renderItem}
-                    ItemSeparatorComponent={this._renderSeparator}
                   />
                 </View>
               );

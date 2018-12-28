@@ -4,6 +4,7 @@ export const MY_JOBS_QUERY = gql`
   query MyJobsQuery {
     me {
       jobSet {
+        applyJobCount
         id
         name
         jobTitle {
@@ -60,6 +61,7 @@ export const APPLIED_JOBS_QUERY = gql`
       data {
         id
         job {
+          hireBy
           id
           name
           description
@@ -132,6 +134,7 @@ export const JOBS_QUERY = gql`
             username
           }
         }
+        applyJobCount
       }
 
       page

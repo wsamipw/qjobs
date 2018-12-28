@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Image, StyleSheet } from "react-native";
+import { View, Image, StyleSheet, StatusBar } from "react-native";
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
 
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -11,10 +11,14 @@ import HeaderButtons, {
 
 import ActionButton from "react-native-action-button";
 
-import { Button } from "react-native-elements";
+import { Header, Body } from "native-base";
 
 import { _removeData } from "../../config/utils";
-import { JWT_AUTH_TOKEN } from "../../config/CONSTANTS";
+import {
+  JWT_AUTH_TOKEN,
+  ACCENT_COLOR,
+  PRIMARY_COLOR
+} from "../../config/CONSTANTS";
 import MyJobsScreen from "./MyJobsScreen";
 import AppliedJobsScreen from "./AppliedJobsScreen";
 
@@ -40,11 +44,26 @@ class ProfileScreen extends Component {
       // `headerLeft` needed to align `headerTitle` exactly at center
       //headerLeft: <View />,
       headerStyle: {
-        backgroundColor: "#5968ef"
+        backgroundColor: "#5968ef",
+        shadowOpacity: 0,
+        shadowOffset: {
+          height: 0
+        },
+        shadowRadius: 0,
+        elevation: 0
+      },
+      headerTintColor: "#fff",
+      headerTitleStyle: {
+        fontWeight: "bold"
       },
       headerTitle: (
         <View
-          style={{ flex: 1, flexDirection: "row", justifyContent: "center" }}
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            justifyContent: "center",
+            marginTop: 15
+          }}
         >
           <Image
             source={require("../../static/img/logoIconMin.png")}
@@ -101,6 +120,7 @@ class ProfileScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor="#ecf0f1" />
         <TabView
           navigationState={this.state}
           onIndexChange={index => this.setState({ index })}
@@ -111,15 +131,15 @@ class ProfileScreen extends Component {
           renderTabBar={props => (
             <TabBar
               {...props}
-              indicatorStyle={{ backgroundColor: "pink" }}
-              style={{ backgroundColor: "#1abc9c" }}
+              indicatorStyle={{ backgroundColor: "white" }}
+              style={{ backgroundColor: "#5968ef" }}
             />
           )}
         />
 
-        <ActionButton buttonColor="#ef3ea2">
+        <ActionButton buttonColor={ACCENT_COLOR}>
           <ActionButton.Item
-            buttonColor="#1abc9c"
+            buttonColor={PRIMARY_COLOR}
             title="Create Job"
             onPress={() => this.props.navigation.navigate("postJob1")}
           >

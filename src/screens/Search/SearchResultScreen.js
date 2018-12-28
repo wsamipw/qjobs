@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import {
   StyleSheet,
-  Text,
   View,
   Dimensions,
   FlatList,
@@ -9,32 +8,39 @@ import {
   StatusBar,
   ActivityIndicator
 } from "react-native";
-import { Button, Icon } from "native-base";
 
-import { Card } from "react-native-elements";
+import { Button, Icon, Text } from "native-base";
 
+import { Card, Divider } from "react-native-elements";
+import moment from "moment";
 import { Query } from "react-apollo";
 
 import { JOBS_QUERY } from "../../config/queries";
 import { _retrieveData } from "../../config/utils";
-import { LOCATION, USER_DATA } from "../../config/CONSTANTS";
+import {
+  LOCATION,
+  USER_DATA,
+  MAX_SHORT_DESCRIPTION_CHARACTER
+} from "../../config/CONSTANTS";
 
 class SearchResultScreen extends Component {
-  static navigationOptions = {
-    title: "Search Result",
-    headerStyle: {
-      backgroundColor: "#5968ef"
-    },
-    headerTintColor: "#fff",
-    headerTitleStyle: {
-      fontWeight: "bold"
-    }
+  static navigationOptions = ({ navigation }) => {
+    return {
+      title: `Search Results for ${navigation.state.params.query}`,
+      headerStyle: {
+        backgroundColor: "#5968ef"
+      },
+      headerTintColor: "#fff",
+      headerTitleStyle: {
+        fontWeight: "bold"
+      }
+    };
   };
 
   state = {
     location: null,
     queryDisable: true,
-
+    title: "",
     // LoggedIn user
     user: null
   };
@@ -48,9 +54,15 @@ class SearchResultScreen extends Component {
       obj.location = location ? JSON.parse(location) : undefined;
       obj.user = user || undefined;
 
-      console.log("obj: ", obj);
-
-      this.setState({ ...obj, queryDisable: false });
+      // console.log("obj: ", obj);
+      // this.props.navigation.setParams({
+      //   myTitle: "j hos"
+      // });
+      this.setState({
+        ...obj,
+        queryDisable: false
+        // title: this.props.navigation.getParam("query", undefined)
+      });
     } catch (err) {
       console.log("error in try catch location: ", err);
     }
@@ -64,15 +76,8 @@ class SearchResultScreen extends Component {
       item.employer.id === this.state.user.id
     ) {
       return (
-        <Button
-          style={{
-            backgroundColor: "#097c28",
-            borderRadius: 8
-          }}
-          round
-          small
-        >
-          <Text style={{ color: "white" }}>My Job</Text>
+        <Button rounded small success style={styles.jobStatusBtnStyle}>
+          <Text>My Job</Text>
         </Button>
       );
     }
@@ -83,23 +88,16 @@ class SearchResultScreen extends Component {
           )
         : null;
     return appliedJob ? (
-      <Button
-        style={{
-          backgroundColor: "blue",
-          borderRadius: 8
-        }}
-        round
-        small
-      >
-        <Text style={{ color: "white" }}>{appliedJob.status}</Text>
+      <Button rounded small primary style={styles.jobStatusBtnStyle}>
+        <Text>{appliedJob.status}</Text>
       </Button>
     ) : null;
   };
 
   render() {
     const query = this.props.navigation.getParam("query", undefined);
-    console.log("this ttate: ", this.state);
-
+    // console.log("navigation params::", this.props.navigation);
+    // console.log("state::", this.state);
     return !this.state.queryDisable ? (
       <View>
         <StatusBar barStyle="light-content" backgroundColor="#ecf0f1" />
@@ -134,16 +132,21 @@ class SearchResultScreen extends Component {
             }
 
             if (data && data.jobs && data.jobs.data.length) {
+              console.log("data::", data.jobs.data);
               return (
-                <View>
+                <View
+                  style={{
+                    marginBottom: 16
+                  }}
+                >
                   <FlatList
                     data={data.jobs.data}
                     keyExtractor={item => item.id}
                     onEndReached={() => {
                       this.val.page += 1;
-                      console.log("val: ", this.val);
-                      console.log("pages: ", data.jobs.pages);
-                      console.log("data length: ", data.jobs.data.length);
+                      // console.log("val: ", this.val);
+                      // console.log("pages: ", data.jobs.pages);
+                      // console.log("data length: ", data.jobs.data.length);
                       if (data.jobs.data.length < data.jobs.rowCount) {
                         fetchMore({
                           variables: {
@@ -176,10 +179,32 @@ class SearchResultScreen extends Component {
                         key={item.id}
                       >
                         <Card>
-                          <Text>Id: {item.id}</Text>
-                          <Text>Name: {item.name}</Text>
-                          <Text>Description {item.description}</Text>
+                          <Text style={styles.jobSearchName}>{item.name}</Text>
+                          <Text style={styles.jobSearchDescription}>
+                            {item.description.slice(
+                              0,
+                              MAX_SHORT_DESCRIPTION_CHARACTER
+                            )}
+                            {item.description.length >
+                              MAX_SHORT_DESCRIPTION_CHARACTER && "..."}
+                          </Text>
                           {this._displayJobStatus(item)}
+                          <Divider
+                            style={{
+                              marginVertical: 8
+                            }}
+                          />
+                          <View style={styles.searchMetaStyles}>
+                            <Text style={styles.searchMetaTextStyles}>
+                              Applicant: {item.applyJobCount}
+                            </Text>
+                            <Text style={styles.searchMetaTextDividerStyles}>
+                              |
+                            </Text>
+                            <Text style={styles.searchMetaTextStyles}>
+                              Deadline: {moment(item.hireBy).fromNow()}
+                            </Text>
+                          </View>
                         </Card>
                       </TouchableOpacity>
                     )}
@@ -193,8 +218,16 @@ class SearchResultScreen extends Component {
             return (
               <View>
                 <StatusBar barStyle="light-content" backgroundColor="#ecf0f1" />
-                <Text>No Data Found</Text>
-                <Text>j hps </Text>
+                <View style={styles.noDataViewStyle}>
+                  <Icon
+                    type="MaterialIcons"
+                    name="cloud-off"
+                    style={{ fontSize: 50 }}
+                  />
+                  <Text>
+                    No results for {this.props.navigation.state.params.query}
+                  </Text>
+                </View>
               </View>
             );
           }}
@@ -207,30 +240,40 @@ class SearchResultScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-  contentStyle: {
+  noDataViewStyle: {
     flex: 1,
+    marginTop: 100,
     flexDirection: "column",
-    justifyContent: "flex-start",
+    justifyContent: "center",
     alignItems: "center"
   },
-  mainWrapper: {
+  jobSearchName: {
+    fontWeight: "bold",
+    fontSize: 24,
+    marginBottom: 8
+  },
+  jobSearchDescription: {
+    fontSize: 12,
+    color: "rgba(0,0,0,0.6)"
+  },
+  searchMetaStyles: {
     flex: 1,
-    marginTop: Dimensions.get("window").height * 0.1,
-    width: Dimensions.get("screen").width * 0.8,
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    alignItems: "center"
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start"
   },
-  logo: {
-    height: 80,
-    width: 80,
-    resizeMode: "contain",
-    marginBottom: 26
+  searchMetaTextStyles: {
+    fontSize: 12,
+    color: "rgba(0,0,0,0.7)",
+    marginRight: 5
   },
-  inputStyles: {
-    paddingLeft: 15,
-    flex: 1
-    // borderRadius: 50
+  searchMetaTextDividerStyles: {
+    fontSize: 12,
+    marginRight: 5,
+    color: "rgba(0,0,0,0.7)"
+  },
+  jobStatusBtnStyle: {
+    marginTop: 8
   }
 });
 
