@@ -3,20 +3,22 @@ import { AsyncStorage } from "react-native";
 export const _storeData = async (key, data) => {
   try {
     await AsyncStorage.setItem(key, data);
-    console.log("token Stored Successfully");
+    console.log(`${key} Stored Successfully`);
   } catch (error) {
     // Error saving data
-    console.log("token Storing Error: ", error);
+    console.log(`${key} Storing Error: `, error);
+    throw new Error(error);
   }
 };
 
 export const _removeData = async key => {
   try {
     await AsyncStorage.removeItem(key);
-    console.log("token Deleted Successfully");
+    console.log(`${key} Deleted Successfully`);
   } catch (error) {
     // Error saving data
-    console.log("token Deleting Error: ", error);
+    console.log(`${key} token Deleting Error: `, error);
+    throw new Error(error);
   }
 };
 

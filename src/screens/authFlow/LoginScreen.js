@@ -7,6 +7,7 @@ import {
   Alert
 } from "react-native";
 import { Container, Content, Text, View, Input, Item, Icon } from "native-base";
+import DropdownAlert from "react-native-dropdownalert";
 import { Button, SocialIcon } from "react-native-elements";
 
 import { Constants, Location, Permissions } from "expo";
@@ -160,13 +161,19 @@ class LoginScreen extends Component {
                         JSON.stringify(response.data.tokenAuth.user)
                       );
 
+                      _retrieveData(JWT_AUTH_TOKEN);
                       _retrieveData(USER_DATA);
 
                       this.props.navigation.navigate("home");
                     })
-                    .catch(error =>
-                      console.log("data error: ", JSON.stringify(error))
-                    );
+                    .catch(error => {
+                      console.log("data error: ", error);
+                      this.dropdown.alertWithType(
+                        "error",
+                        "Login Error",
+                        "Please, enter valid credentials"
+                      );
+                    });
 
                 {
                   /* this.props.navigation.navigate("home"); */
@@ -197,7 +204,9 @@ class LoginScreen extends Component {
               </TouchableOpacity>
             </View>
           </View>
+          <DropdownAlert ref={ref => (this.dropdown = ref)} />
         </Content>
+        <DropdownAlert ref={ref => (this.dropdown = ref)} />
       </Container>
     );
   }

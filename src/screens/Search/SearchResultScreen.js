@@ -103,6 +103,7 @@ class SearchResultScreen extends Component {
         <StatusBar barStyle="light-content" backgroundColor="#ecf0f1" />
         <Query
           query={JOBS_QUERY}
+          fetchPolicy="network-only"
           variables={{
             page: this.val.page,
             rows: this.val.rows,

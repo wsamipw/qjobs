@@ -13,6 +13,8 @@ import { APPLY_JOB_MUTATION } from "../config/mutations";
 import CustomToast from "../config/CustomToast";
 import { JOBS_QUERY, APPLIED_JOBS_QUERY } from "../config/queries";
 
+import { NavigationActions, StackActions } from "react-navigation";
+
 class SearchDetailScreen extends Component {
   state = {
     job: "",
@@ -41,6 +43,21 @@ class SearchDetailScreen extends Component {
 
   Default_Toast_Bottom = () => {
     this.refs.defaultToastBottom.ShowToastFunction("Successfully Applied");
+  };
+
+  resetStack = () => {
+    this.props.navigation.dispatch(
+      StackActions.reset({
+        index: 0,
+        // key: null,
+        actions: [
+          NavigationActions.navigate({
+            routeName: "search",
+            params: { someParams: "parameters goes here..." }
+          })
+        ]
+      })
+    );
   };
 
   render() {
@@ -137,6 +154,7 @@ class SearchDetailScreen extends Component {
                 ) {
                   console.log("success apply job: ");
                   this.Default_Toast_Bottom();
+                  this.resetStack();
                   this.props.navigation.navigate("jobs");
                 } else throw new Error(response);
               })

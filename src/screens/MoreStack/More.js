@@ -265,6 +265,7 @@ class More extends Component {
         onPress={async () => {
           try {
             await _removeData(JWT_AUTH_TOKEN);
+            await _removeData(USER_DATA);
 
             console.log("logout pressed");
             this.props.navigation.navigate("login");
@@ -330,8 +331,8 @@ class More extends Component {
             {this.state.user.firstName && this.state.user.lastName
               ? `${this.state.user.firstName} ${this.state.user.lastName}`
               : this.state.user.username
-                ? this.state.user.username
-                : ""}
+              ? this.state.user.username
+              : ""}
           </Text>
           <Text
             style={{

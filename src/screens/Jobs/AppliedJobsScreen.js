@@ -38,6 +38,7 @@ class AppliedJobsScreen extends Component {
   );
 
   render() {
+    console.log("this props applied");
     return (
       <View>
         <Query

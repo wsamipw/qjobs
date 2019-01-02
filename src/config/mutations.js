@@ -30,6 +30,15 @@ export const APPLY_JOB_MUTATION = gql`
   }
 `;
 
+export const DELETE_APPLY_JOB_MUTATION = gql`
+  mutation DeleteApplyJobMutation($id: ID!) {
+    deleteApplyjob(id: $id) {
+      msg
+      status
+    }
+  }
+`;
+
 export const SELECT_APPLY_JOB_MUTATION = gql`
   mutation SelectApplyJobMutation($id: ID!, $select: Boolean!) {
     selectApplyjob(id: $id, select: $select) {
@@ -107,6 +116,17 @@ export const REGISTER_MUTATION = gql`
       token
       msg
       status
+      user {
+        id
+        username
+        firstName
+        lastName
+        email
+        currentAddress
+        permanentAddress
+        gender
+        dateOfBirth
+      }
     }
   }
 `;

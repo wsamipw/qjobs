@@ -5,7 +5,8 @@ import {
   Dimensions,
   FlatList,
   ScrollView,
-  StatusBar
+  StatusBar,
+  Alert
 } from "react-native";
 import { Button, Accordion, ListItem, Text } from "native-base";
 import { Card } from "react-native-elements";
@@ -30,6 +31,7 @@ import {
 
 import {
   SELECT_APPLY_JOB_MUTATION,
+  DELETE_APPLY_JOB_MUTATION,
   COMPLETE_APPLY_JOB_MUTATION,
   CONFIRM_APPLY_JOB_MUTATION
 } from "../../config/mutations";
@@ -202,6 +204,7 @@ class SearchDetailScreen extends Component {
 
   // Used when it came from AppliedJobs
   renderStatus = item => {
+    console.log("item: ", item);
     if (item.status === ACCEPTED) {
       return (
         <View>
@@ -211,7 +214,7 @@ class SearchDetailScreen extends Component {
             primary
             styles={styles.statusBtnStylesAppliedJobs}
           >
-            <Text> ACCEPTED</Text>
+            <Text>ACCEPTED</Text>
           </Button>
           <Button
             block
@@ -271,7 +274,38 @@ class SearchDetailScreen extends Component {
       );
     } else if (item.status === APPLIED) {
       return (
-        <Button round block primary style={styles.statusBtnStylesAppliedJobs}>
+        <Button
+          round
+          block
+          primary
+          style={styles.statusBtnStylesAppliedJobs}
+          onPress={() => {
+            Alert.alert("CANCEL JOB", "Do you want to cancel the job?", [
+              {
+                text: "CANCEL JOB",
+                onPress: () => {
+                  console.log("CANCEL JOB CLICKED");
+                  this.props
+                    .deleteApplyjob(item.id)
+                    .then(response => {
+                      console.log("resp_delete apply: ", response);
+                      if (
+                        response.data.deleteApplyjob.status === 200 &&
+                        response.data.deleteApplyjob.msg === "success"
+                      ) {
+                        console.log("success delete apply");
+                        this.props.navigation.goBack();
+                      } else throw new Error(response);
+                    })
+                    .catch(error => {
+                      console.log("erro: ", JSON.stringify(error));
+                    });
+                }
+              },
+              { text: "GO BACK" }
+            ]);
+          }}
+        >
           <Text>APPLIED</Text>
         </Button>
       );
@@ -307,17 +341,16 @@ class SearchDetailScreen extends Component {
     const key = this.props.navigation.getParam("key", null);
 
     // Checks whether the job creater and applier are same
-    // Also checks if the status is set i.e if status is set
-    // then it should return false
     // Return True if they are different
     const condition1 =
-      !eachItem.status &&
-      (eachItem.employer && eachItem.employer.id !== this.state.id);
+      eachItem.employer && eachItem.employer.id !== this.state.id;
 
     // Checks whether the person has already applied for the job
     // Inner conditions returns True if found
     // and outer negation `!` negates it and returns false to
     // determine whether to display the `Apply Job` button
+    console.log("this state: ", this.state);
+    console.log("applybisjdof: ", eachItem.applyjobSet);
     const condition2 = !(eachItem.applyjobSet && eachItem.applyjobSet.length
       ? eachItem.applyjobSet.find(
           eachApplyJobSet =>
@@ -325,12 +358,6 @@ class SearchDetailScreen extends Component {
             eachApplyJobSet.employee.id === this.state.id
         )
       : false);
-
-    const dataArray = [
-      { title: "First Element", content: "Lorem ipsum dolor sit amet" },
-      { title: "Second Element", content: "Lorem ipsum dolor sit amet" },
-      { title: "Third Element", content: "Lorem ipsum dolor sit amet" }
-    ];
 
     return eachItem ? (
       <ScrollView scrollEnabled>
@@ -465,6 +492,25 @@ export default compose(
         })
     })
   }),
+  graphql(DELETE_APPLY_JOB_MUTATION, {
+    props: ({ mutate }) => ({
+      deleteApplyjob: id =>
+        mutate({
+          variables: {
+            id
+          },
+          refetchQueries: [
+            {
+              query: APPLIED_JOBS_QUERY,
+              variables: {
+                page: 1,
+                rows: 4
+              }
+            }
+          ]
+        })
+    })
+  }),
   graphql(COMPLETE_APPLY_JOB_MUTATION, {
     props: ({ mutate }) => ({
       completeApplyjob: (id, complete, totalHours) =>
@@ -486,7 +532,15 @@ export default compose(
             id,
             confirm
           },
-          refetchQueries: [{ query: APPLIED_JOBS_QUERY }]
+          refetchQueries: [
+            {
+              query: APPLIED_JOBS_QUERY,
+              variables: {
+                page: 1,
+                rows: 4
+              }
+            }
+          ]
         })
     })
   })

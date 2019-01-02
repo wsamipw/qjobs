@@ -6,7 +6,7 @@ import styles from "../../Styles/LoginRegisterStyles";
 
 import { compose, graphql } from "react-apollo";
 
-import { JWT_AUTH_TOKEN } from "../../config/CONSTANTS";
+import { JWT_AUTH_TOKEN, USER_DATA } from "../../config/CONSTANTS";
 import { REGISTER_MUTATION } from "../../config/mutations";
 
 import { _storeData, _retrieveData } from "../../config/utils";
@@ -171,16 +171,24 @@ class RegisterScreen extends Component {
                   if (password === confirm_password)
                     this.props
                       .createUser(email, password, username)
-                      .then(response => {
+                      .then(async response => {
                         console.log("data: ", response.data);
                         if (response.data.createUser.msg === "success") {
-                          _storeData(
-                            JWT_AUTH_TOKEN,
-                            response.data.createUser.token
-                          );
-                          _retrieveData(JWT_AUTH_TOKEN);
+                          try {
+                            await _storeData(
+                              JWT_AUTH_TOKEN,
+                              response.data.createUser.token
+                            );
 
-                          this.props.navigation.navigate("home");
+                            await _storeData(
+                              USER_DATA,
+                              JSON.stringify(response.data.createUser.user)
+                            );
+
+                            this.props.navigation.navigate("home");
+                          } catch (err) {
+                            console.log("catch err: ", err);
+                          }
                         } else throw new Error(response);
                       })
                       .catch(error =>
