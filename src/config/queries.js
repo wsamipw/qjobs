@@ -1,5 +1,36 @@
 import gql from "graphql-tag";
 
+export const JOB_APPLICATIONS_QUERY = gql`
+  query JobApplicationsQuery($page: Int!, $rows: Int!, $jobId: ID) {
+    jobApplications(page: $page, rows: $rows, jobId: $jobId) {
+      page
+      rows
+      rowCount
+      pages
+      data {
+        id
+        hourlyRate
+        totalHours
+        totalFee
+        applied
+        description
+        status
+        applyjobquestionsSet {
+          id
+          question
+          answer
+        }
+        employee {
+          id
+          firstName
+          lastName
+          email
+        }
+      }
+    }
+  }
+`;
+
 export const MY_JOBS_QUERY = gql`
   query MyJobsQuery {
     me {
@@ -25,26 +56,6 @@ export const MY_JOBS_QUERY = gql`
         location {
           type
           coordinates
-        }
-        applyjobSet {
-          id
-          description
-          status
-          hourlyRate
-          totalHours
-          totalFee
-          applyjobquestionsSet {
-            id
-            question
-            answer
-          }
-          employee {
-            id
-            username
-            firstName
-            lastName
-            email
-          }
         }
       }
     }
@@ -72,6 +83,11 @@ export const APPLIED_JOBS_QUERY = gql`
             lastName
           }
         }
+        applyjobquestionsSet {
+          id
+          question
+          answer
+        }
         hourlyRate
         applied
         description
@@ -86,6 +102,15 @@ export const JOB_TITLES_QUERY = gql`
     jobTitle(name: $name) {
       id
       name
+    }
+  }
+`;
+
+export const JOB_STATUS_CHECK_QUERY = gql`
+  query JobStatusCheckQuery($id: ID!, $status: String!) {
+    jobStatusChange(id: $id, status: $status) {
+      id
+      status
     }
   }
 `;

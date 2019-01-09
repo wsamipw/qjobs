@@ -17,8 +17,8 @@ import {
   UserDetailScreen,
   JobsScreen,
   JobsDetailScreen,
-  MyJobsScreen,
-  AppliedJobsScreen,
+  MyJobDetailScreen,
+  AppliedJobDetailScreen,
   SearchResultScreen,
   SettingsScreen,
   PostJobScreen1,
@@ -31,7 +31,9 @@ import {
   PostJobScreen41,
   Accounts,
   ApplyJob,
-  More
+  More,
+  JobApplicationsListScreen,
+  JobApplicationDetailScreen
 } from "..";
 import { ACCENT_COLOR } from "../../config/CONSTANTS";
 
@@ -40,7 +42,11 @@ const JobsStack = createStackNavigator(
     jobs: JobsScreen,
     jobsDetail: JobsDetailScreen,
 
-    searchDetail: SearchDetailScreen,
+    appliedJobDetail: AppliedJobDetailScreen,
+    jobApplicationsList: JobApplicationsListScreen,
+    jobApplicationDetail: JobApplicationDetailScreen,
+
+    myJobDetail: MyJobDetailScreen,
 
     // Post Job Related Pages
     postJob1: {
@@ -62,6 +68,16 @@ const JobsStack = createStackNavigator(
     //     backgroundColor: "#5968ef"
     //   }
     // }
+  }
+);
+
+const JobApplicationsListSwitch = createSwitchNavigator(
+  {
+    jobApplicationsList: JobApplicationsListScreen,
+    jobApplicationDetail: JobApplicationDetailScreen
+  },
+  {
+    initialRouteName: "jobApplicationsList"
   }
 );
 

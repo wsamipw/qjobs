@@ -3,7 +3,7 @@ import { View, FlatList, ActivityIndicator } from "react-native";
 import { Query } from "react-apollo";
 import moment from "moment";
 import { ListItem, Right, Body, Text, Icon } from "native-base";
-import { APPLIED_JOBS_QUERY } from "../../config/queries";
+import { APPLIED_JOBS_QUERY } from "../../../config/queries";
 
 class AppliedJobsScreen extends Component {
   val = { page: 1, rows: 4 };
@@ -11,7 +11,7 @@ class AppliedJobsScreen extends Component {
   _renderItem = ({ item }) => (
     <ListItem
       onPress={() => {
-        this.props.route.navigation.navigate("searchDetail", {
+        this.props.route.navigation.navigate("appliedJobDetail", {
           item,
           key: this.props.route.key
         });
@@ -58,6 +58,8 @@ class AppliedJobsScreen extends Component {
               console.log("error applied jobs: ", JSON.stringify(error));
               return <Text>Error Fetching Data !</Text>;
             }
+
+            console.log('data: appleid:  ', data)
 
             if (data && data.appliedJobs && data.appliedJobs.data.length) {
               return (

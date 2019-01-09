@@ -19,8 +19,8 @@ import {
   ACCENT_COLOR,
   PRIMARY_COLOR
 } from "../../config/CONSTANTS";
-import MyJobsScreen from "./MyJobsScreen";
-import AppliedJobsScreen from "./AppliedJobsScreen";
+import MyJobsScreen from "./MyJobs/MyJobsScreen";
+import AppliedJobsScreen from "./AppliedJobs/AppliedJobsScreen";
 
 const IoniconsHeaderButton = passMeFurther => (
   // the `passMeFurther` variable here contains props from <Item .../> as well as <HeaderButtons ... />
@@ -108,12 +108,12 @@ class JobsScreen extends Component {
   state = {
     index: 0,
     routes: [
-      { key: "myJobs", title: "My Jobs", navigation: this.props.navigation },
       {
         key: "appliedJobs",
         title: "Applied Jobs",
         navigation: this.props.navigation
-      }
+      },
+      { key: "myJobs", title: "My Jobs", navigation: this.props.navigation }
     ]
   };
 

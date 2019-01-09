@@ -204,7 +204,6 @@ class LoginScreen extends Component {
               </TouchableOpacity>
             </View>
           </View>
-          <DropdownAlert ref={ref => (this.dropdown = ref)} />
         </Content>
         <DropdownAlert ref={ref => (this.dropdown = ref)} />
       </Container>

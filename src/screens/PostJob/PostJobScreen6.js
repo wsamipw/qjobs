@@ -6,6 +6,7 @@ import { connect } from "react-redux";
 import { Button } from "react-native-elements";
 import { MapView } from "expo";
 import { compose, graphql, withApollo } from "react-apollo";
+import DropdownAlert from "react-native-dropdownalert";
 
 import { deleteMultiplePostJobScreensState } from "../../actions/";
 import { _retrieveData } from "../../config/utils";
@@ -13,7 +14,6 @@ import { _retrieveData } from "../../config/utils";
 import { POST_JOB_MUTATION } from "../../config/mutations";
 import { MY_JOBS_QUERY } from "../../config/queries";
 import { LOCATION } from "../../config/CONSTANTS";
-import CustomToast from "../../config/CustomToast";
 
 class PostJobScreen6 extends Component {
   static navigationOptions = {
@@ -30,12 +30,6 @@ class PostJobScreen6 extends Component {
   };
 
   onChange = (key, val) => this.setState({ [key]: val });
-
-  Default_Toast_Bottom = () => {
-    this.refs.defaultToastBottom.ShowToastFunction(
-      "Default Toast Bottom Message."
-    );
-  };
 
   render() {
     if (this.state.loading)
@@ -71,7 +65,7 @@ class PostJobScreen6 extends Component {
             this.setState({
               loading: true
             });
-            console.log("porp6: ", this.props.postJobState);
+            // console.log("porp6: ", this.props.postJobState);
             const {
               jobTitle,
               hireBy,
@@ -88,18 +82,18 @@ class PostJobScreen6 extends Component {
             const latitude = location ? location.coords.latitude : undefined;
             const longitude = location ? location.coords.longitude : undefined;
 
-            console.log("latitude: ", latitude, " longiidf: ", longitude);
+            // console.log("latitude: ", latitude, " longiidf: ", longitude);
 
-            console.log(
-              "reuquesDAt: ",
-              jobTitle,
-              hireBy,
-              description,
-              latitude,
-              longitude,
-              timeout,
-              extraQuestion
-            );
+            // console.log(
+            //   "reuquesDAt: ",
+            //   jobTitle,
+            //   hireBy,
+            //   description,
+            //   latitude,
+            //   longitude,
+            //   timeout,
+            //   extraQuestion
+            // );
 
             {
               /* const response = await this.props.createJob(
@@ -142,24 +136,27 @@ class PostJobScreen6 extends Component {
                 if (response.data.createJob.msg === "success") {
                   this.setState({ loading: false });
                   console.log("success: ", response);
+                  this.dropdown.alertWithType(
+                    "success",
+                    "Success",
+                    "Job Created Successfully"
+                  );
                   this.props.deleteMultiplePostJobScreensState();
 
-                  this.Default_Toast_Bottom();
                   this.props.navigation.navigate("jobs");
-                } else throw new Error(response);
+                } else throw new Error(response.data.createJob.msg);
               })
               .catch(error => {
                 this.setState({ loading: false });
 
                 console.log("job post errror: ", JSON.stringify(error));
+
+                this.dropdown.alertWithType("error", "Error", error.message);
               });
           }}
         />
-        <CustomToast
-          ref="defaultToastBottom"
-          position="bottom"
-          backgroundColor="#FF0000"
-        />
+        <DropdownAlert ref={ref => (this.dropdown = ref)} />
+
         {/* <Button
                 backgroundColor="green"
                 title="Publish"
