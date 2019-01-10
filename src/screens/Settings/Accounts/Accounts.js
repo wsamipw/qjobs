@@ -13,12 +13,14 @@ import { Container, Content, Button } from "native-base";
 import { ImagePicker } from "expo";
 import { connect } from "react-redux";
 import { Query, compose, graphql } from "react-apollo";
+import DropdownAlert from "react-native-dropdownalert";
+
 import { CREATE_USER_PRO_MUTATION } from "../../../config/mutations";
 
 import { JOB_TITLES_QUERY } from "../../../config/queries";
 
 import { SELECT_A_JOB_TITLE } from "../../../config/CONSTANTS";
-import CustomToast from "../../../config/CustomToast";
+// import CustomToast from "../../../config/CustomToast";
 // const jobTitles = ["job1", "job2", "job3", "job4"];
 
 class Accounts extends Component {
@@ -34,8 +36,10 @@ class Accounts extends Component {
     jobTitle: SELECT_A_JOB_TITLE,
     verifyingDoc1Image: null,
     verifyingDoc2Image: null,
-    verifyingDoc1Base64: "",
-    verifyingDoc2Base64: ""
+    verifyingDoc1Base64: null,
+    verifyingDoc2Base64: null,
+
+    loading: false
   };
 
   componentWillUnmount() {
@@ -43,8 +47,8 @@ class Accounts extends Component {
       jobTitle: SELECT_A_JOB_TITLE,
       verifyingDoc1Image: null,
       verifyingDoc2Image: null,
-      verifyingDoc1Base64: "",
-      verifyingDoc2Base64: ""
+      verifyingDoc1Base64: null,
+      verifyingDoc2Base64: null
     });
   }
 
@@ -82,11 +86,11 @@ class Accounts extends Component {
     }
   };
 
-  Default_Toast_Bottom = () => {
-    this.refs.defaultToastBottom.ShowToastFunction(
-      "Default Toast Bottom Message."
-    );
-  };
+  // Default_Toast_Bottom = () => {
+  //   this.refs.defaultToastBottom.ShowToastFunction(
+  //     "Default Toast Bottom Message."
+  //   );
+  // };
 
   render() {
     const { verifyingDoc1Image, verifyingDoc2Image } = this.state;
@@ -98,6 +102,7 @@ class Accounts extends Component {
             <Button
               rounded
               block
+              disabled={this.state.loading}
               onPress={() => {
                 const {
                   jobTitle,
@@ -106,27 +111,54 @@ class Accounts extends Component {
                 } = this.state;
 
                 if (
-                  (jobTitle !== SELECT_A_JOB_TITLE && (verifyingDoc1Base64 || 
-                  verifyingDoc2Base64))
+                  jobTitle !== SELECT_A_JOB_TITLE &&
+                  (verifyingDoc1Base64 || verifyingDoc2Base64)
                 ) {
-                  this.props
-                    .createUserPro(
-                      jobTitle,
-                      verifyingDoc1Base64,
-                      verifyingDoc2Base64
-                    )
-                    .then(response => {
-                      console.log("response use pros: ", response);
-                      if (
-                        (response.data.createUserpro.status === 200) &
-                        (response.data.createUserpro.msg === "success")
-                      ) {
-                        this.Default_Toast_Bottom();
-                      } else throw new Error(response);
-                    })
-                    .catch(error =>
-                      console.log("data error: ", JSON.stringify(error))
-                    );
+                  this.setState({ loading: true }, () => {
+                    // console.log(
+                    //   "this iamge 1 ",
+                    //   this.state.verifyingDoc1Base64
+                    // );
+                    // console.log(
+                    //   "this image 2: ",
+                    //   this.state.verifyingDoc2Base64
+                    // );
+
+                    this.props
+                      .createUserPro(
+                        jobTitle,
+                        verifyingDoc1Base64,
+                        verifyingDoc2Base64
+                      )
+                      .then(response => {
+                        console.log("response use pros: ", response);
+                        if (
+                          (response.data.createUserpro.status === 200) &
+                          (response.data.createUserpro.msg === "success")
+                        ) {
+                          // this.Default_Toast_Bottom();
+                          this.setState({ loading: false });
+                          this.dropdown.alertWithType(
+                            "success",
+                            "Success",
+                            "Successfully Updated"
+                          );
+                        } else throw new Error(response.data.createUserpro.msg);
+                      })
+                      .catch(error => {
+                        this.setState({ loading: false });
+                        console.log(
+                          "register pro error: ",
+                          JSON.stringify(error)
+                        );
+
+                        this.dropdown.alertWithType(
+                          "error",
+                          "Error",
+                          error.message
+                        );
+                      });
+                  });
                 } else {
                   Alert.alert(
                     "JobTitle Not Selected or Image not Uploaded",
@@ -208,7 +240,8 @@ class Accounts extends Component {
             )}
           </Content>
         </Container>
-        <CustomToast ref="defaultToastBottom" position="bottom" />
+        {/* <CustomToast ref="defaultToastBottom" position="bottom" /> */}
+        <DropdownAlert ref={ref => (this.dropdown = ref)} />
       </ScrollView>
     );
   }

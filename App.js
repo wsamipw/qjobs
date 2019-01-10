@@ -48,8 +48,11 @@ const httpLink = new createHttpLink({
 
 const client = new ApolloClient({
   link: authLink.concat(httpLink),
-  cache: new InMemoryCache()
-
+  cache: new InMemoryCache(),
+  onError: ({ graphQLErrors, networkError }) => {
+    if (graphQLErrors) return console.error("GrahQL Errors:", graphQLErrors);
+    if (networkError) return console.error("Network Error: ", networkError);
+  }
   // defaultOptions: defaultOptions
 });
 

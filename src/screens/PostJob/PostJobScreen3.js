@@ -22,7 +22,7 @@ class PostJobScreen3 extends Component {
   onChange = (key, val) => this.setState({ [key]: val });
 
   render() {
-    console.log("props: ", this.props);
+    // console.log("props: ", this.props);
     return (
       <ScrollView scrollEnabled>
         <Text>

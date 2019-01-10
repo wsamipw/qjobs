@@ -7,29 +7,25 @@ import {
   ScrollView,
   StatusBar,
   Alert,
-  TouchableOpacity,
   Modal,
   Picker
 } from "react-native";
 
 import { isEmpty } from "lodash";
 
-import { Button, Accordion, ListItem, Text, Item, Input } from "native-base";
+import { Button, ListItem, Text, Item, Input } from "native-base";
 import { AirbnbRating } from "react-native-ratings";
 import { Card } from "react-native-elements";
 import { compose, graphql } from "react-apollo";
 
-import ParallaxScrollView from "react-native-parallax-scroll-view";
-
 import { Query } from "react-apollo";
 
-import { JOB_STATUS_CHECK_QUERY } from "../../config/queries";
+import { JOB_STATUS_CHECK_QUERY } from "../../../config/queries";
 
 import Icon from "react-native-vector-icons/Ionicons";
-import { _retrieveData } from "../../config/utils";
+import { _retrieveData } from "../../../config/utils";
 import {
   USER_DATA,
-  JWT_AUTH_TOKEN,
   APPLIED,
   ACCEPTED,
   REJECTED,
@@ -38,21 +34,20 @@ import {
   TIMEOUT,
   COMPLETED,
   UNCOMPLETED
-} from "../../config/CONSTANTS";
+} from "../../../config/CONSTANTS";
 
 import {
   SELECT_APPLY_JOB_MUTATION,
-  DELETE_APPLY_JOB_MUTATION,
-  COMPLETE_APPLY_JOB_MUTATION,
-  CONFIRM_APPLY_JOB_MUTATION
-} from "../../config/mutations";
-import { MY_JOBS_QUERY, APPLIED_JOBS_QUERY } from "../../config/queries";
+  COMPLETE_APPLY_JOB_MUTATION
+} from "../../../config/mutations";
+import { MY_JOBS_QUERY } from "../../../config/queries";
 
-class SearchDetailScreen extends Component {
+class JobApplicationDetailScreen extends Component {
   static navigationOptions = ({ navigation }) => {
     return {
-      title: `${navigation.state.params.item.name ||
-        navigation.state.params.item.job.name}`,
+      title: `${navigation.state.params.item.employee.firstName} ${
+        navigation.state.params.item.employee.lastName
+      }`,
       headerStyle: {
         backgroundColor: "#5968ef"
       },
@@ -88,35 +83,6 @@ class SearchDetailScreen extends Component {
     } catch (err) {
       console.log("error searchdetailscreen.js: ", err);
     }
-
-    const eachItem = this.props.navigation.getParam("item", null);
-    const key = this.props.navigation.getParam("key", null);
-
-    // Checks whether the job creater and applier are same
-    // Return True if they are different
-    const condition1 =
-      eachItem.employer && eachItem.employer.id !== this.state.id;
-
-    // Checks whether the person has already applied for the job
-    // Inner conditions returns True if found
-    // and outer negation `!` negates it and returns false to
-    // determine whether to display the `Apply Job` button
-    // console.log("this state: ", this.state);
-    // console.log("eachItem: ", eachItem);
-    const condition2 = !(eachItem.applyjobSet && eachItem.applyjobSet.length
-      ? eachItem.applyjobSet.find(
-          eachApplyJobSet =>
-            eachApplyJobSet.employee &&
-            eachApplyJobSet.employee.id === this.state.id
-        )
-      : false);
-
-    this.setState({
-      eachItem,
-      key,
-      condition1,
-      condition2
-    });
   }
 
   _toggleModal = item =>
@@ -129,13 +95,12 @@ class SearchDetailScreen extends Component {
     console.log("complete Rating is: " + rating);
   }
 
-  // Used when it came from My Jobs
-  renderCheckmarks = item => {
+  renderJobStatus = item => {
     if (item.status === ACCEPTED) {
       return <Icon name="md-checkmark-circle" size={30} color="#00FF00" />;
     } else if (item.status === APPLIED) {
       return (
-        <View style={styles.renderCheckmarksWrapper}>
+        <View style={styles.renderJobStatusWrapper}>
           <Icon
             name="md-close-circle"
             size={30}
@@ -153,7 +118,7 @@ class SearchDetailScreen extends Component {
                     response.data.selectApplyjob.msg === "success"
                   ) {
                     console.log("success close");
-                    this.props.navigation.goBack();
+                    // this.props.navigation.goBack();
                   } else throw new Error(response);
                 })
                 .catch(error => {
@@ -175,7 +140,7 @@ class SearchDetailScreen extends Component {
                     response.data.selectApplyjob.msg === "success"
                   ) {
                     console.log("success tick");
-                    this.props.navigation.goBack();
+                    // this.props.navigation.goBack();
                   } else throw new Error(response);
                 })
                 .catch(error => {
@@ -225,174 +190,23 @@ class SearchDetailScreen extends Component {
     }
   };
 
-  // Used when it came from AppliedJobs
-  renderStatus = item => {
-    // console.log("item: ", item);
-    if (item.status === ACCEPTED) {
-      return (
-        <View>
-          <Button
-            round
-            block
-            primary
-            styles={styles.statusBtnStylesAppliedJobs}
-          >
-            <Text>ACCEPTED</Text>
-          </Button>
-          <Button
-            block
-            success
-            styles={styles.statusBtnStylesAppliedJobs}
-            onPress={() => {
-              this.props
-                .confirmApplyjob(item.id, true)
-                .then(response => {
-                  console.log("resp_confirm: ", response);
-                  if (
-                    response.data.confirmApplyjob.status === 200 &&
-                    response.data.confirmApplyjob.msg === "success"
-                  ) {
-                    console.log("success confirm ");
-                    this.props.navigation.goBack();
-                  } else throw new Error(response);
-                })
-                .catch(error => {
-                  console.log("erro: ", JSON.stringify(error));
-                });
-            }}
-          >
-            <Text>CONFIRM</Text>
-          </Button>
-          <Button
-            block
-            danger
-            styles={styles.statusBtnStylesAppliedJobs}
-            onPress={() => {
-              this.props
-                .confirmApplyjob(item.id, false)
-                .then(response => {
-                  console.log("resp_revoke: ", response);
-                  if (
-                    response.data.confirmApplyjob.status === 200 &&
-                    response.data.confirmApplyjob.msg === "success"
-                  ) {
-                    console.log("success close revoke");
-                    this.props.navigation.goBack();
-                  } else throw new Error(response);
-                })
-                .catch(error => {
-                  console.log("erro: ", JSON.stringify(error));
-                });
-            }}
-          >
-            <Text>REVOKE</Text>
-          </Button>
-        </View>
-      );
-    } else if (item.status === REJECTED) {
-      return (
-        <Button round block danger style={styles.statusBtnStylesAppliedJobs}>
-          <Text> REJECTED</Text>
-        </Button>
-      );
-    } else if (item.status === APPLIED) {
-      return (
-        <Button
-          round
-          block
-          primary
-          style={styles.statusBtnStylesAppliedJobs}
-          onPress={() => {
-            Alert.alert("CANCEL JOB", "Do you want to cancel the job?", [
-              {
-                text: "CANCEL JOB",
-                onPress: () => {
-                  console.log("CANCEL JOB CLICKED");
-                  this.props
-                    .deleteApplyjob(item.id)
-                    .then(response => {
-                      console.log("resp_delete apply: ", response);
-                      if (
-                        response.data.deleteApplyjob.status === 200 &&
-                        response.data.deleteApplyjob.msg === "success"
-                      ) {
-                        console.log("success delete apply");
-                        this.props.navigation.goBack();
-                      } else throw new Error(response);
-                    })
-                    .catch(error => {
-                      console.log("erro: ", JSON.stringify(error));
-                    });
-                }
-              },
-              { text: "GO BACK" }
-            ]);
-          }}
-        >
-          <Text>APPLIED</Text>
-        </Button>
-      );
-    } else if (item.status === CONFIRMED) {
-      return (
-        <Button round block primary style={styles.statusBtnStylesAppliedJobs}>
-          <Text>CONFIRMED</Text>
-        </Button>
-      );
-    } else if (item.status === REVOKED) {
-      return (
-        <Button round block info style={styles.statusBtnStylesAppliedJobs}>
-          <Text>REVOKED</Text>
-        </Button>
-      );
-    } else if (item.status === TIMEOUT) {
-      return (
-        <Button round block warning style={styles.statusBtnStylesAppliedJobs}>
-          <Text>TIMEOUT</Text>
-        </Button>
-      );
-    } else if (item.status === COMPLETED) {
-      return (
-        <Button round block success style={styles.statusBtnStylesAppliedJobs}>
-          <Text>COMPLETED</Text>
-        </Button>
-      );
-    } else {
-      return null;
-    }
-  };
-
   render() {
-    // console.log("this state: ", this.state);
-    // console.log("this prips: ", this.props);
-
-    const { eachItem, key, condition1, condition2 } = this.state;
+    const eachItem = this.props.navigation.getParam("item", null);
 
     return eachItem ? (
       <ScrollView scrollEnabled>
         <View style={styles.mainWrapper}>
           <StatusBar barStyle="light-content" backgroundColor="#ecf0f1" />
-          <Card>
-            {/* <Text>Name: {eachItem.name}</Text> */}
-            <Text style={styles.headingTextStyles}>Description</Text>
-            <Text>{eachItem.description}</Text>
-          </Card>
-          {eachItem.extraQuestion && eachItem.extraQuestion.length > 0 && (
-            <Card>
-              <Text style={styles.headingTextStyles}>Extra Questions</Text>
-              {eachItem.extraQuestion.map((eachExtraQuestion, index, arr) => {
-                return (
-                  <ListItem
-                    key={index}
-                    first={index === 0}
-                    last={index === arr.length - 1}
-                  >
-                    <Text>{eachExtraQuestion}</Text>
-                  </ListItem>
-                );
-              })}
-            </Card>
-          )}
 
+          <Card>
+            <Text>
+              {eachItem.employee.firstName}
+              {eachItem.employee.lastName}
+            </Text>
+            <Text>{eachItem.applied}</Text>
+            <Text>{eachItem.description}</Text>
+            <Text>{eachItem.hourlyRate}</Text>
+          </Card>
           {eachItem.applyjobquestionsSet &&
             eachItem.applyjobquestionsSet.length > 0 && (
               <Card>
@@ -414,26 +228,6 @@ class SearchDetailScreen extends Component {
               </Card>
             )}
 
-          {condition1 && condition2 && (
-            <View
-              style={{
-                marginTop: 10,
-                marginHorizontal: Dimensions.get("screen").width * 0.05
-              }}
-            >
-              <Button
-                rounded
-                block
-                onPress={() =>
-                  this.props.navigation.navigate("applyJob", { item: eachItem })
-                }
-              >
-                <Text>Apply</Text>
-              </Button>
-            </View>
-          )}
-
-          {/* {eachItem.status && ( */}
           <Query
             query={JOB_STATUS_CHECK_QUERY}
             fetchPolicy="cache-and-network"
@@ -445,8 +239,11 @@ class SearchDetailScreen extends Component {
           >
             {({ loading, error, data, startPolling, stopPolling }) => {
               console.log("eachITem in side query id: ", eachItem.id);
-              console.log("eachITem in side query status: ", eachItem.status);
-              startPolling(1000);
+              console.log(
+                "eachITem in side query job app detaik status: ",
+                eachItem.status
+              );
+
               /*
                * `finalData` priotizes the data received
                * from the query .i.e the changed status data.
@@ -456,59 +253,24 @@ class SearchDetailScreen extends Component {
                * if received from the query, `eachItem` variable
                * is to be used to get the unchanged status
                */
-              const finalData = !isEmpty(data) ? data : eachItem;
+              const finalData = !isEmpty(data)
+                ? data.jobStatusChange
+                : eachItem;
+
+              !finalData.status !== COMPLETED && startPolling(1000);
+              finalData.status === COMPLETED && stopPolling();
 
               if (error) {
-                console.log("error job status: ", error);
+                console.log("error job status: ", JSON.stringify(error));
                 stopPolling();
               }
 
               if (finalData) {
-                return this.renderStatus(finalData);
+                console.log("finaldata ran job app detail: ", finalData);
+                return this.renderJobStatus(finalData);
               }
             }}
           </Query>
-          {/* )} */}
-          {/* Used when it came from My Jobs */}
-          {key === "myJobs" &&
-          eachItem.applyjobSet &&
-          eachItem.applyjobSet.length ? (
-            <View>
-              <View
-                style={{
-                  marginTop: 10,
-                  marginHorizontal: Dimensions.get("screen").width * 0.05
-                }}
-              >
-                <Text style={styles.headingTextStyles}>Applications</Text>
-              </View>
-              <FlatList
-                data={eachItem.applyjobSet}
-                keyExtractor={eachItem => eachItem.id}
-                renderItem={({ item }) => {
-                  return (
-                    <View key={item.id}>
-                      <Card>
-                        <Text style={{ fontWeight: "100" }}>
-                          Name:
-                          {item.employee &&
-                            `${item.employee.firstName} ${
-                              item.employee.lastName
-                            }`}
-                        </Text>
-                        <Text>
-                          Email: {item.employee && item.employee.email}
-                        </Text>
-                        <Text>Hourly Rate: {item.hourlyRate}</Text>
-
-                        {this.renderCheckmarks(item)}
-                      </Card>
-                    </View>
-                  );
-                }}
-              />
-            </View>
-          ) : null}
 
           <Modal
             animationType="slide"
@@ -625,7 +387,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginBottom: 8
   },
-  renderCheckmarksWrapper: {
+  renderJobStatusWrapper: {
     flex: 1,
     flexDirection: "row",
     justifyContent: "flex-start",
@@ -653,25 +415,7 @@ export default compose(
         })
     })
   }),
-  graphql(DELETE_APPLY_JOB_MUTATION, {
-    props: ({ mutate }) => ({
-      deleteApplyjob: id =>
-        mutate({
-          variables: {
-            id
-          },
-          refetchQueries: [
-            {
-              query: APPLIED_JOBS_QUERY,
-              variables: {
-                page: 1,
-                rows: 4
-              }
-            }
-          ]
-        })
-    })
-  }),
+
   graphql(COMPLETE_APPLY_JOB_MUTATION, {
     props: ({ mutate }) => ({
       completeApplyjob: (id, complete, totalHours, rating, review) =>
@@ -686,25 +430,5 @@ export default compose(
           refetchQueries: [{ query: MY_JOBS_QUERY }]
         })
     })
-  }),
-  graphql(CONFIRM_APPLY_JOB_MUTATION, {
-    props: ({ mutate }) => ({
-      confirmApplyjob: (id, confirm) =>
-        mutate({
-          variables: {
-            id,
-            confirm
-          },
-          refetchQueries: [
-            {
-              query: APPLIED_JOBS_QUERY,
-              variables: {
-                page: 1,
-                rows: 4
-              }
-            }
-          ]
-        })
-    })
   })
-)(SearchDetailScreen);
+)(JobApplicationDetailScreen);

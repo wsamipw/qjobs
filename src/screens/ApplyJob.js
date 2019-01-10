@@ -10,7 +10,7 @@ import { connect } from "react-redux";
 import { compose, graphql } from "react-apollo";
 
 import { APPLY_JOB_MUTATION } from "../config/mutations";
-import CustomToast from "../config/CustomToast";
+// import CustomToast from "../config/CustomToast";
 import { JOBS_QUERY, APPLIED_JOBS_QUERY } from "../config/queries";
 
 import { NavigationActions, StackActions } from "react-navigation";
@@ -41,9 +41,9 @@ class SearchDetailScreen extends Component {
 
   onChange = (key, val) => this.setState({ [key]: val });
 
-  Default_Toast_Bottom = () => {
-    this.refs.defaultToastBottom.ShowToastFunction("Successfully Applied");
-  };
+  // Default_Toast_Bottom = () => {
+  //   this.refs.defaultToastBottom.ShowToastFunction("Successfully Applied");
+  // };
 
   resetStack = () => {
     this.props.navigation.dispatch(
@@ -127,7 +127,7 @@ class SearchDetailScreen extends Component {
           backgroundColor="#3F51B5"
           title="Apply"
           onPress={() => {
-            console.log("stat: ", this.state);
+            console.log("state apply job: ", this.state);
 
             const hourlyRate = Number(this.state.hourlyRate);
 
@@ -153,7 +153,7 @@ class SearchDetailScreen extends Component {
                   response.data.applyJob.msg === "success"
                 ) {
                   console.log("success apply job: ");
-                  this.Default_Toast_Bottom();
+                  // this.Default_Toast_Bottom();
                   this.resetStack();
                   this.props.navigation.navigate("jobs");
                 } else throw new Error(response);
@@ -165,7 +165,7 @@ class SearchDetailScreen extends Component {
         >
           <Text>Apply </Text>
         </Button>
-        <CustomToast ref="defaultToastBottom" position="bottom" />
+        {/* <CustomToast ref="defaultToastBottom" position="bottom" /> */}
       </ScrollView>
     );
   }

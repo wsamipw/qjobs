@@ -62,8 +62,16 @@ export const COMPLETE_APPLY_JOB_MUTATION = gql`
     $id: ID!
     $complete: Boolean!
     $totalHours: Float!
+    $rating: Int!
+    $review: String
   ) {
-    completeApplyjob(id: $id, complete: $complete, totalHours: $totalHours) {
+    completeApplyjob(
+      id: $id
+      complete: $complete
+      totalHours: $totalHours
+      rating: $rating
+      review: $review
+    ) {
       msg
       status
     }
