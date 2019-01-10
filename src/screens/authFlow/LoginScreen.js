@@ -4,10 +4,19 @@ import {
   Image,
   TouchableOpacity,
   BackHandler,
-  Alert
+  StatusBar
 } from "react-native";
-import { Container, Content, Text, View, Input, Item, Icon } from "native-base";
-import DropdownAlert from "react-native-dropdownalert";
+import {
+  Container,
+  Content,
+  Text,
+  View,
+  Input,
+  Item,
+  Icon,
+  Toast
+} from "native-base";
+// import DropdownAlert from "react-native-dropdownalert";
 import { Button, SocialIcon } from "react-native-elements";
 
 import { Constants, Location, Permissions } from "expo";
@@ -24,6 +33,7 @@ import { _storeData, _retrieveData } from "../../config/utils";
 class LoginScreen extends Component {
   state = {
     hidePass: true,
+    showToast: false,
 
     username: "",
     password: "",
@@ -38,6 +48,10 @@ class LoginScreen extends Component {
     } else {
       this._getLocationAsync();
     }
+  }
+
+  componentWillUnmount() {
+    Toast.toastInstance = null;
   }
 
   _getLocationAsync = async () => {
@@ -168,11 +182,19 @@ class LoginScreen extends Component {
                     })
                     .catch(error => {
                       console.log("data error: ", error);
-                      this.dropdown.alertWithType(
-                        "error",
-                        "Login Error",
-                        "Please, enter valid credentials"
-                      );
+                      // this.dropdown.alertWithType(
+                      //   "error",
+                      //   "Login Error",
+                      //   "Please, enter valid credentials"
+                      // );
+
+                      Toast.show({
+                        text: "Please enter valid credentials!",
+                        buttonText: "Okay",
+                        duration: 3000,
+                        position: "bottom",
+                        type: "danger"
+                      });
                     });
 
                 {
@@ -204,9 +226,24 @@ class LoginScreen extends Component {
               </TouchableOpacity>
             </View>
           </View>
-          <DropdownAlert ref={ref => (this.dropdown = ref)} />
+          {/* <DropdownAlert
+            // zIndex={99}
+            elevation={1}
+            translucent={false}
+            defaultContainer={{
+              padding: 8,
+              paddingTop: StatusBar.currentHeight,
+              flexDirection: "row"
+            }}
+            containerStyle={{
+              backgroundColor: "#cc3232",
+              padding: 20,
+              elevation: 1
+            }}
+            ref={ref => (this.dropdown = ref)}
+          /> */}
         </Content>
-        <DropdownAlert ref={ref => (this.dropdown = ref)} />
+        {/* <DropdownAlert ref={ref => (this.dropdown = ref)} /> */}
       </Container>
     );
   }

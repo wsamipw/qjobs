@@ -96,12 +96,12 @@ class RegisterScreen extends Component {
                 value={this.state.password}
                 onChangeText={val => this.onChange("password", val)}
               />
-              <TouchableOpacity onPress={this.togglePassVisisble}>
+              {/* <TouchableOpacity onPress={this.togglePassVisisble}>
                 <Icon
                   name={this.state.hidePass ? "eye" : "eye-off"}
                   style={styles.showPassIcon}
                 />
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </Item>
             <Text>{this.state.errorPassword}</Text>
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { SafeAreaView } from "react-native";
-import { Container, StyleProvider } from "native-base";
+import { Container, StyleProvider, Root } from "native-base";
 import { Provider } from "react-redux";
 
 // Apollo Requirements
@@ -81,19 +81,21 @@ class App extends React.Component {
       return <Expo.AppLoading />;
     }
     return (
-      <ApolloProvider client={client}>
-        <StyleProvider style={getTheme(platform)}>
-          <SafeAreaView style={{ flex: 1 }}>
-            <Container>
-              <MainNavigator
-                ref={navigatorRef => {
-                  this.navigatorEl = navigatorRef;
-                }}
-              />
-            </Container>
-          </SafeAreaView>
-        </StyleProvider>
-      </ApolloProvider>
+      <Root>
+        <ApolloProvider client={client}>
+          <StyleProvider style={getTheme(platform)}>
+            <SafeAreaView style={{ flex: 1 }}>
+              <Container>
+                <MainNavigator
+                  ref={navigatorRef => {
+                    this.navigatorEl = navigatorRef;
+                  }}
+                />
+              </Container>
+            </SafeAreaView>
+          </StyleProvider>
+        </ApolloProvider>
+      </Root>
     );
   }
 }

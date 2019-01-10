@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import {
   StyleSheet,
-  Text,
   View,
   Picker,
   ScrollView,
@@ -9,14 +8,13 @@ import {
   ActivityIndicator
 } from "react-native";
 import { connect } from "react-redux";
-import { Button } from "react-native-elements";
-import { DatePicker } from "native-base";
+import { DatePicker, Container, Content, Button, Text } from "native-base";
 import { Query } from "react-apollo";
 
 import { saveMultiplePostJobScreensState } from "../../actions/";
 
 import { JOB_TITLES_QUERY } from "../../config/queries";
-import { SELECT_A_JOB_TITLE } from "../../config/CONSTANTS";
+import { SELECT_A_JOB_TITLE, PRIMARY_COLOR } from "../../config/CONSTANTS";
 
 class PostJobScreen1 extends Component {
   static navigationOptions = {
@@ -36,80 +34,109 @@ class PostJobScreen1 extends Component {
 
   render() {
     return (
-      <Query query={JOB_TITLES_QUERY} fetchPolicy="cache-and-network">
-        {({
-          loading: loadingJobTitles,
-          error: errorJobTitles,
-          data: dataJobTitles
-        }) => {
-          if (loadingJobTitles)
-            return <ActivityIndicator size="large" color="#ff6347" />;
-          if (errorJobTitles) return <Text>Error Fetching Data !</Text>;
+      <Container>
+        <Content
+          style={{
+            padding: 16
+          }}
+        >
+          <Query query={JOB_TITLES_QUERY} fetchPolicy="cache-and-network">
+            {({
+              loading: loadingJobTitles,
+              error: errorJobTitles,
+              data: dataJobTitles
+            }) => {
+              if (loadingJobTitles)
+                return <ActivityIndicator size="large" color="#ff6347" />;
+              if (errorJobTitles) return <Text>Error Fetching Data !</Text>;
 
-          const jobTitles = [
-            { id: SELECT_A_JOB_TITLE, name: SELECT_A_JOB_TITLE },
-            ...dataJobTitles.jobTitle
-          ];
+              const jobTitles = [
+                { id: SELECT_A_JOB_TITLE, name: SELECT_A_JOB_TITLE },
+                ...dataJobTitles.jobTitle
+              ];
 
-          return (
-            <ScrollView scrollEnabled>
-              {/* Job Titles */}
-              <Picker
-                selectedValue={this.state.jobTitle}
-                style={styles.pickerStyle}
-                onValueChange={jobTitle => this.setState({ jobTitle })}
-              >
-                {jobTitles &&
-                  jobTitles.map(jobTitle => (
-                    <Picker.Item
-                      key={jobTitle.id}
-                      label={jobTitle.name}
-                      value={jobTitle.id}
-                    />
-                  ))}
-              </Picker>
+              return (
+                <ScrollView scrollEnabled>
+                  {/* Job Titles */}
+                  <View style={styles.stepsWrapper}>
+                    <View style={styles.stepNumber}>
+                      <Text>1</Text>
+                    </View>
+                    <Picker
+                      selectedValue={this.state.jobTitle}
+                      style={styles.pickerStyle}
+                      onValueChange={jobTitle => this.setState({ jobTitle })}
+                    >
+                      {jobTitles &&
+                        jobTitles.map(jobTitle => (
+                          <Picker.Item
+                            key={jobTitle.id}
+                            label={jobTitle.name}
+                            value={jobTitle.id}
+                          />
+                        ))}
+                    </Picker>
+                  </View>
 
-              <Text>How urgently do you need to make a hire?</Text>
-              <DatePicker
-                defaultDate={new Date()}
-                minimumDate={new Date(1951, 1, 1)}
-                maximumDate={new Date(2051, 12, 31)}
-                locale={"en"}
-                timeZoneOffsetInMinutes={undefined}
-                modalTransparent={false}
-                animationType={"fade"}
-                androidMode={"default"}
-                placeHolderText="Select date"
-                textStyle={{ color: "green" }}
-                placeHolderTextStyle={{ color: "#d3d3d3" }}
-                onDateChange={val => this.onChange("hireBy", val.toISOString())}
-              />
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: 18,
+                      marginVertical: 10
+                    }}
+                  >
+                    How urgently do you need to make a hire?
+                  </Text>
+                  <DatePicker
+                    defaultDate={new Date()}
+                    minimumDate={new Date(1951, 1, 1)}
+                    maximumDate={new Date(2051, 12, 31)}
+                    locale={"en"}
+                    timeZoneOffsetInMinutes={undefined}
+                    modalTransparent={false}
+                    animationType={"fade"}
+                    androidMode={"default"}
+                    placeHolderText="Select date"
+                    textStyle={{ color: "green" }}
+                    placeHolderTextStyle={{ color: "#d3d3d3" }}
+                    onDateChange={val =>
+                      this.onChange("hireBy", val.toISOString())
+                    }
+                  />
 
-              <Button
-                backgroundColor="#3F51B5"
-                title="Next"
-                onPress={() => {
-                  if (
-                    this.state.hireBy &&
-                    this.state.jobTitle !== SELECT_A_JOB_TITLE
-                  ) {
-                    this.props.saveMultiplePostJobScreensState({
-                      ...this.state
-                    });
-                    this.props.navigation.navigate("postJob3");
-                  } else {
-                    Alert.alert(
-                      "Title or Date Empty",
-                      "Please give title and enter the!",
-                      [{ text: "OK" }]
-                    );
-                  }
-                }}
-              />
-            </ScrollView>
-          );
-        }}
-      </Query>
+                  <Button
+                    block
+                    rounded
+                    backgroundColor={PRIMARY_COLOR}
+                    style={{
+                      marginTop: 16
+                    }}
+                    onPress={() => {
+                      if (
+                        this.state.hireBy &&
+                        this.state.jobTitle !== SELECT_A_JOB_TITLE
+                      ) {
+                        this.props.saveMultiplePostJobScreensState({
+                          ...this.state
+                        });
+                        this.props.navigation.navigate("postJob3");
+                      } else {
+                        Alert.alert(
+                          "Title or Date Empty",
+                          "Please give title and enter the!",
+                          [{ text: "OK" }]
+                        );
+                      }
+                    }}
+                  >
+                    <Text>Next</Text>
+                  </Button>
+                </ScrollView>
+              );
+            }}
+          </Query>
+        </Content>
+      </Container>
     );
   }
 }
@@ -124,6 +151,20 @@ const styles = StyleSheet.create({
   pickerStyle: {
     height: 50,
     width: "100%"
+  },
+  stepsWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  stepNumber: {
+    display: "flex",
+    flexDirection: "row",
+
+    backgroundColor: PRIMARY_COLOR,
+    height: 20,
+    width: 20,
+    borderRadius: 10
   }
 });
 
