@@ -62,27 +62,6 @@ class MyJobScreen extends Component {
                     refreshing={networkStatus === 4}
                     onRefresh={() => refetch()}
                     keyExtractor={item => item.id}
-                    /* renderItem={({ item }) => {
-                    return (
-                      <TouchableOpacity
-                        onPress={() => {
-                          this.props.route.navigation.navigate("searchDetail", {
-                            item,
-                            key: this.props.route.key
-                          });
-                        }}
-                        key={item.id}
-                      >
-                        <Card>
-                          <Text>Id: {item.id}</Text>
-                          <Text>
-                            Name: {item.jobTitle && item.jobTitle.name}
-                          </Text>
-                          <Text>Type of Job: {item.typeOfJob}</Text>
-                        </Card>
-                      </TouchableOpacity>
-                    );
-                  }} */
                     renderItem={this._renderItem}
                   />
                 </View>

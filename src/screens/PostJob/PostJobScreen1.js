@@ -2,13 +2,19 @@ import React, { Component } from "react";
 import {
   StyleSheet,
   View,
-  Picker,
   ScrollView,
   Alert,
   ActivityIndicator
 } from "react-native";
 import { connect } from "react-redux";
-import { DatePicker, Container, Content, Button, Text } from "native-base";
+import {
+  DatePicker,
+  Picker,
+  Container,
+  Content,
+  Button,
+  Text
+} from "native-base";
 import { Query } from "react-apollo";
 
 import { saveMultiplePostJobScreensState } from "../../actions/";
@@ -57,14 +63,25 @@ class PostJobScreen1 extends Component {
 
               return (
                 <ScrollView scrollEnabled>
-                  {/* Job Titles */}
+                  <Text style={styles.questionTitleText}>
+                    Select the Job Type
+                  </Text>
                   <View style={styles.stepsWrapper}>
                     <View style={styles.stepNumber}>
-                      <Text>1</Text>
+                      <Text
+                        style={{
+                          color: "white"
+                        }}
+                      >
+                        1
+                      </Text>
                     </View>
                     <Picker
                       selectedValue={this.state.jobTitle}
                       style={styles.pickerStyle}
+                      itemStyle={{
+                        paddingLeft: 8
+                      }}
                       onValueChange={jobTitle => this.setState({ jobTitle })}
                     >
                       {jobTitles &&
@@ -77,32 +94,36 @@ class PostJobScreen1 extends Component {
                         ))}
                     </Picker>
                   </View>
-
-                  <Text
-                    style={{
-                      fontWeight: "bold",
-                      fontSize: 18,
-                      marginVertical: 10
-                    }}
-                  >
-                    How urgently do you need to make a hire?
+                  <Text style={styles.questionTitleText}>
+                    How urgently do you need to hire?
                   </Text>
-                  <DatePicker
-                    defaultDate={new Date()}
-                    minimumDate={new Date(1951, 1, 1)}
-                    maximumDate={new Date(2051, 12, 31)}
-                    locale={"en"}
-                    timeZoneOffsetInMinutes={undefined}
-                    modalTransparent={false}
-                    animationType={"fade"}
-                    androidMode={"default"}
-                    placeHolderText="Select date"
-                    textStyle={{ color: "green" }}
-                    placeHolderTextStyle={{ color: "#d3d3d3" }}
-                    onDateChange={val =>
-                      this.onChange("hireBy", val.toISOString())
-                    }
-                  />
+                  <View style={styles.stepsWrapper}>
+                    <View style={styles.stepNumber}>
+                      <Text
+                        style={{
+                          color: "white"
+                        }}
+                      >
+                        2
+                      </Text>
+                    </View>
+                    <DatePicker
+                      defaultDate={new Date()}
+                      minimumDate={new Date(1951, 1, 1)}
+                      maximumDate={new Date(2051, 12, 31)}
+                      locale={"en"}
+                      timeZoneOffsetInMinutes={undefined}
+                      modalTransparent={false}
+                      animationType={"fade"}
+                      androidMode={"default"}
+                      placeHolderText="Select date"
+                      textStyle={{ color: "green" }}
+                      placeHolderTextStyle={{ color: "#d3d3d3" }}
+                      onDateChange={val =>
+                        this.onChange("hireBy", val.toISOString())
+                      }
+                    />
+                  </View>
 
                   <Button
                     block
@@ -152,6 +173,12 @@ const styles = StyleSheet.create({
     height: 50,
     width: "100%"
   },
+
+  questionTitleText: {
+    fontWeight: "bold",
+    fontSize: 18,
+    marginVertical: 10
+  },
   stepsWrapper: {
     display: "flex",
     flexDirection: "row",
@@ -160,7 +187,8 @@ const styles = StyleSheet.create({
   stepNumber: {
     display: "flex",
     flexDirection: "row",
-
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: PRIMARY_COLOR,
     height: 20,
     width: 20,

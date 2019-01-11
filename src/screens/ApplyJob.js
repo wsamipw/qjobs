@@ -1,7 +1,16 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, ScrollView, Dimensions } from "react-native";
-import { Item, Input, View } from "native-base";
-import { Button } from "react-native-elements";
+import { StyleSheet, ScrollView, Dimensions } from "react-native";
+import {
+  Item,
+  Input,
+  View,
+  Button,
+  Text,
+  Textarea,
+  Container,
+  Content,
+  Label
+} from "native-base";
 
 import RadioForm from "react-native-simple-radio-button";
 
@@ -14,8 +23,21 @@ import { APPLY_JOB_MUTATION } from "../config/mutations";
 import { JOBS_QUERY, APPLIED_JOBS_QUERY } from "../config/queries";
 
 import { NavigationActions, StackActions } from "react-navigation";
+import { PRIMARY_COLOR } from "../config/CONSTANTS";
 
 class SearchDetailScreen extends Component {
+  static navigationOptions = ({ navigation }) => {
+    return {
+      title: `Apply for ${navigation.state.params.item.jobTitle.name}`,
+      headerStyle: {
+        backgroundColor: "#5968ef"
+      },
+      headerTintColor: "#fff",
+      headerTitleStyle: {
+        fontWeight: "bold"
+      }
+    };
+  };
   state = {
     job: "",
     // backgroundCheck: false,
@@ -62,111 +84,143 @@ class SearchDetailScreen extends Component {
 
   render() {
     return (
-      <ScrollView scrollEnabled>
-        <Item>
-          <Input
-            placeholder="Hourly Rate ($10.00)"
-            value={this.state.hourlyRate}
-            onChangeText={val => this.onChange("hourlyRate", val)}
-          />
-        </Item>
-        <Item>
-          <Input
-            placeholder="Description"
-            value={this.state.description}
-            onChangeText={val => this.onChange("description", val)}
-          />
-        </Item>
-        {/* <Text style={{ fontWeight: "bold" }}>Background Check</Text>
-        <RadioForm
-          radio_props={[
-            { label: "Required", value: "Required" },
-            { label: "Not Required", value: "Not Required" }
-          ]}
-          initial={this.state.backgroundCheck}
-          onPress={value => {
-            this.setState({
-              backgroundCheck: value === "Required" ? true : false
-            });
-          }}
-        /> */}
-        {this.state.extraQuestion.length ? (
-          <View>
-            <Text style={{ fontWeight: "bold" }}>Extra Questions</Text>
-
-            {this.state.extraQuestion.map((eachExtraQuestion, index) => {
-              return (
-                <View key={index}>
-                  <Text style={{ fontWeight: "bold" }}>
-                    {eachExtraQuestion.question}
-                  </Text>
-                  <Item>
-                    <Input
-                      placeholder="Your Answer"
-                      value={eachExtraQuestion.answer}
-                      onChangeText={val =>
-                        this.setState({
-                          extraQuestion: this.state.extraQuestion.map(each =>
-                            each.question === eachExtraQuestion.question
-                              ? {
-                                  ...each,
-                                  answer: val
-                                }
-                              : each
-                          )
-                        })
-                      }
-                    />
-                  </Item>
-                </View>
-              );
-            })}
-          </View>
-        ) : null}
-        <Button
-          backgroundColor="#3F51B5"
-          title="Apply"
-          onPress={() => {
-            console.log("state apply job: ", this.state);
-
-            const hourlyRate = Number(this.state.hourlyRate);
-
-            const {
-              job,
-              description,
-              //backgroundCheck,
-              extraQuestion
-            } = this.state;
-
-            this.props
-              .applyJob(
-                job,
-                //backgroundCheck,
-                description,
-                hourlyRate,
-                extraQuestion
-              )
-              .then(response => {
-                console.log("response:", response);
-                if (
-                  response.data.applyJob.status === 200 &&
-                  response.data.applyJob.msg === "success"
-                ) {
-                  console.log("success apply job: ");
-                  // this.Default_Toast_Bottom();
-                  this.resetStack();
-                  this.props.navigation.navigate("jobs");
-                } else throw new Error(response);
-              })
-              .catch(error => {
-                console.log("error apply jov:", JSON.stringify(error));
-              });
+      <Container>
+        <Content
+          style={{
+            padding: 16
           }}
         >
-          <Text>Apply </Text>
-        </Button>
-        {/* <CustomToast ref="defaultToastBottom" position="bottom" /> */}
-      </ScrollView>
+          <ScrollView scrollEnabled>
+            <Text
+              style={{
+                fontWeight: "bold"
+              }}
+            >
+              Your Proposed Rate:
+            </Text>
+            <Item floatingLabel>
+              <Label>Hourly Rate</Label>
+              <Input
+                keyboardType="numeric"
+                value={this.state.hourlyRate}
+                onChangeText={val => this.onChange("hourlyRate", val)}
+              />
+            </Item>
+            <Text
+              style={{
+                marginVertical: 10,
+                fontWeight: "bold"
+              }}
+            >
+              Job Description:
+            </Text>
+            <Textarea
+              placeholder="Description"
+              rowSpan={5}
+              bordered
+              value={this.state.description}
+              onChangeText={val => this.onChange("description", val)}
+            />
+            {/* <Text style={{ fontWeight: "bold" }}>Background Check</Text>
+        <RadioForm
+        radio_props={[
+        { label: "Required", value: "Required" },
+        { label: "Not Required", value: "Not Required" }
+        ]}
+        initial={this.state.backgroundCheck}
+        onPress={value => {
+        this.setState({
+        backgroundCheck: value === "Required" ? true : false
+        });
+        }}
+        /> */}
+            {this.state.extraQuestion.length ? (
+              <View>
+                <Text
+                  style={{ fontWeight: "bold", marginTop: 10, marginBottom: 6 }}
+                >
+                  Extra Questions
+                </Text>
+
+                {this.state.extraQuestion.map((eachExtraQuestion, index) => {
+                  return (
+                    <View key={index}>
+                      <Text style={{ fontWeight: "bold" }}>
+                        {eachExtraQuestion.question}
+                      </Text>
+                      <Textarea
+                        bordered
+                        rowSpan={4}
+                        placeholder="Your Answer"
+                        value={eachExtraQuestion.answer}
+                        onChangeText={val =>
+                          this.setState({
+                            extraQuestion: this.state.extraQuestion.map(each =>
+                              each.question === eachExtraQuestion.question
+                                ? {
+                                    ...each,
+                                    answer: val
+                                  }
+                                : each
+                            )
+                          })
+                        }
+                      />
+                    </View>
+                  );
+                })}
+              </View>
+            ) : null}
+            <Button
+              backgroundColor={PRIMARY_COLOR}
+              rounded
+              block
+              style={{
+                marginTop: 15
+              }}
+              onPress={() => {
+                console.log("state apply job: ", this.state);
+
+                const hourlyRate = Number(this.state.hourlyRate);
+
+                const {
+                  job,
+                  description,
+                  //backgroundCheck,
+                  extraQuestion
+                } = this.state;
+
+                this.props
+                  .applyJob(
+                    job,
+                    //backgroundCheck,
+                    description,
+                    hourlyRate,
+                    extraQuestion
+                  )
+                  .then(response => {
+                    console.log("response:", response);
+                    if (
+                      response.data.applyJob.status === 200 &&
+                      response.data.applyJob.msg === "success"
+                    ) {
+                      console.log("success apply job: ");
+                      // this.Default_Toast_Bottom();
+                      this.resetStack();
+                      this.props.navigation.navigate("jobs");
+                    } else throw new Error(response);
+                  })
+                  .catch(error => {
+                    console.log("error apply jov:", JSON.stringify(error));
+                  });
+              }}
+            >
+              <Text>Apply</Text>
+            </Button>
+            {/* <CustomToast ref="defaultToastBottom" position="bottom" /> */}
+          </ScrollView>
+        </Content>
+      </Container>
     );
   }
 }

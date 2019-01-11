@@ -1,15 +1,15 @@
 import React, { Component } from "react";
 import {
   StyleSheet,
-  Text,
   ScrollView,
   Picker,
   Image,
   Alert,
   ActivityIndicator,
-  Platform
+  Platform,
+  StatusBar
 } from "react-native";
-import { Container, Content, Button } from "native-base";
+import { Container, Content, Button, Text, View } from "native-base";
 import { ImagePicker } from "expo";
 import { connect } from "react-redux";
 import { Query, compose, graphql } from "react-apollo";
@@ -19,13 +19,11 @@ import { CREATE_USER_PRO_MUTATION } from "../../../config/mutations";
 
 import { JOB_TITLES_QUERY } from "../../../config/queries";
 
-import { SELECT_A_JOB_TITLE } from "../../../config/CONSTANTS";
-// import CustomToast from "../../../config/CustomToast";
-// const jobTitles = ["job1", "job2", "job3", "job4"];
+import { SELECT_A_JOB_TITLE, PRIMARY_COLOR } from "../../../config/CONSTANTS";
 
 class Accounts extends Component {
   static navigationOptions = {
-    headerTitle: "Pro User",
+    headerTitle: "Register as Pro User",
     headerStyle: {
       backgroundColor: "#5968ef"
     },
@@ -86,163 +84,183 @@ class Accounts extends Component {
     }
   };
 
-  // Default_Toast_Bottom = () => {
-  //   this.refs.defaultToastBottom.ShowToastFunction(
-  //     "Default Toast Bottom Message."
-  //   );
-  // };
-
   render() {
     const { verifyingDoc1Image, verifyingDoc2Image } = this.state;
 
     return (
-      <ScrollView scrollEnabled>
-        <Container>
-          <Content scrollEnabled>
-            <Button
-              rounded
-              block
-              disabled={this.state.loading}
-              onPress={() => {
-                const {
-                  jobTitle,
-                  verifyingDoc1Base64,
-                  verifyingDoc2Base64
-                } = this.state;
+      <Container>
+        <Content
+          scrollEnabled
+          style={{
+            padding: 16
+          }}
+        >
+          <StatusBar barStyle="light-content" backgroundColor="#ecf0f1" />
+          <Text
+            style={{
+              fontWeight: "bold"
+            }}
+          >
+            Select The Job Title you want to Upgrade:
+          </Text>
+          <Query query={JOB_TITLES_QUERY}>
+            {({ loading, error, data }) => {
+              if (loading)
+                return <ActivityIndicator size="large" color="#ff6347" />;
+              if (error) return <Text>Error Fetching Data !</Text>;
 
-                if (
-                  jobTitle !== SELECT_A_JOB_TITLE &&
-                  (verifyingDoc1Base64 || verifyingDoc2Base64)
-                ) {
-                  this.setState({ loading: true }, () => {
-                    // console.log(
-                    //   "this iamge 1 ",
-                    //   this.state.verifyingDoc1Base64
-                    // );
-                    // console.log(
-                    //   "this image 2: ",
-                    //   this.state.verifyingDoc2Base64
-                    // );
-
-                    this.props
-                      .createUserPro(
-                        jobTitle,
-                        verifyingDoc1Base64,
-                        verifyingDoc2Base64
-                      )
-                      .then(response => {
-                        console.log("response use pros: ", response);
-                        if (
-                          (response.data.createUserpro.status === 200) &
-                          (response.data.createUserpro.msg === "success")
-                        ) {
-                          // this.Default_Toast_Bottom();
-                          this.setState({ loading: false });
-                          this.dropdown.alertWithType(
-                            "success",
-                            "Success",
-                            "Successfully Updated"
-                          );
-                        } else throw new Error(response.data.createUserpro.msg);
-                      })
-                      .catch(error => {
-                        this.setState({ loading: false });
-                        console.log(
-                          "register pro error: ",
-                          JSON.stringify(error)
-                        );
-
-                        this.dropdown.alertWithType(
-                          "error",
-                          "Error",
-                          error.message
-                        );
-                      });
-                  });
-                } else {
-                  Alert.alert(
-                    "JobTitle Not Selected or Image not Uploaded",
-                    "Please give title and upload both images",
-                    [{ text: "OK" }]
-                  );
-                }
+              const jobTitles = [
+                { id: SELECT_A_JOB_TITLE, name: SELECT_A_JOB_TITLE },
+                ...data.jobTitle
+              ];
+              return (
+                <ScrollView scrollEnabled>
+                  <Picker
+                    selectedValue={this.state.jobTitle}
+                    style={styles.pickerStyle}
+                    onValueChange={jobTitle => this.setState({ jobTitle })}
+                  >
+                    {jobTitles &&
+                      jobTitles.map(jobTitle => (
+                        <Picker.Item
+                          key={jobTitle.id}
+                          label={jobTitle.name}
+                          value={jobTitle.id}
+                        />
+                      ))}
+                  </Picker>
+                </ScrollView>
+              );
+            }}
+          </Query>
+          <View style={styles.docUploadWrapper}>
+            <Text
+              style={{
+                fontWeight: "bold"
               }}
             >
-              <Text>Submit</Text>
-            </Button>
-            <Query query={JOB_TITLES_QUERY}>
-              {({ loading, error, data }) => {
-                if (loading)
-                  return <ActivityIndicator size="large" color="#ff6347" />;
-                if (error) return <Text>Error Fetching Data !</Text>;
-
-                const jobTitles = [
-                  { id: SELECT_A_JOB_TITLE, name: SELECT_A_JOB_TITLE },
-                  ...data.jobTitle
-                ];
-                return (
-                  <ScrollView scrollEnabled>
-                    {/* <Text>asdasdasdsad</Text> */}
-                    <Picker
-                      selectedValue={this.state.jobTitle}
-                      style={styles.pickerStyle}
-                      onValueChange={jobTitle => this.setState({ jobTitle })}
-                    >
-                      {jobTitles &&
-                        jobTitles.map(jobTitle => (
-                          <Picker.Item
-                            key={jobTitle.id}
-                            label={jobTitle.name}
-                            value={jobTitle.id}
-                          />
-                        ))}
-                    </Picker>
-                  </ScrollView>
-                );
-              }}
-            </Query>
-            <Text>Verifying Document 1: </Text>
+              Verifying Document I
+            </Text>
+            {verifyingDoc1Image && (
+              <Image
+                source={{ uri: verifyingDoc1Image }}
+                style={{ width: 200, height: 200, marginVertical: 10 }}
+              />
+            )}
             <Button
               rounded
+              bordered
               block
+              style={{
+                marginTop: 8
+              }}
               onPress={this._pickImage.bind(
                 this,
                 "verifyingDoc1Image",
                 "verifyingDoc1Base64"
               )}
             >
-              <Text>Upload Image</Text>
+              <Text>{verifyingDoc1Image ? "Change" : "Upload"}</Text>
             </Button>
-            {verifyingDoc1Image && (
+          </View>
+          <View style={styles.docUploadWrapper}>
+            <Text
+              style={{
+                fontWeight: "bold"
+              }}
+            >
+              Verifying Document II
+            </Text>
+            {verifyingDoc2Image && (
               <Image
-                source={{ uri: verifyingDoc1Image }}
-                style={{ width: 200, height: 200 }}
+                source={{ uri: verifyingDoc2Image }}
+                style={{ width: 200, height: 200, marginVertical: 10 }}
               />
             )}
-
-            <Text>Verifying Document 2: </Text>
             <Button
               rounded
+              bordered
               block
+              style={{
+                marginTop: 8
+              }}
               onPress={this._pickImage.bind(
                 this,
                 "verifyingDoc2Image",
                 "verifyingDoc2Base64"
               )}
             >
-              <Text>Upload Image</Text>
+              <Text>{verifyingDoc2Image ? "Change" : "Upload"}</Text>
             </Button>
-            {verifyingDoc2Image && (
-              <Image
-                source={{ uri: verifyingDoc2Image }}
-                style={{ width: 200, height: 200 }}
-              />
-            )}
-          </Content>
-        </Container>
-        {/* <CustomToast ref="defaultToastBottom" position="bottom" /> */}
+          </View>
+          <Button
+            rounded
+            backgroundColor={PRIMARY_COLOR}
+            block
+            disabled={this.state.loading}
+            style={{
+              marginBottom: 20
+            }}
+            onPress={() => {
+              const {
+                jobTitle,
+                verifyingDoc1Base64,
+                verifyingDoc2Base64
+              } = this.state;
+
+              if (
+                jobTitle !== SELECT_A_JOB_TITLE &&
+                (verifyingDoc1Base64 || verifyingDoc2Base64)
+              ) {
+                this.setState({ loading: true }, () => {
+                  this.props
+                    .createUserPro(
+                      jobTitle,
+                      verifyingDoc1Base64,
+                      verifyingDoc2Base64
+                    )
+                    .then(response => {
+                      console.log("response use pros: ", response);
+                      if (
+                        (response.data.createUserpro.status === 200) &
+                        (response.data.createUserpro.msg === "success")
+                      ) {
+                        this.setState({ loading: false });
+                        this.dropdown.alertWithType(
+                          "success",
+                          "Success",
+                          "Successfully Updated"
+                        );
+                      } else throw new Error(response.data.createUserpro.msg);
+                    })
+                    .catch(error => {
+                      this.setState({ loading: false });
+                      console.log(
+                        "register pro error: ",
+                        JSON.stringify(error)
+                      );
+
+                      this.dropdown.alertWithType(
+                        "error",
+                        "Error",
+                        error.message
+                      );
+                    });
+                });
+              } else {
+                Alert.alert(
+                  "JobTitle Not Selected or Image not Uploaded",
+                  "Please give title and upload both images",
+                  [{ text: "OK" }]
+                );
+              }
+            }}
+          >
+            <Text>Submit</Text>
+          </Button>
+        </Content>
         <DropdownAlert ref={ref => (this.dropdown = ref)} />
-      </ScrollView>
+      </Container>
     );
   }
 }
@@ -265,6 +283,19 @@ const styles = StyleSheet.create({
   pickerStyle: {
     height: 50,
     width: "100%"
+  },
+  docUploadWrapper: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginVertical: 10,
+    borderWidth: 2,
+    borderColor: "#d3d3d3",
+    borderRadius: 10,
+    borderStyle: "dashed",
+    padding: 15
+    // minHeight: 150
   }
 });
 

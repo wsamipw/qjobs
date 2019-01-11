@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, ScrollView } from "react-native";
+import { StyleSheet, ScrollView } from "react-native";
 import { connect } from "react-redux";
-import { Button, Card } from "react-native-elements";
+import { Button, Card, Text, Container, Content, ListItem } from "native-base";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -9,6 +9,7 @@ import HeaderButtons, {
   HeaderButton,
   Item
 } from "react-navigation-header-buttons";
+import { PRIMARY_COLOR } from "../../config/CONSTANTS";
 
 /*
  * This Screen/Page is changed from `experience` to `extraquestion`
@@ -50,25 +51,64 @@ class PostJobScreen4 extends Component {
 
   render() {
     return (
-      <ScrollView scrollEnabled>
-        {this.props.postJobState &&
-          this.props.postJobState.extraQuestion &&
-          this.props.postJobState.extraQuestion.map(
-            (eachExtraQuestion, index) => (
-              <Card key={index}>
-                <Text>Name: {eachExtraQuestion}</Text>
-              </Card>
-            )
-          )}
-
-        <Button
-          backgroundColor="#3F51B5"
-          title="Next"
-          onPress={() => {
-            this.props.navigation.navigate("postJob6");
+      <Container>
+        <Content
+          style={{
+            padding: 16
           }}
-        />
-      </ScrollView>
+        >
+          {this.props.postJobState &&
+          this.props.postJobState.extraQuestion &&
+          this.props.postJobState.extraQuestion.length > 0 ? (
+            <Text
+              style={{
+                fontWeight: "bold"
+              }}
+            >
+              List of Extra Questions:
+            </Text>
+          ) : (
+            <Text>
+              You can add multiple Question from the header above or Skip.
+            </Text>
+          )}
+          <ScrollView scrollEnabled>
+            {this.props.postJobState &&
+              this.props.postJobState.extraQuestion &&
+              this.props.postJobState.extraQuestion.map(
+                (eachExtraQuestion, index, arr) => (
+                  <ListItem
+                    key={index}
+                    first={index === 0}
+                    last={index === arr.length - 1}
+                  >
+                    <Text>{eachExtraQuestion}</Text>
+                  </ListItem>
+                )
+              )}
+
+            <Button
+              backgroundColor={PRIMARY_COLOR}
+              block
+              rounded
+              style={{
+                marginTop: 15
+              }}
+              onPress={() => {
+                this.props.navigation.navigate("postJob6");
+              }}
+            >
+              <Text>
+                {this.props.postJobState &&
+                this.props.postJobState.extraQuestion &&
+                this.props.postJobState.extraQuestion.length > 0
+                  ? "Next"
+                  : "Skip"}
+              </Text>
+            </Button>
+          </ScrollView>
+        </Content>
+      </Container>
     );
   }
 }
@@ -76,9 +116,7 @@ class PostJobScreen4 extends Component {
 const styles = StyleSheet.create({
   containerToolbar: {
     flex: 1,
-    //justifyContent: 'center',
     justifyContent: "flex-start",
-    // https://github.com/facebook/react-native/issues/2957#event-417214498
     alignItems: "stretch",
     backgroundColor: "#F5FCFF"
   },
