@@ -76,32 +76,6 @@ class JobsScreen extends Component {
           />
         </View>
       )
-      // headerRight: (
-      //   <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
-      //     <Item
-      //       title="Add Job"
-      //       iconName="plus-circle"
-      //       onPress={() => {
-      //         navigation.navigate("postJob1");
-      //       }}
-      //     />
-      //     <Item
-      //       title="settings"
-      //       iconName="settings"
-      //       onPress={() => {
-      //         navigation.navigate("settings");
-      //       }}
-      //     />
-      //     <Item
-      //       title="logout"
-      //       iconName="logout"
-      //       onPress={async () => {
-      //         await _removeData(JWT_AUTH_TOKEN);
-      //         navigation.navigate("login");
-      //       }}
-      //     />
-      //   </HeaderButtons>
-      // )
     };
   };
 
@@ -120,7 +94,7 @@ class JobsScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <StatusBar barStyle="light-content" backgroundColor="#ecf0f1" />
+        <StatusBar barStyle="light-content" backgroundColor={PRIMARY_COLOR} />
         <TabView
           navigationState={this.state}
           onIndexChange={index => this.setState({ index })}

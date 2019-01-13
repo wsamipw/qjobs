@@ -95,7 +95,7 @@ class Accounts extends Component {
             padding: 16
           }}
         >
-          <StatusBar barStyle="light-content" backgroundColor="#ecf0f1" />
+          <StatusBar barStyle="light-content" backgroundColor={PRIMARY_COLOR} />
           <Text
             style={{
               fontWeight: "bold"

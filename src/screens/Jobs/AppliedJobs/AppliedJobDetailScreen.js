@@ -11,7 +11,7 @@ import {
 import { isEmpty } from "lodash";
 
 import { Button, ListItem, Text } from "native-base";
-import { Card } from "react-native-elements";
+import { Card, Divider } from "react-native-elements";
 import { compose, graphql } from "react-apollo";
 
 import { Query } from "react-apollo";
@@ -28,7 +28,8 @@ import {
   REVOKED,
   TIMEOUT,
   COMPLETED,
-  UNCOMPLETED
+  UNCOMPLETED,
+  PRIMARY_COLOR
 } from "../../../config/CONSTANTS";
 
 import {
@@ -73,10 +74,9 @@ class AppliedJobDetailScreen extends Component {
       return (
         <View>
           <Button
-            round
             block
             primary
-            styles={styles.statusBtnStylesAppliedJobs}
+            style={styles.statusBtnStylesAppliedJobs}
             onPress={() => {
               Alert.alert("CANCEL JOB", "Do you want to cancel the job?", [
                 {
@@ -109,7 +109,7 @@ class AppliedJobDetailScreen extends Component {
           <Button
             block
             success
-            styles={styles.statusBtnStylesAppliedJobs}
+            style={styles.statusBtnStylesAppliedJobs}
             onPress={() => {
               this.props
                 .confirmApplyjob(item.id, true)
@@ -133,7 +133,7 @@ class AppliedJobDetailScreen extends Component {
           <Button
             block
             danger
-            styles={styles.statusBtnStylesAppliedJobs}
+            style={styles.statusBtnStylesAppliedJobs}
             onPress={() => {
               this.props
                 .confirmApplyjob(item.id, false)
@@ -185,7 +185,6 @@ class AppliedJobDetailScreen extends Component {
               { text: "GO BACK" }
             ]);
           }}
-          round
           block
           danger
           style={styles.statusBtnStylesAppliedJobs}
@@ -198,7 +197,6 @@ class AppliedJobDetailScreen extends Component {
 
       return (
         <Button
-          round
           block
           primary
           style={styles.statusBtnStylesAppliedJobs}
@@ -261,7 +259,6 @@ class AppliedJobDetailScreen extends Component {
               { text: "GO BACK" }
             ]);
           }}
-          round
           block
           primary
           style={styles.statusBtnStylesAppliedJobs}
@@ -298,7 +295,6 @@ class AppliedJobDetailScreen extends Component {
               { text: "GO BACK" }
             ]);
           }}
-          round
           block
           info
           style={styles.statusBtnStylesAppliedJobs}
@@ -335,7 +331,6 @@ class AppliedJobDetailScreen extends Component {
               { text: "GO BACK" }
             ]);
           }}
-          round
           block
           warning
           style={styles.statusBtnStylesAppliedJobs}
@@ -372,7 +367,6 @@ class AppliedJobDetailScreen extends Component {
               { text: "GO BACK" }
             ]);
           }}
-          round
           block
           success
           style={styles.statusBtnStylesAppliedJobs}
@@ -391,7 +385,7 @@ class AppliedJobDetailScreen extends Component {
     return eachItem ? (
       <ScrollView scrollEnabled>
         <View style={styles.mainWrapper}>
-          <StatusBar barStyle="light-content" backgroundColor="#ecf0f1" />
+          <StatusBar barStyle="light-content" backgroundColor={PRIMARY_COLOR} />
           <Card>
             {/* <Text>Name: {eachItem.name}</Text> */}
             <Text style={styles.headingTextStyles}>Description</Text>
@@ -421,20 +415,18 @@ class AppliedJobDetailScreen extends Component {
                 {eachItem.applyjobquestionsSet.map(
                   (eachExtraQuestion, index, arr) => {
                     return (
-                      <ListItem
-                        key={index}
-                        first={index === 0}
-                        last={index === arr.length - 1}
-                      >
-                        <Text>Question: {eachExtraQuestion.question}</Text>
-                        <Text>Answer: {eachExtraQuestion.answer}</Text>
-                      </ListItem>
+                      <View style={{ marginVertical: 8 }} key={index}>
+                        <Text>{eachExtraQuestion.question}</Text>
+                        <Text note style={{ marginBottom: 5 }}>
+                          {eachExtraQuestion.answer}
+                        </Text>
+                        {arr.length - 1 !== index && <Divider />}
+                      </View>
                     );
                   }
                 )}
               </Card>
             )}
-
           <Query
             query={JOB_STATUS_CHECK_QUERY}
             fetchPolicy="cache-and-network"
@@ -490,9 +482,6 @@ const styles = StyleSheet.create({
   mainWrapper: {
     flex: 1,
     marginBottom: 10
-    // marginTop: Dimensions.get("window").height * 0.05,
-    // marginLeft: Dimensions.get("screen").width * 0.05,
-    // marginRight: Dimensions.get("screen").width * 0.05
   },
   headingTextStyles: {
     fontWeight: "bold",
@@ -500,8 +489,8 @@ const styles = StyleSheet.create({
     marginBottom: 8
   },
   statusBtnStylesAppliedJobs: {
-    marginVertical: 6,
-    marginHorizontal: Dimensions.get("screen").width * 0.04
+    marginHorizontal: Dimensions.get("screen").width * 0.04,
+    marginVertical: 10
   }
 });
 

@@ -20,7 +20,8 @@ import { _retrieveData } from "../../config/utils";
 import {
   LOCATION,
   USER_DATA,
-  MAX_SHORT_DESCRIPTION_CHARACTER
+  MAX_SHORT_DESCRIPTION_CHARACTER,
+  PRIMARY_COLOR
 } from "../../config/CONSTANTS";
 
 class SearchResultScreen extends Component {
@@ -99,8 +100,8 @@ class SearchResultScreen extends Component {
     // console.log("navigation params::", this.props.navigation);
     // console.log("state::", this.state);
     return !this.state.queryDisable ? (
-      <View>
-        <StatusBar barStyle="light-content" backgroundColor="#ecf0f1" />
+      <View style={{ flex: 1 }}>
+        <StatusBar barStyle="light-content" backgroundColor={PRIMARY_COLOR} />
         <Query
           query={JOBS_QUERY}
           fetchPolicy="network-only"
@@ -137,6 +138,7 @@ class SearchResultScreen extends Component {
               return (
                 <View
                   style={{
+                    flex: 1,
                     marginBottom: 16
                   }}
                 >
@@ -217,15 +219,18 @@ class SearchResultScreen extends Component {
               return <ActivityIndicator size="large" color="#ff6347" />;
             }
             return (
-              <View>
-                <StatusBar barStyle="light-content" backgroundColor="#ecf0f1" />
+              <View style={{ flex: 1 }}>
+                <StatusBar
+                  barStyle="light-content"
+                  backgroundColor={PRIMARY_COLOR}
+                />
                 <View style={styles.noDataViewStyle}>
                   <Icon
                     type="MaterialIcons"
                     name="cloud-off"
-                    style={{ fontSize: 50 }}
+                    style={{ fontSize: 50, color: "#d3d3d3" }}
                   />
-                  <Text>
+                  <Text note>
                     No results for {this.props.navigation.state.params.query}
                   </Text>
                 </View>
@@ -243,6 +248,7 @@ class SearchResultScreen extends Component {
 const styles = StyleSheet.create({
   noDataViewStyle: {
     flex: 1,
+    height: "100%",
     marginTop: 100,
     flexDirection: "column",
     justifyContent: "center",

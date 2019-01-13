@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import {
-  Text,
   ScrollView,
   TouchableOpacity,
   View,
@@ -12,11 +11,15 @@ import {
   Alert
 } from "react-native";
 import ParallaxScrollView from "react-native-parallax-scroll-view";
-
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import { _removeData, _retrieveData } from "../../config/utils";
-import { JWT_AUTH_TOKEN, USER_DATA } from "../../config/CONSTANTS";
+import {
+  JWT_AUTH_TOKEN,
+  USER_DATA,
+  PRIMARY_COLOR
+} from "../../config/CONSTANTS";
 import CustomToast from "../../config/CustomToast";
+import { Button, Text } from "native-base";
 
 class More extends Component {
   static navigationOptions = {
@@ -341,6 +344,20 @@ class More extends Component {
           >
             {this.state.user.email ? this.state.user.email : ""}
           </Text>
+          <Button
+            rounded
+            style={{
+              backgroundColor: "transparent",
+              borderColor: "white",
+              borderWidth: 1,
+              marginVertical: 8,
+              paddingVertical: 4
+            }}
+          >
+            <Text uppercase={false} style={{ color: "white", fontSize: 8 }}>
+              Update Profile Picture
+            </Text>
+          </Button>
         </View>
       )}
     </View>
@@ -392,7 +409,7 @@ class More extends Component {
     );
   }
 }
-const PARALLAX_HEADER_HEIGHT = 250;
+const PARALLAX_HEADER_HEIGHT = 320;
 const STICKY_HEADER_HEIGHT = 80;
 
 const styles = StyleSheet.create({

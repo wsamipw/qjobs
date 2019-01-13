@@ -1,5 +1,5 @@
 import React from "react";
-import { SafeAreaView } from "react-native";
+import { SafeAreaView, StatusBar } from "react-native";
 import { Container, StyleProvider, Root } from "native-base";
 import { Provider } from "react-redux";
 
@@ -78,6 +78,7 @@ class App extends React.Component {
   }
 
   render() {
+    StatusBar.setBarStyle("dark-content", true);
     const MainNavigator = mainNavigator(this.state.navigateTo);
 
     if (this.state.loading) {

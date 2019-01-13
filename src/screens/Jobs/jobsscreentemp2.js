@@ -15,7 +15,7 @@ import { connect } from "react-redux";
 import { Button, Card } from "react-native-elements";
 
 import { _removeData } from "../../config/utils";
-import { JWT_AUTH_TOKEN } from "../../config/CONSTANTS";
+import { JWT_AUTH_TOKEN, PRIMARY_COLOR } from "../../config/CONSTANTS";
 
 import { Query, compose, withApollo, graphql } from "react-apollo";
 
@@ -102,7 +102,7 @@ class JobsScreen extends Component {
     const { page, rows } = this.state;
     return (
       <ScrollView scrollEnabled>
-        <StatusBar backgroundColor="rgb(122,77,246)" barStyle="light-content" />
+        <StatusBar backgroundColor={PRIMARY_COLOR} barStyle="light-content" />
         <ToolbarAndroid
           style={styles.toolbar}
           logo={require("../static/img/logoIcon.png")}

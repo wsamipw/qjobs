@@ -21,6 +21,7 @@ import PopupDialog, {
   DialogTitle,
   ScaleAnimation
 } from "react-native-popup-dialog";
+import { PRIMARY_COLOR } from "../../config/CONSTANTS";
 
 const scaleAnimation = new ScaleAnimation();
 
@@ -47,7 +48,7 @@ export default class SearchJobScreen extends Component {
   render() {
     return (
       <Container>
-        <StatusBar barStyle="dark-content" backgroundColor="#ecf0f1" />
+        <StatusBar barStyle="dark-content" />
         <Content contentContainerStyle={styles.contentStyle}>
           <View style={styles.mainWrapper}>
             <Image

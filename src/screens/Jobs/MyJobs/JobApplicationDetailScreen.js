@@ -13,7 +13,15 @@ import {
 
 import { isEmpty } from "lodash";
 
-import { Button, ListItem, Text, Item, Input } from "native-base";
+import {
+  Button,
+  Content,
+  Text,
+  Item,
+  Input,
+  Label,
+  Textarea
+} from "native-base";
 import { AirbnbRating } from "react-native-ratings";
 import { Card } from "react-native-elements";
 import { compose, graphql } from "react-apollo";
@@ -33,7 +41,8 @@ import {
   REVOKED,
   TIMEOUT,
   COMPLETED,
-  UNCOMPLETED
+  UNCOMPLETED,
+  PRIMARY_COLOR
 } from "../../../config/CONSTANTS";
 
 import {
@@ -41,6 +50,8 @@ import {
   COMPLETE_APPLY_JOB_MUTATION
 } from "../../../config/mutations";
 import { MY_JOBS_QUERY } from "../../../config/queries";
+import Tag from "../../../components/Tag";
+import moment from "moment";
 
 class JobApplicationDetailScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -95,19 +106,49 @@ class JobApplicationDetailScreen extends Component {
     console.log("complete Rating is: " + rating);
   }
 
+  renderStatus = status => {
+    if (status === ACCEPTED) {
+      return <Tag text="Accepted" primary />;
+    } else if (status === REJECTED) {
+      return <Tag text="Rejected" danger />;
+    } else if (status === APPLIED) {
+      return <Tag text="Applied" primary />;
+    } else if (status === CONFIRMED) {
+      return <Tag text="Confirmed" success />;
+    } else if (status === REVOKED) {
+      return <Tag text="Revoked" warning />;
+    } else if (status === TIMEOUT) {
+      return <Tag text="Timeout" warning />;
+    } else if (status === COMPLETED) {
+      return <Tag text="Completed" success />;
+    } else if (status === UNCOMPLETED) {
+      return <Tag text="Uncompleted" warning />;
+    } else {
+      return null;
+    }
+  };
+
   renderJobStatus = item => {
-    if (item.status === ACCEPTED) {
-      return <Icon name="md-checkmark-circle" size={30} color="#00FF00" />;
+    if (item.status === CONFIRMED) {
+      return (
+        <Button
+          block
+          success
+          style={styles.statusBtnStylesAppliedJobs}
+          onPress={() => {
+            this._toggleModal(item);
+          }}
+        >
+          <Text>FINALIZE JOB</Text>
+        </Button>
+      );
     } else if (item.status === APPLIED) {
       return (
         <View style={styles.renderJobStatusWrapper}>
-          <Icon
-            name="md-close-circle"
-            size={30}
-            color="#FF0000"
-            style={{
-              marginRight: 10
-            }}
+          <Button
+            danger
+            block
+            style={styles.jobStatusButton}
             onPress={() => {
               this.props
                 .selectApplyjob(item.id, false)
@@ -125,11 +166,13 @@ class JobApplicationDetailScreen extends Component {
                   console.log("erro: ", JSON.stringify(error));
                 });
             }}
-          />
-          <Icon
-            name="md-checkmark-circle-outline"
-            size={30}
-            color="#00FF00"
+          >
+            <Text>Reject</Text>
+          </Button>
+          <Button
+            primary
+            block
+            style={styles.jobStatusButton}
             onPress={() => {
               this.props
                 .selectApplyjob(item.id, true)
@@ -147,46 +190,13 @@ class JobApplicationDetailScreen extends Component {
                   console.log("erro: ", JSON.stringify(error));
                 });
             }}
-          />
-        </View>
-      );
-    } else if (item.status === REJECTED) {
-      return (
-        <Button danger round small style={styles.statusBtnStyles}>
-          <Text>REJECTED</Text>
-        </Button>
-      );
-    } else if (item.status === CONFIRMED) {
-      return (
-        <View>
-          <Text>
-            <Icon name="md-checkmark-circle" size={30} color="#00FF00" />
-          </Text>
-          <View style={{ height: 10 }} />
-
-          <Button
-            block
-            success
-            onPress={() => {
-              this._toggleModal(item);
-            }}
           >
-            <Text>FINALIZE JOB</Text>
+            <Text>Accept</Text>
           </Button>
         </View>
       );
-    } else if (item.status === COMPLETED) {
-      return (
-        <Button round small success style={styles.statusBtnStyles}>
-          <Text> COMPLETED</Text>
-        </Button>
-      );
-    } else if (item.status === UNCOMPLETED) {
-      return (
-        <Button round small danger style={styles.statusBtnStyles}>
-          <Text> UNCOMPLETED</Text>
-        </Button>
-      );
+    } else {
+      return null;
     }
   };
 
@@ -196,16 +206,59 @@ class JobApplicationDetailScreen extends Component {
     return eachItem ? (
       <ScrollView scrollEnabled>
         <View style={styles.mainWrapper}>
-          <StatusBar barStyle="light-content" backgroundColor="#ecf0f1" />
-
+          <StatusBar barStyle="light-content" backgroundColor={PRIMARY_COLOR} />
           <Card>
+            <Text style={{ fontWeight: "bold" }}>Name: </Text>
             <Text>
-              {eachItem.employee.firstName}
-              {eachItem.employee.lastName}
+              {eachItem.employee.firstName} {eachItem.employee.lastName}
             </Text>
-            <Text>{eachItem.applied}</Text>
+            <Text style={{ fontWeight: "bold", marginTop: 10 }}>
+              Applied Date:
+            </Text>
+            <Text>{moment(eachItem.applied).format("MMMM DD, YYYY")}</Text>
+            <Text style={{ fontWeight: "bold", marginTop: 10 }}>
+              Description:
+            </Text>
             <Text>{eachItem.description}</Text>
+            <Text style={{ fontWeight: "bold", marginTop: 10 }}>Rate:</Text>
             <Text>{eachItem.hourlyRate}</Text>
+            {/* {this.renderStatus(eachItem.status)} */}
+            <Query
+              query={JOB_STATUS_CHECK_QUERY}
+              fetchPolicy="cache-and-network"
+              variables={{
+                id: eachItem.id,
+                status: eachItem.status
+              }}
+              // pollInterval={1000}
+            >
+              {({ loading, error, data, startPolling, stopPolling }) => {
+                /*
+                 * `finalData` priotizes the data received
+                 * from the query .i.e the changed status data.
+                 * The above query checks whether the `status`
+                 * has been changed and responds only if `status`
+                 * is changed else it is timedOut. So if no response
+                 * if received from the query, `eachItem` variable
+                 * is to be used to get the unchanged status
+                 */
+                const finalData = !isEmpty(data)
+                  ? data.jobStatusChange
+                  : eachItem;
+
+                !finalData.status !== COMPLETED && startPolling(1000);
+                finalData.status === COMPLETED && stopPolling();
+
+                if (error) {
+                  stopPolling();
+                  return <Text>Error Data Fetching</Text>;
+                }
+
+                if (finalData) {
+                  return this.renderStatus(finalData.status);
+                }
+              }}
+            </Query>
           </Card>
           {eachItem.applyjobquestionsSet &&
             eachItem.applyjobquestionsSet.length > 0 && (
@@ -214,14 +267,13 @@ class JobApplicationDetailScreen extends Component {
                 {eachItem.applyjobquestionsSet.map(
                   (eachExtraQuestion, index, arr) => {
                     return (
-                      <ListItem
-                        key={index}
-                        first={index === 0}
-                        last={index === arr.length - 1}
-                      >
-                        <Text>Question: {eachExtraQuestion.question}</Text>
-                        <Text>Answer: {eachExtraQuestion.answer}</Text>
-                      </ListItem>
+                      <View style={{ marginVertical: 8 }} key={index}>
+                        <Text>{eachExtraQuestion.question}</Text>
+                        <Text note style={{ marginBottom: 5 }}>
+                          {eachExtraQuestion.answer}
+                        </Text>
+                        {arr.length - 1 !== index && <Divider />}
+                      </View>
                     );
                   }
                 )}
@@ -281,93 +333,101 @@ class JobApplicationDetailScreen extends Component {
               this._toggleModal(null);
             }}
           >
-            <View
-              style={{
-                backgroundColor: "white",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "100%",
-                height: "100%"
-              }}
-            >
-              <AirbnbRating
-                count={5}
-                size={20}
-                reviews={["Terrible", "Bad", "Okay", "Good", "Greate"]}
-                defaultRating={this.state.rating}
-                onFinishRating={this.ratingCompleted}
-              />
-
-              <Picker
-                selectedValue={this.state.isJobCompleted}
-                style={{ height: 50, width: 200 }}
-                onValueChange={isJobCompleted =>
-                  this.setState({ isJobCompleted }, () =>
-                    console.log("job comple: ", this.state)
-                  )
-                }
+            <Content padder>
+              <View
+                style={{
+                  backgroundColor: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "100%",
+                  height: "100%"
+                }}
               >
-                <Picker.Item label="Job Completed" value={true} />
-                <Picker.Item label="Job Terminated" value={false} />
-              </Picker>
-
-              <Item rounded>
-                <Input
-                  placeholder="Total Hours spent in the job"
-                  value={this.state.totalHours}
-                  onChangeText={val => this.setState({ totalHours: val })}
+                <AirbnbRating
+                  count={5}
+                  size={20}
+                  reviews={["Terrible", "Bad", "Okay", "Good", "Greate"]}
+                  defaultRating={this.state.rating}
+                  onFinishRating={this.ratingCompleted}
                 />
-              </Item>
-              <Item rounded>
-                <Input
-                  placeholder="Review"
+
+                <Picker
+                  selectedValue={this.state.isJobCompleted}
+                  style={{ height: 50, width: 200 }}
+                  onValueChange={isJobCompleted =>
+                    this.setState({ isJobCompleted }, () =>
+                      console.log("job comple: ", this.state)
+                    )
+                  }
+                >
+                  <Picker.Item label="Job Completed" value={true} />
+                  <Picker.Item label="Job Terminated" value={false} />
+                </Picker>
+                <Item floatingLabel>
+                  <Label>Total Hours Spent</Label>
+                  <Input
+                    keyboardType="numeric"
+                    value={this.state.totalHours}
+                    onChangeText={val => this.setState({ totalHours: val })}
+                  />
+                </Item>
+                <Textarea
+                  rowSpan={5}
+                  bordered
                   value={this.state.review}
                   onChangeText={val => this.setState({ review: val })}
+                  placeholder="Review"
                 />
-              </Item>
-              <Button
-                backgroundColor="#3F51B5"
-                primary
-                onPress={() => {
-                  console.log("state apply job: ");
+                <Button
+                  backgroundColor={PRIMARY_COLOR}
+                  primary
+                  block
+                  rounded
+                  style={{
+                    marginTop: 15
+                  }}
+                  onPress={() => {
+                    console.log("state apply job: ");
 
-                  const {
-                    isJobCompleted,
-                    totalHours,
-                    rating,
-                    review,
-                    selectedApplicationItem
-                  } = this.state;
-
-                  console.log("selc: ", selectedApplicationItem);
-                  this.props
-                    .completeApplyjob(
-                      selectedApplicationItem.id,
+                    const {
                       isJobCompleted,
                       totalHours,
                       rating,
-                      review
-                    )
-                    .then(response => {
-                      console.log("resp_confirm: ", response);
-                      if (
-                        response.data.completeApplyjob.status === 200 &&
-                        response.data.completeApplyjob.msg === "success"
-                      ) {
-                        console.log("success close");
-                        // this.props.navigation.goBack();
-                        // this.setState({ eachItem: })
-                        this._toggleModal(null);
-                      } else throw new Error(response);
-                    })
-                    .catch(error => {
-                      console.log("erro: ", JSON.stringify(error));
-                    });
-                }}
-              >
-                <Text>Submit</Text>
-              </Button>
-            </View>
+                      review,
+                      selectedApplicationItem
+                    } = this.state;
+
+                    console.log("selc: ", selectedApplicationItem);
+                    this.props
+                      .completeApplyjob(
+                        selectedApplicationItem.id,
+                        isJobCompleted,
+                        totalHours,
+                        rating,
+                        review
+                      )
+                      .then(response => {
+                        console.log("resp_confirm: ", response);
+                        if (
+                          response.data.completeApplyjob.status === 200 &&
+                          response.data.completeApplyjob.msg === "success"
+                        ) {
+                          console.log("success close");
+                          // this.props.navigation.goBack();
+                          // this.setState({ eachItem: })
+                          this._toggleModal(null);
+                        } else throw new Error(response);
+                      })
+                      .catch(error => {
+                        console.log("erro: ", JSON.stringify(error));
+                      });
+                  }}
+                >
+                  <Text>Submit</Text>
+                </Button>
+              </View>
+            </Content>
           </Modal>
         </View>
       </ScrollView>
@@ -379,27 +439,27 @@ const styles = StyleSheet.create({
   mainWrapper: {
     flex: 1,
     marginBottom: 10
-    // marginTop: Dimensions.get("window").height * 0.05,
-    // marginLeft: Dimensions.get("screen").width * 0.05,
-    // marginRight: Dimensions.get("screen").width * 0.05
   },
   headingTextStyles: {
     fontWeight: "bold",
     fontSize: 20,
     marginBottom: 8
   },
-  renderJobStatusWrapper: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    alignItems: "center"
-  },
-  statusBtnStyles: {
-    marginVertical: 6
-  },
+
   statusBtnStylesAppliedJobs: {
-    marginVertical: 6,
+    marginVertical: 10,
     marginHorizontal: Dimensions.get("screen").width * 0.04
+  },
+  renderJobStatusWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginVertical: 10,
+    marginHorizontal: Dimensions.get("screen").width * 0.04
+  },
+  jobStatusButton: {
+    width: "48%"
   }
 });
 

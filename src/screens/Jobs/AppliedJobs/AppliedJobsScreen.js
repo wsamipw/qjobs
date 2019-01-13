@@ -2,8 +2,9 @@ import React, { Component } from "react";
 import { View, FlatList, ActivityIndicator } from "react-native";
 import { Query } from "react-apollo";
 import moment from "moment";
-import { ListItem, Right, Body, Text, Icon } from "native-base";
+import { ListItem, Right, Body, Text, Icon, Badge } from "native-base";
 import { APPLIED_JOBS_QUERY } from "../../../config/queries";
+import { PRIMARY_COLOR } from "../../../config/CONSTANTS";
 
 class AppliedJobsScreen extends Component {
   val = { page: 1, rows: 4 };
@@ -25,12 +26,24 @@ class AppliedJobsScreen extends Component {
         >
           {item.job && item.job.name}
         </Text>
+
         <Text note>
           By: {item.job && item.job.employer && item.job.employer.username}
         </Text>
         <Text note> Deadline: {moment(item.job.hireBy).fromNow()}</Text>
       </Body>
       <Right>
+        <Badge
+          style={{
+            backgroundColor: "white",
+            borderWidth: 1,
+            borderColor: PRIMARY_COLOR
+          }}
+        >
+          <Text style={{ color: PRIMARY_COLOR, fontSize: 8 }}>
+            {item.status}
+          </Text>
+        </Badge>
         <Text note>Rate: {item.hourlyRate}</Text>
         <Icon active name="arrow-forward" />
       </Right>
@@ -59,7 +72,7 @@ class AppliedJobsScreen extends Component {
               return <Text>Error Fetching Data !</Text>;
             }
 
-            console.log('data: appleid:  ', data)
+            console.log("data: appleid:  ", data);
 
             if (data && data.appliedJobs && data.appliedJobs.data.length) {
               return (
@@ -99,21 +112,42 @@ class AppliedJobsScreen extends Component {
                 </View>
               );
             } else {
-              if (loading) displayText = "Loading ...";
-              else displayText = "No Data Found";
-
-              return (
-                <View>
-                  <Text> {displayText}</Text>
-                  {/* <Image
-                    source={require("../../static/img/noResult.jpg")}
-                    style={{
-                      flex: 1,
-                      resizeMode: "cover"
-                    }}
-                  /> */}
-                </View>
-              );
+              if (loading) {
+                return (
+                  <View>
+                    <Text>Loading...</Text>
+                  </View>
+                );
+              } else {
+                return (
+                  <View style={{ flex: 1 }}>
+                    <StatusBar
+                      barStyle="light-content"
+                      backgroundColor={PRIMARY_COLOR}
+                    />
+                    <View
+                      style={{
+                        flex: 1,
+                        // height: "100%",
+                        marginTop: 100,
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center"
+                      }}
+                    >
+                      <Icon
+                        type="MaterialIcons"
+                        name="cloud-off"
+                        style={{ fontSize: 50, color: "#d3d3d3" }}
+                      />
+                      <Text note>
+                        No results for{" "}
+                        {this.props.navigation.state.params.query}
+                      </Text>
+                    </View>
+                  </View>
+                );
+              }
             }
           }}
         </Query>

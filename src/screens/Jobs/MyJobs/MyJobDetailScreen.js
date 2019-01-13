@@ -49,7 +49,7 @@ class MyJobDetailScreen extends Component {
 
     return (
       <Content scrollEnabled>
-        <StatusBar barStyle="light-content" backgroundColor="#ecf0f1" />
+        <StatusBar barStyle="light-content" backgroundColor={PRIMARY_COLOR} />
         {eachItem ? (
           <View style={styles.mainWrapper}>
             <Card>

@@ -4,22 +4,28 @@ import {
   Picker,
   RefreshControl,
   ScrollView,
-  Text,
   Image,
   ActivityIndicator,
   StyleSheet,
   StatusBar
 } from "react-native";
-import { Container, Content, Item, Input, DatePicker } from "native-base";
-import { Button } from "react-native-elements";
-
+import {
+  Container,
+  Content,
+  Item,
+  Input,
+  DatePicker,
+  Label,
+  Button,
+  Text
+} from "native-base";
+import { Divider } from "react-native-elements";
 import { compose, graphql } from "react-apollo";
 
-import styles from "../../Styles/LoginRegisterStyles";
-
 import { UPDATE_USER_MUTATION } from "../../config/mutations";
-import { USER_DATA } from "../../config/CONSTANTS";
+import { USER_DATA, PRIMARY_COLOR } from "../../config/CONSTANTS";
 import { _retrieveData, _storeData } from "../../config/utils";
+import moment from "moment";
 
 class UserDetailScreen extends Component {
   /* Below navigationOptions need not be called or passed
@@ -59,7 +65,7 @@ class UserDetailScreen extends Component {
           permanentAddress: user.permanentAddress ? user.permanentAddress : "",
           gender: user.gender ? user.gender : this.state.gender,
           dateOfBirth: user.dateOfBirth
-            ? user.dateOfBirth
+            ? new Date(user.dateOfBirth)
             : this.state.dateOfBirth
         });
     } catch (err) {
@@ -72,71 +78,98 @@ class UserDetailScreen extends Component {
   render() {
     return (
       <ScrollView scrollEnabled>
-        <StatusBar barStyle="light-content" backgroundColor="#ecf0f1" />
+        <StatusBar barStyle="light-content" backgroundColor={PRIMARY_COLOR} />
         <Container>
-          <Content scrollEnabled>
+          <Content scrollEnabled padder>
             <View>
-              <DatePicker
-                defaultDate={new Date(this.state.dateOfBirth)}
-                minimumDate={new Date(1951, 1, 1)}
-                maximumDate={new Date(2051, 12, 31)}
-                locale={"en"}
-                timeZoneOffsetInMinutes={undefined}
-                modalTransparent={false}
-                animationType={"fade"}
-                androidMode={"default"}
-                placeHolderText="Select date"
-                textStyle={{ color: "green" }}
-                placeHolderTextStyle={{ color: "#d3d3d3" }}
-                onDateChange={val =>
-                  this.onChange("dateOfBirth", val.toJSON().slice(0, 10))
-                }
-              />
+              <View
+                style={{
+                  marginVertical: 10,
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "flex-start",
+                  alignItems: "center"
+                }}
+              >
+                <Text style={{ fontWeight: "bold" }}>Date of Birth: </Text>
+                <DatePicker
+                  defaultDate={new Date(this.state.dateOfBirth)}
+                  minimumDate={new Date(1951, 1, 1)}
+                  maximumDate={new Date(2051, 12, 31)}
+                  locale={"en"}
+                  timeZoneOffsetInMinutes={undefined}
+                  modalTransparent={false}
+                  animationType={"fade"}
+                  androidMode={"default"}
+                  placeHolderText={moment(this.state.dateOfBirth).format(
+                    "DD/MM/YYYY"
+                  )}
+                  textStyle={{ color: "green" }}
+                  placeHolderTextStyle={{ color: "#d3d3d3" }}
+                  onDateChange={val =>
+                    this.onChange("dateOfBirth", val.toJSON().slice(0, 10))
+                  }
+                />
+              </View>
+              <Divider />
 
-              <Item rounded style={styles.inputWrapper}>
+              <Item floatingLabel style={styles.inputWraperStyle}>
+                <Label>First Name</Label>
                 <Input
-                  placeholder="First Name"
                   value={this.state.firstName}
                   onChangeText={val => this.onChange("firstName", val)}
                 />
               </Item>
-              <Item rounded style={styles.inputWrapper}>
+              <Item floatingLabel style={styles.inputWraperStyle}>
+                <Label>Last Name</Label>
                 <Input
-                  placeholder="Last Name"
                   value={this.state.lastName}
                   onChangeText={val => this.onChange("lastName", val)}
                 />
               </Item>
-              <Picker
-                selectedValue={this.state.gender}
-                style={{ height: 50, width: 200 }}
-                onValueChange={gender => this.setState({ gender })}
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "flex-start",
+                  alignItems: "center"
+                }}
               >
-                <Picker.Item label="Male" value="Male" />
-                <Picker.Item label="Female" value="Female" />
-                <Picker.Item label="Other" value="Other" />
-              </Picker>
-              <Item rounded style={styles.inputWrapper}>
+                <Text style={{ fontWeight: "bold" }}>Gender:</Text>
+                <Picker
+                  selectedValue={this.state.gender}
+                  style={{ height: 50, width: 200 }}
+                  onValueChange={gender => this.setState({ gender })}
+                >
+                  <Picker.Item label="Male" value="Male" />
+                  <Picker.Item label="Female" value="Female" />
+                  <Picker.Item label="Other" value="Other" />
+                </Picker>
+              </View>
+              <Divider />
+              <Item floatingLabel style={styles.inputWraperStyle}>
+                <Label>Current Address</Label>
                 <Input
-                  placeholder="Current Address"
                   value={this.state.currentAddress}
                   onChangeText={val => this.onChange("currentAddress", val)}
                 />
               </Item>
-              <Item rounded style={styles.inputWrapper}>
+              <Item floatingLabel style={styles.inputWraperStyle}>
+                <Label>Permanent Address</Label>
                 <Input
-                  placeholder="Permanent Address"
                   value={this.state.permanentAddress}
                   onChangeText={val => this.onChange("permanentAddress", val)}
                 />
               </Item>
 
               <Button
-                backgroundColor="#3F51B5"
-                containerViewStyle={styles.loginButtton}
+                backgroundColor={PRIMARY_COLOR}
                 disabled={this.state.loading}
                 rounded
-                title="Update"
+                block
+                style={{
+                  marginVertical: 15
+                }}
                 onPress={() => {
                   const {
                     firstName,
@@ -195,7 +228,9 @@ class UserDetailScreen extends Component {
                       // Display Update Error box here i.e PopUp or Something ...
                     });
                 }}
-              />
+              >
+                <Text>Update</Text>
+              </Button>
             </View>
           </Content>
         </Container>
@@ -204,12 +239,15 @@ class UserDetailScreen extends Component {
   }
 }
 
-const userstyles = StyleSheet.create({
+const styles = StyleSheet.create({
   contentStyle: {
     flex: 1,
     flexDirection: "column",
     justifyContent: "flex-start",
     alignItems: "center"
+  },
+  inputWraperStyle: {
+    marginVertical: 10
   }
 });
 

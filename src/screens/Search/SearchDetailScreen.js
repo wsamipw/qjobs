@@ -37,7 +37,8 @@ import {
   REVOKED,
   TIMEOUT,
   COMPLETED,
-  UNCOMPLETED
+  UNCOMPLETED,
+  PRIMARY_COLOR
 } from "../../config/CONSTANTS";
 
 import {
@@ -370,7 +371,7 @@ class SearchDetailScreen extends Component {
     return eachItem ? (
       <ScrollView scrollEnabled>
         <View style={styles.mainWrapper}>
-          <StatusBar barStyle="light-content" backgroundColor="#ecf0f1" />
+          <StatusBar barStyle="light-content" backgroundColor={PRIMARY_COLOR} />
           <Card>
             {/* <Text>Name: {eachItem.name}</Text> */}
             <Text style={styles.headingTextStyles}>Description</Text>
