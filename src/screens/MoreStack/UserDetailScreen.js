@@ -6,7 +6,9 @@ import {
   ScrollView,
   Text,
   Image,
-  ActivityIndicator
+  ActivityIndicator,
+  StyleSheet,
+  StatusBar
 } from "react-native";
 import { Container, Content, Item, Input, DatePicker } from "native-base";
 import { Button } from "react-native-elements";
@@ -42,7 +44,7 @@ class UserDetailScreen extends Component {
     currentAddress: "",
     permanentAddress: "",
     gender: "Male",
-    dateOfBirth: new Date().toJSON().slice(0, 10)
+    dateOfBirth: new Date()
   };
 
   async componentDidMount() {
@@ -70,9 +72,10 @@ class UserDetailScreen extends Component {
   render() {
     return (
       <ScrollView scrollEnabled>
+        <StatusBar barStyle="light-content" backgroundColor="#ecf0f1" />
         <Container>
-          <Content scrollEnabled contentContainerStyle={styles.contentStyle}>
-            <View style={styles.mainContent}>
+          <Content scrollEnabled>
+            <View>
               <DatePicker
                 defaultDate={new Date(this.state.dateOfBirth)}
                 minimumDate={new Date(1951, 1, 1)}
@@ -201,14 +204,14 @@ class UserDetailScreen extends Component {
   }
 }
 
-// const styles = StyleSheet.create({
-//   contentStyle: {
-//     flex: 1,
-//     flexDirection: "column",
-//     justifyContent: "flex-start",
-//     alignItems: "center"
-//   }
-// });
+const userstyles = StyleSheet.create({
+  contentStyle: {
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "center"
+  }
+});
 
 export default compose(
   graphql(UPDATE_USER_MUTATION, {

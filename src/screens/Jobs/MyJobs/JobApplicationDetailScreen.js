@@ -263,6 +263,7 @@ class JobApplicationDetailScreen extends Component {
               if (error) {
                 console.log("error job status: ", JSON.stringify(error));
                 stopPolling();
+                return <Text>Error Data Fetching</Text>;
               }
 
               if (finalData) {

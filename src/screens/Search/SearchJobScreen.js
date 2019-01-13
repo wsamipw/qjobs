@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   contentStyle: {
     flex: 1,
     flexDirection: "column",
-    justifyContent: "flex-start",
+    justifyContent: "center",
     alignItems: "center"
   },
   mainWrapper: {
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     marginTop: Dimensions.get("window").height * 0.1,
     width: Dimensions.get("screen").width * 0.8,
     flexDirection: "column",
-    justifyContent: "flex-start",
+    justifyContent: "center",
     alignItems: "center",
     zIndex: 1
   },

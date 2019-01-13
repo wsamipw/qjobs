@@ -7,13 +7,13 @@ import {
   StatusBar
 } from "react-native";
 
-import { Button, ListItem, Text } from "native-base";
+import { Button, ListItem, Text, Container, Content } from "native-base";
 import { Card } from "react-native-elements";
 
 import { JOB_STATUS_CHECK_QUERY } from "../../../config/queries";
 
 import { _retrieveData } from "../../../config/utils";
-import { USER_DATA } from "../../../config/CONSTANTS";
+import { USER_DATA, PRIMARY_COLOR } from "../../../config/CONSTANTS";
 
 class MyJobDetailScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -48,10 +48,10 @@ class MyJobDetailScreen extends Component {
     const eachItem = this.props.navigation.getParam("item", null);
 
     return (
-      <ScrollView scrollEnabled>
+      <Content scrollEnabled>
+        <StatusBar barStyle="light-content" backgroundColor="#ecf0f1" />
         {eachItem ? (
           <View style={styles.mainWrapper}>
-            <StatusBar barStyle="light-content" backgroundColor="#ecf0f1" />
             <Card>
               {/* <Text>Name: {eachItem.name}</Text> */}
               <Text style={styles.headingTextStyles}>Description</Text>
@@ -77,8 +77,11 @@ class MyJobDetailScreen extends Component {
         ) : null}
 
         <Button
-          backgroundColor="#3F51B5"
-          primary
+          backgroundColor={PRIMARY_COLOR}
+          block
+          style={{
+            marginHorizontal: Dimensions.get("screen").width * 0.04
+          }}
           onPress={() => {
             this.props.navigation.navigate("jobApplicationsList", {
               jobId: eachItem.id
@@ -87,7 +90,7 @@ class MyJobDetailScreen extends Component {
         >
           <Text>See Job Applications</Text>
         </Button>
-      </ScrollView>
+      </Content>
     );
   }
 }
