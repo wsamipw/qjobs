@@ -136,7 +136,10 @@ class JobApplicationDetailScreen extends Component {
           success
           style={styles.statusBtnStylesAppliedJobs}
           onPress={() => {
-            this._toggleModal(item);
+            // this._toggleModal(item);
+            this.props.navigation.navigate("payment", {
+              id: item.id
+            });
           }}
         >
           <Text>FINALIZE JOB</Text>
@@ -319,7 +322,7 @@ class JobApplicationDetailScreen extends Component {
               }
 
               if (finalData) {
-                console.log("finaldata ran job app detail: ", finalData);
+                // console.log("finaldata ran job app detail: ", finalData);
                 return this.renderJobStatus(finalData);
               }
             }}
@@ -373,6 +376,7 @@ class JobApplicationDetailScreen extends Component {
                   />
                 </Item>
                 <Textarea
+                  style={{ width: "100%" }}
                   rowSpan={5}
                   bordered
                   value={this.state.review}

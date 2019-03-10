@@ -40,10 +40,11 @@ import TrainingFormScreen from "./Training/TrainingFormScreen";
 // Settings Related Screens
 import SettingsScreen from "./Settings/SettingsScreen";
 import Accounts from "./Settings/Accounts/Accounts";
-
 import ApplyJob from "./ApplyJob";
-
 import More from "./MoreStack/More";
+
+import BraintreePayment from "./BraintreePayment/BraintreePaymentScreen"
+
 
 import {
   PostJobScreen1,
@@ -67,6 +68,7 @@ export {
   MyJobDetailScreen,
   JobApplicationsListScreen,
   JobApplicationDetailScreen,
+  BraintreePayment,
   MyJobsScreen,
   AppliedJobsScreen,
   UserDetailScreen,

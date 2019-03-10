@@ -30,6 +30,24 @@ export const APPLY_JOB_MUTATION = gql`
   }
 `;
 
+export const INPUT_TOTAL_HOURS_MUTATION = gql`
+  mutation InputTotalhoursMutation($id: ID!, $totalHours: Float!) {
+    inputTotalhours(id: $id, totalHours: $totalHours) {
+      msg
+      status
+    }
+  }
+`;
+
+export const CREATE_PAYMENT_MUTATION = gql`
+  mutation CreatePaymentMutation($id: ID!, $nonce: String!) {
+    createPayment(id: $id, nonce: $nonce) {
+      msg
+      status
+    }
+  }
+`;
+
 export const DELETE_APPLY_JOB_MUTATION = gql`
   mutation DeleteApplyJobMutation($id: ID!) {
     deleteApplyjob(id: $id) {

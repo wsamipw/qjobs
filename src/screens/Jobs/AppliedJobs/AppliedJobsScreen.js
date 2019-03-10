@@ -2,12 +2,14 @@ import React, { Component } from "react";
 import { View, FlatList, ActivityIndicator } from "react-native";
 import { Query } from "react-apollo";
 import moment from "moment";
-import { ListItem, Right, Body, Text, Icon, Badge } from "native-base";
+import { ListItem, Right, Body, Text, Icon, Badge, Spinner } from "native-base";
 import { APPLIED_JOBS_QUERY } from "../../../config/queries";
 import { PRIMARY_COLOR } from "../../../config/CONSTANTS";
 
 class AppliedJobsScreen extends Component {
-  val = { page: 1, rows: 4 };
+  val = { page: 1, rows: 5 };
+
+  fetchMoreLoading = false;
 
   _renderItem = ({ item }) => (
     <ListItem
@@ -51,28 +53,41 @@ class AppliedJobsScreen extends Component {
   );
 
   render() {
-    console.log("this props applied");
     return (
       <View>
         <Query
           query={APPLIED_JOBS_QUERY}
           fetchPolicy="cache-and-network"
           variables={{ page: this.val.page, rows: this.val.rows }}
-          notifyOnNetworkStatusChange
+          // notifyOnNetworkStatusChange
         >
           {({ loading, error, data, refetch, networkStatus, fetchMore }) => {
-            let displayText = "";
+            if (networkStatus === 4) {
+              console.log("network status lading: ", loading);
+              console.log("network status data: ", data);
 
-            if (networkStatus === 4)
               return <ActivityIndicator size="large" color="#ff6347" />;
-            if (loading)
+            }
+            if (loading && !this.fetchMoreLoading) {
+              console.log("loading  loading: ", loading);
+              console.log("loading  data: ", data);
               return <ActivityIndicator size="large" color="#ff6347" />;
+            }
             if (error) {
               console.log("error applied jobs: ", JSON.stringify(error));
               return <Text>Error Fetching Data !</Text>;
             }
 
-            console.log("data: appleid:  ", data);
+            // console.log(
+            //   "data: appleid:  ",
+            //   data.appliedJobs.page,
+            //   " ",
+            //   data.appliedJobs.pages,
+            //   " ",
+            //   data.appliedJobs.rows,
+            //   " ",
+            //   data.appliedJobs.rowCount
+            // );
 
             if (data && data.appliedJobs && data.appliedJobs.data.length) {
               return (
@@ -80,35 +95,46 @@ class AppliedJobsScreen extends Component {
                   <FlatList
                     data={data.appliedJobs.data}
                     refreshing={networkStatus === 4}
-                    onRefresh={() => refetch()}
+                    onRefresh={() => {
+                      console.log("val page refetch: ", this.val.page);
+                      this.val.page = 1;
+                      refetch();
+                    }}
                     keyExtractor={item => item.id}
                     onEndReached={() => {
                       this.val.page += 1;
+                      this.fetchMoreLoading = true;
 
+                      console.log("page:", this.val.page);
+                      console.log("pagessss: ", data.appliedJobs.pages);
                       if (this.val.page <= data.appliedJobs.pages) {
+                        console.log("fetchmore ran: ", this.val.page);
                         fetchMore({
                           variables: {
                             page: this.val.page,
                             rows: this.val.rows
                           },
                           updateQuery: (prev, { fetchMoreResult }) => {
+                            this.fetchMoreLoading = false;
                             if (!fetchMoreResult) return prev;
                             return Object.assign({}, prev, {
                               appliedJobs: {
                                 ...prev.appliedJobs,
                                 data: [
                                   ...prev.appliedJobs.data,
-                                  ...fetchMoreResult.appliedJobs
-                                ]
+                                  ...fetchMoreResult.appliedJobs.data
+                                ],
+                                page: fetchMoreResult.appliedJobs.page
                               }
                             });
                           }
                         });
                       }
                     }}
-                    onEndReachedThreshold={0.1}
+                    onEndReachedThreshold={0.8}
                     renderItem={this._renderItem}
                   />
+                  {this.fetchMoreLoading && <Spinner color="grey" />}
                 </View>
               );
             } else {

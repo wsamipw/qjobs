@@ -33,7 +33,8 @@ import {
   ApplyJob,
   More,
   JobApplicationsListScreen,
-  JobApplicationDetailScreen
+  JobApplicationDetailScreen,
+  BraintreePayment
 } from "..";
 import { ACCENT_COLOR } from "../../config/CONSTANTS";
 
@@ -45,6 +46,8 @@ const JobsStack = createStackNavigator(
     appliedJobDetail: AppliedJobDetailScreen,
     jobApplicationsList: JobApplicationsListScreen,
     jobApplicationDetail: JobApplicationDetailScreen,
+
+    payment: BraintreePayment,
 
     myJobDetail: MyJobDetailScreen,
 

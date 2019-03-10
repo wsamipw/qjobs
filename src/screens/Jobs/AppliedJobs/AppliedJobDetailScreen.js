@@ -8,9 +8,11 @@ import {
   Alert
 } from "react-native";
 
+import DropdownAlert from "react-native-dropdownalert";
+
 import { isEmpty } from "lodash";
 
-import { Button, ListItem, Text } from "native-base";
+import { Item, Button, ListItem, Text, Input } from "native-base";
 import { Card, Divider } from "react-native-elements";
 import { compose, graphql } from "react-apollo";
 
@@ -34,7 +36,8 @@ import {
 
 import {
   DELETE_APPLY_JOB_MUTATION,
-  CONFIRM_APPLY_JOB_MUTATION
+  CONFIRM_APPLY_JOB_MUTATION,
+  INPUT_TOTAL_HOURS_MUTATION
 } from "../../../config/mutations";
 import { APPLIED_JOBS_QUERY } from "../../../config/queries";
 
@@ -55,7 +58,9 @@ class AppliedJobDetailScreen extends Component {
 
   state = {
     // LoggedIn user id
-    id: ""
+    id: "",
+    totalHours: "",
+    loading: false
   };
 
   async componentDidMount() {
@@ -68,7 +73,7 @@ class AppliedJobDetailScreen extends Component {
   }
 
   renderStatus = item => {
-    console.log("renderStatus applied job ", item);
+    // console.log("renderStatus applied job ", item);
     if (item.status === ACCEPTED) {
       console.log("accepted: ", item.status);
       return (
@@ -379,6 +384,69 @@ class AppliedJobDetailScreen extends Component {
     }
   };
 
+  renderInputTotalHoursForm = () => {
+    return (
+      <View>
+        <Item>
+          <Input
+            keyboardType="numeric"
+            placeholder="Total Hours to complete this job"
+            value={this.state.totalHours}
+            onChangeText={val => this.setState({ totalHours: val })}
+          />
+        </Item>
+
+        <Button
+          backgroundColor={PRIMARY_COLOR}
+          rounded
+          block
+          disabled={this.state.loading}
+          style={{
+            marginTop: 15
+          }}
+          onPress={() => {
+            if (this.state.totalHours) {
+              this.setState({
+                loading: true
+              });
+
+              const eachItem = this.props.navigation.getParam("item", null);
+              const id = eachItem && eachItem.id;
+
+              const totalHours = Number(this.state.totalHours);
+
+              this.props
+                .inputTotalhours(id, totalHours)
+                .then(response => {
+                  console.log("eresponse: ", response);
+
+                  if (response.data.inputTotalhours.msg === "success") {
+                    this.setState({ loading: false });
+
+                    this.dropdown.alertWithType("success", "Success");
+                  } else throw new Error(response.data.inputTotalhours.msg);
+                })
+                .catch(error => {
+                  console.log("error total hours:", error);
+                  this.setState({ loading: false });
+
+                  this.dropdown.alertWithType("error", "Error", error.message);
+                });
+            } else {
+              Alert.alert(
+                "Input field Empty",
+                "Please enter the required hours",
+                [{ text: "OK" }]
+              );
+            }
+          }}
+        >
+          <Text>Submit</Text>
+        </Button>
+      </View>
+    );
+  };
+
   render() {
     const eachItem = this.props.navigation.getParam("item", null);
 
@@ -459,20 +527,22 @@ class AppliedJobDetailScreen extends Component {
               !finalData.status !== COMPLETED && startPolling(1000);
               finalData.status === COMPLETED && stopPolling();
 
-              console.log("data inside query: ", data);
+              // console.log("data inside query: ", data);
               if (error) {
                 console.log("error job status: ", error);
                 stopPolling();
               }
 
               if (finalData) {
-                console.log("finaldata ran applied job detail: ", finalData);
+                // console.log("finaldata ran applied job detail: ", finalData);
 
                 return this.renderStatus(finalData);
               }
             }}
           </Query>
+          {this.renderInputTotalHoursForm()}
         </View>
+        <DropdownAlert ref={ref => (this.dropdown = ref)} />
       </ScrollView>
     ) : null;
   }
@@ -495,6 +565,17 @@ const styles = StyleSheet.create({
 });
 
 export default compose(
+  graphql(INPUT_TOTAL_HOURS_MUTATION, {
+    props: ({ mutate }) => ({
+      inputTotalhours: (id, totalHours) =>
+        mutate({
+          variables: {
+            id,
+            totalHours
+          }
+        })
+    })
+  }),
   graphql(DELETE_APPLY_JOB_MUTATION, {
     props: ({ mutate }) => ({
       deleteApplyjob: id =>

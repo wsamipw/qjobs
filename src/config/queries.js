@@ -97,6 +97,12 @@ export const APPLIED_JOBS_QUERY = gql`
   }
 `;
 
+export const CLIENT_PAYMENT_TOKEN_QUERY = gql`
+  query clientPaymentTokenQuery {
+    clientPaymentToken
+  }
+`;
+
 export const JOB_TITLES_QUERY = gql`
   query JobTitlesQuery($name: String) {
     jobTitle(name: $name) {
