@@ -50,9 +50,9 @@ class LoginScreen extends Component {
     }
   }
 
-  componentWillUnmount() {
-    Toast.toastInstance = null;
-  }
+  // componentWillUnmount() {
+  //   Toast.toastInstance = null;
+  // }
 
   _getLocationAsync = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
@@ -181,7 +181,7 @@ class LoginScreen extends Component {
                       this.props.navigation.navigate("home");
                     })
                     .catch(error => {
-                      console.log("data error: ", error);
+                      console.log("data error: ", JSON.stringify(error));
                       // this.dropdown.alertWithType(
                       //   "error",
                       //   "Login Error",

@@ -8,11 +8,11 @@ import {
   Alert
 } from "react-native";
 
-import DropdownAlert from "react-native-dropdownalert";
+// import DropdownAlert from "react-native-dropdownalert";
 
 import { isEmpty } from "lodash";
 
-import { Item, Button, ListItem, Text, Input } from "native-base";
+import { Item, Button, ListItem, Text, Input, Toast } from "native-base";
 import { Card, Divider } from "react-native-elements";
 import { compose, graphql } from "react-apollo";
 
@@ -45,7 +45,7 @@ class AppliedJobDetailScreen extends Component {
   static navigationOptions = ({ navigation }) => {
     return {
       title: `${navigation.state.params.item.naAccordionme ||
-        navigation.state.params.item.job.name}`,
+        navigation.state.params.item.job.properties.name}`,
       headerStyle: {
         backgroundColor: "#5968ef"
       },
@@ -70,6 +70,10 @@ class AppliedJobDetailScreen extends Component {
     } catch (err) {
       console.log("error searchdetailscreen.js: ", err);
     }
+  }
+
+  componentWillUnmount() {
+    Toast.toastInstance = null;
   }
 
   renderStatus = item => {
@@ -416,21 +420,37 @@ class AppliedJobDetailScreen extends Component {
               const totalHours = Number(this.state.totalHours);
 
               this.props
-                .inputTotalhours(id, totalHours)
+                .inputTotalHours(id, totalHours)
                 .then(response => {
                   console.log("eresponse: ", response);
 
-                  if (response.data.inputTotalhours.msg === "success") {
+                  if (response.data.inputTotalHours.msg === "success") {
                     this.setState({ loading: false });
 
-                    this.dropdown.alertWithType("success", "Success");
-                  } else throw new Error(response.data.inputTotalhours.msg);
+                    // this.dropdown.alertWithType("success", "Success");
+
+                    Toast.show({
+                      text: "Success",
+                      buttonText: "Okay",
+                      duration: 3000,
+                      position: "bottom",
+                      type: "success"
+                    });
+                  } else throw new Error(response.data.inputTotalHours.msg);
                 })
                 .catch(error => {
-                  console.log("error total hours:", error);
+                  console.log("error total hours:", JSON.stringify(error));
                   this.setState({ loading: false });
 
-                  this.dropdown.alertWithType("error", "Error", error.message);
+                  Toast.show({
+                    text: error.message,
+                    buttonText: "Okay",
+                    duration: 5000,
+                    position: "bottom",
+                    type: "danger"
+                  });
+
+                  // this.dropdown.alertWithType("error", "Error", error.message);
                 });
             } else {
               Alert.alert(
@@ -449,6 +469,7 @@ class AppliedJobDetailScreen extends Component {
 
   render() {
     const eachItem = this.props.navigation.getParam("item", null);
+    console.log("each item applied job detail: ", eachItem);
 
     return eachItem ? (
       <ScrollView scrollEnabled>
@@ -459,22 +480,6 @@ class AppliedJobDetailScreen extends Component {
             <Text style={styles.headingTextStyles}>Description</Text>
             <Text>{eachItem.description}</Text>
           </Card>
-          {eachItem.extraQuestion && eachItem.extraQuestion.length > 0 && (
-            <Card>
-              <Text style={styles.headingTextStyles}>Extra Questions</Text>
-              {eachItem.extraQuestion.map((eachExtraQuestion, index, arr) => {
-                return (
-                  <ListItem
-                    key={index}
-                    first={index === 0}
-                    last={index === arr.length - 1}
-                  >
-                    <Text>{eachExtraQuestion}</Text>
-                  </ListItem>
-                );
-              })}
-            </Card>
-          )}
 
           {eachItem.applyjobquestionsSet &&
             eachItem.applyjobquestionsSet.length > 0 && (
@@ -495,6 +500,7 @@ class AppliedJobDetailScreen extends Component {
                 )}
               </Card>
             )}
+
           <Query
             query={JOB_STATUS_CHECK_QUERY}
             fetchPolicy="cache-and-network"
@@ -542,7 +548,7 @@ class AppliedJobDetailScreen extends Component {
           </Query>
           {this.renderInputTotalHoursForm()}
         </View>
-        <DropdownAlert ref={ref => (this.dropdown = ref)} />
+        {/* <DropdownAlert ref={ref => (this.dropdown = ref)} /> */}
       </ScrollView>
     ) : null;
   }
@@ -567,7 +573,7 @@ const styles = StyleSheet.create({
 export default compose(
   graphql(INPUT_TOTAL_HOURS_MUTATION, {
     props: ({ mutate }) => ({
-      inputTotalhours: (id, totalHours) =>
+      inputTotalHours: (id, totalHours) =>
         mutate({
           variables: {
             id,

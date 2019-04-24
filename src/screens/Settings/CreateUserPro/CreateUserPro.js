@@ -9,11 +9,11 @@ import {
   Platform,
   StatusBar
 } from "react-native";
-import { Container, Content, Button, Text, View } from "native-base";
+import { Container, Content, Button, Text, View, Toast } from "native-base";
 import { ImagePicker } from "expo";
 import { connect } from "react-redux";
 import { Query, compose, graphql } from "react-apollo";
-import DropdownAlert from "react-native-dropdownalert";
+// import DropdownAlert from "react-native-dropdownalert";
 
 import { CREATE_USER_PRO_MUTATION } from "../../../config/mutations";
 
@@ -21,7 +21,7 @@ import { JOB_TITLES_QUERY } from "../../../config/queries";
 
 import { SELECT_A_JOB_TITLE, PRIMARY_COLOR } from "../../../config/CONSTANTS";
 
-class Accounts extends Component {
+class CreateUserPro extends Component {
   static navigationOptions = {
     headerTitle: "Register as Pro User",
     headerStyle: {
@@ -41,6 +41,8 @@ class Accounts extends Component {
   };
 
   componentWillUnmount() {
+    // Toast.toastInstance = null;
+
     this.setState({
       jobTitle: SELECT_A_JOB_TITLE,
       verifyingDoc1Image: null,
@@ -222,15 +224,22 @@ class Accounts extends Component {
                     .then(response => {
                       console.log("response use pros: ", response);
                       if (
-                        (response.data.createUserpro.status === 200) &
-                        (response.data.createUserpro.msg === "success")
+                        response.data.createUserpro.status === 200 &&
+                        response.data.createUserpro.msg === "success"
                       ) {
                         this.setState({ loading: false });
-                        this.dropdown.alertWithType(
-                          "success",
-                          "Success",
-                          "Successfully Updated"
-                        );
+                        // this.dropdown.alertWithType(
+                        //   "success",
+                        //   "Success",
+                        //   "Successfully Updated"
+                        // );
+                        Toast.show({
+                          text: "Successfully Registered",
+                          buttonText: "Okay",
+                          duration: 3000,
+                          position: "bottom",
+                          type: "success"
+                        });
                       } else throw new Error(response.data.createUserpro.msg);
                     })
                     .catch(error => {
@@ -240,11 +249,19 @@ class Accounts extends Component {
                         JSON.stringify(error)
                       );
 
-                      this.dropdown.alertWithType(
-                        "error",
-                        "Error",
-                        error.message
-                      );
+                      Toast.show({
+                        text: error.message,
+                        buttonText: "Okay",
+                        duration: 3000,
+                        position: "bottom",
+                        type: "danger"
+                      });
+
+                      // this.dropdown.alertWithType(
+                      //   "error",
+                      //   "Error",
+                      //   error.message
+                      // );
                     });
                 });
               } else {
@@ -259,7 +276,7 @@ class Accounts extends Component {
             <Text>Submit</Text>
           </Button>
         </Content>
-        <DropdownAlert ref={ref => (this.dropdown = ref)} />
+        {/* <DropdownAlert ref={ref => (this.dropdown = ref)} /> */}
       </Container>
     );
   }
@@ -313,4 +330,4 @@ export default compose(
         })
     })
   })
-)(Accounts);
+)(CreateUserPro);

@@ -11,46 +11,55 @@ class AppliedJobsScreen extends Component {
 
   fetchMoreLoading = false;
 
-  _renderItem = ({ item }) => (
-    <ListItem
-      onPress={() => {
-        this.props.route.navigation.navigate("appliedJobDetail", {
-          item,
-          key: this.props.route.key
-        });
-      }}
-    >
-      <Body>
-        <Text
-          style={{
-            fontWeight: "bold"
-          }}
-        >
-          {item.job && item.job.name}
-        </Text>
-
-        <Text note>
-          By: {item.job && item.job.employer && item.job.employer.username}
-        </Text>
-        <Text note> Deadline: {moment(item.job.hireBy).fromNow()}</Text>
-      </Body>
-      <Right>
-        <Badge
-          style={{
-            backgroundColor: "white",
-            borderWidth: 1,
-            borderColor: PRIMARY_COLOR
-          }}
-        >
-          <Text style={{ color: PRIMARY_COLOR, fontSize: 8 }}>
-            {item.status}
+  _renderItem = ({ item }) => {
+    return (
+      <ListItem
+        onPress={() => {
+          this.props.route.navigation.navigate("appliedJobDetail", {
+            item,
+            key: this.props.route.key
+          });
+        }}
+      >
+        <Body>
+          <Text
+            style={{
+              fontWeight: "bold"
+            }}
+          >
+            {item.job && item.job.properties.name}
           </Text>
-        </Badge>
-        <Text note>Rate: {item.hourlyRate}</Text>
-        <Icon active name="arrow-forward" />
-      </Right>
-    </ListItem>
-  );
+
+          <Text note>
+            By:{" "}
+            {item.job &&
+              item.job.properties &&
+              item.job.properties.employer &&
+              item.job.properties.employer.username}
+          </Text>
+          <Text note>
+            {" "}
+            Deadline: {moment(item.job.properties.hireBy).fromNow()}
+          </Text>
+        </Body>
+        <Right>
+          <Badge
+            style={{
+              backgroundColor: "white",
+              borderWidth: 1,
+              borderColor: PRIMARY_COLOR
+            }}
+          >
+            <Text style={{ color: PRIMARY_COLOR, fontSize: 8 }}>
+              {item.status}
+            </Text>
+          </Badge>
+          <Text note>Rate: {item.hourlyRate}</Text>
+          <Icon active name="arrow-forward" />
+        </Right>
+      </ListItem>
+    );
+  };
 
   render() {
     return (
@@ -90,6 +99,7 @@ class AppliedJobsScreen extends Component {
             // );
 
             if (data && data.appliedJobs && data.appliedJobs.data.length) {
+              console.log("data apllied jos: ", data.appliedJobs);
               return (
                 <View>
                   <FlatList
@@ -145,12 +155,13 @@ class AppliedJobsScreen extends Component {
                   </View>
                 );
               } else {
+                console.log("no result for aplplpedi jos: ", data.appliedJobs);
                 return (
                   <View style={{ flex: 1 }}>
-                    <StatusBar
+                    {/* <StatusBar
                       barStyle="light-content"
                       backgroundColor={PRIMARY_COLOR}
-                    />
+                    /> */}
                     <View
                       style={{
                         flex: 1,
@@ -168,7 +179,7 @@ class AppliedJobsScreen extends Component {
                       />
                       <Text note>
                         No results for{" "}
-                        {this.props.navigation.state.params.query}
+                        {/* {this.props.navigation.state.params.query} */}
                       </Text>
                     </View>
                   </View>

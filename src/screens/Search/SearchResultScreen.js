@@ -70,27 +70,28 @@ class SearchResultScreen extends Component {
   }
   val = { page: 1, rows: 4 };
 
-  _displayJobStatus = item => {
+  _checkJobStatus = item => {
     if (
-      item.employer &&
+      item.properties.employer &&
       this.state.user &&
-      item.employer.id === this.state.user.id
-    ) {
-      return (
-        <Button rounded small success style={styles.jobStatusBtnStyle}>
-          <Text>My Job</Text>
-        </Button>
-      );
-    }
+      item.properties.employer.id === this.state.user.id
+    )
+      return "My Job";
+
     const appliedJob =
-      item.applyjobSet && item.applyjobSet.length
-        ? item.applyjobSet.find(
+      item.properties.applyjobSet && item.properties.applyjobSet.length
+        ? item.properties.applyjobSet.find(
             eachjobSet => eachjobSet.employee.id === this.state.user.id
           )
         : null;
-    return appliedJob ? (
-      <Button rounded small primary style={styles.jobStatusBtnStyle}>
-        <Text>{appliedJob.status}</Text>
+
+    return appliedJob ? appliedJob.status : null;
+  };
+
+  _displayJobStatus = jobStatus => {
+    return jobStatus ? (
+      <Button rounded small success style={styles.jobStatusBtnStyle}>
+        <Text>{jobStatus}</Text>
       </Button>
     ) : null;
   };
@@ -172,45 +173,53 @@ class SearchResultScreen extends Component {
                       }
                     }}
                     onEndReachedThreshold={0.1}
-                    renderItem={({ item }) => (
-                      <TouchableOpacity
-                        onPress={() =>
-                          this.props.navigation.navigate("searchDetail", {
-                            item
-                          })
-                        }
-                        key={item.id}
-                      >
-                        <Card>
-                          <Text style={styles.jobSearchName}>{item.name}</Text>
-                          <Text style={styles.jobSearchDescription}>
-                            {item.description.slice(
-                              0,
-                              MAX_SHORT_DESCRIPTION_CHARACTER
-                            )}
-                            {item.description.length >
-                              MAX_SHORT_DESCRIPTION_CHARACTER && "..."}
-                          </Text>
-                          {this._displayJobStatus(item)}
-                          <Divider
-                            style={{
-                              marginVertical: 8
-                            }}
-                          />
-                          <View style={styles.searchMetaStyles}>
-                            <Text style={styles.searchMetaTextStyles}>
-                              Applicant: {item.applyJobCount}
+                    renderItem={({ item }) => {
+                      const jobStatus = this._checkJobStatus(item);
+
+                      return (
+                        <TouchableOpacity
+                          onPress={() =>
+                            this.props.navigation.navigate("searchDetail", {
+                              item,
+                              jobStatus
+                            })
+                          }
+                          key={item.id}
+                        >
+                          <Card>
+                            <Text style={styles.jobSearchName}>
+                              {item.properties.name}
                             </Text>
-                            <Text style={styles.searchMetaTextDividerStyles}>
-                              |
+                            <Text style={styles.jobSearchDescription}>
+                              {item.properties.description.slice(
+                                0,
+                                MAX_SHORT_DESCRIPTION_CHARACTER
+                              )}
+                              {item.properties.description.length >
+                                MAX_SHORT_DESCRIPTION_CHARACTER && "..."}
                             </Text>
-                            <Text style={styles.searchMetaTextStyles}>
-                              Deadline: {moment(item.hireBy).fromNow()}
-                            </Text>
-                          </View>
-                        </Card>
-                      </TouchableOpacity>
-                    )}
+                            {this._displayJobStatus(jobStatus)}
+                            <Divider
+                              style={{
+                                marginVertical: 8
+                              }}
+                            />
+                            <View style={styles.searchMetaStyles}>
+                              <Text style={styles.searchMetaTextStyles}>
+                                Applicant: {item.properties.applyJobCount}
+                              </Text>
+                              <Text style={styles.searchMetaTextDividerStyles}>
+                                |
+                              </Text>
+                              <Text style={styles.searchMetaTextStyles}>
+                                Deadline:{" "}
+                                {moment(item.properties.hireBy).fromNow()}
+                              </Text>
+                            </View>
+                          </Card>
+                        </TouchableOpacity>
+                      );
+                    }}
                   />
                 </View>
               );

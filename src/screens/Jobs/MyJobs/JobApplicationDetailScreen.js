@@ -30,7 +30,6 @@ import { Query } from "react-apollo";
 
 import { JOB_STATUS_CHECK_QUERY } from "../../../config/queries";
 
-import Icon from "react-native-vector-icons/Ionicons";
 import { _retrieveData } from "../../../config/utils";
 import {
   USER_DATA,
@@ -129,7 +128,8 @@ class JobApplicationDetailScreen extends Component {
   };
 
   renderJobStatus = item => {
-    if (item.status === CONFIRMED) {
+    console.log("job applic detai: ", item);
+    if (item.status === COMPLETED) {
       return (
         <Button
           block
@@ -154,19 +154,19 @@ class JobApplicationDetailScreen extends Component {
             style={styles.jobStatusButton}
             onPress={() => {
               this.props
-                .selectApplyjob(item.id, false)
+                .selectApplyJob(item.id, false)
                 .then(response => {
                   console.log("resp_close: ", response);
                   if (
-                    response.data.selectApplyjob.status === 200 &&
-                    response.data.selectApplyjob.msg === "success"
+                    response.data.selectApplyJob.status === 200 &&
+                    response.data.selectApplyJob.msg === "success"
                   ) {
                     console.log("success close");
                     // this.props.navigation.goBack();
                   } else throw new Error(response);
                 })
                 .catch(error => {
-                  console.log("erro: ", JSON.stringify(error));
+                  console.log("erro: ", error);
                 });
             }}
           >
@@ -178,12 +178,12 @@ class JobApplicationDetailScreen extends Component {
             style={styles.jobStatusButton}
             onPress={() => {
               this.props
-                .selectApplyjob(item.id, true)
+                .selectApplyJob(item.id, true)
                 .then(response => {
                   console.log("resp_tick: ", response);
                   if (
-                    response.data.selectApplyjob.status === 200 &&
-                    response.data.selectApplyjob.msg === "success"
+                    response.data.selectApplyJob.status === 200 &&
+                    response.data.selectApplyJob.msg === "success"
                   ) {
                     console.log("success tick");
                     // this.props.navigation.goBack();
@@ -228,7 +228,7 @@ class JobApplicationDetailScreen extends Component {
             {/* {this.renderStatus(eachItem.status)} */}
             <Query
               query={JOB_STATUS_CHECK_QUERY}
-              fetchPolicy="cache-and-network"
+              fetchPolicy="network-only"
               variables={{
                 id: eachItem.id,
                 status: eachItem.status
@@ -242,22 +242,31 @@ class JobApplicationDetailScreen extends Component {
                  * The above query checks whether the `status`
                  * has been changed and responds only if `status`
                  * is changed else it is timedOut. So if no response
-                 * if received from the query, `eachItem` variable
+                 * is received from the query, `eachItem` variable
                  * is to be used to get the unchanged status
                  */
+                console.log("data polling: ", data);
                 const finalData = !isEmpty(data)
                   ? data.jobStatusChange
                   : eachItem;
 
-                !finalData.status !== COMPLETED && startPolling(1000);
-                finalData.status === COMPLETED && stopPolling();
+                if (!finalData.status !== COMPLETED) {
+                  console.log("NOT completed status");
+                  startPolling(1000);
+                }
+                if (finalData.status === COMPLETED) {
+                  console.log("status completed");
+                  stopPolling();
+                }
 
                 if (error) {
+                  console.log("erropolling: ", error);
                   stopPolling();
                   return <Text>Error Data Fetching</Text>;
                 }
 
                 if (finalData) {
+                  console.log("finaldata render statys", finalData);
                   return this.renderStatus(finalData.status);
                 }
               }}
@@ -282,7 +291,6 @@ class JobApplicationDetailScreen extends Component {
                 )}
               </Card>
             )}
-
           <Query
             query={JOB_STATUS_CHECK_QUERY}
             fetchPolicy="cache-and-network"
@@ -312,7 +320,7 @@ class JobApplicationDetailScreen extends Component {
                 ? data.jobStatusChange
                 : eachItem;
 
-              !finalData.status !== COMPLETED && startPolling(1000);
+              finalData.status !== COMPLETED && startPolling(1000);
               finalData.status === COMPLETED && stopPolling();
 
               if (error) {
@@ -327,7 +335,6 @@ class JobApplicationDetailScreen extends Component {
               }
             }}
           </Query>
-
           <Modal
             animationType="slide"
             transparent={false}
@@ -404,7 +411,7 @@ class JobApplicationDetailScreen extends Component {
 
                     console.log("selc: ", selectedApplicationItem);
                     this.props
-                      .completeApplyjob(
+                      .completeApplyJob(
                         selectedApplicationItem.id,
                         isJobCompleted,
                         totalHours,
@@ -414,8 +421,8 @@ class JobApplicationDetailScreen extends Component {
                       .then(response => {
                         console.log("resp_confirm: ", response);
                         if (
-                          response.data.completeApplyjob.status === 200 &&
-                          response.data.completeApplyjob.msg === "success"
+                          response.data.completeApplyJob.status === 200 &&
+                          response.data.completeApplyJob.msg === "success"
                         ) {
                           console.log("success close");
                           // this.props.navigation.goBack();
@@ -470,7 +477,7 @@ const styles = StyleSheet.create({
 export default compose(
   graphql(SELECT_APPLY_JOB_MUTATION, {
     props: ({ mutate }) => ({
-      selectApplyjob: (id, select) =>
+      selectApplyJob: (id, select) =>
         mutate({
           variables: {
             id,
@@ -483,7 +490,7 @@ export default compose(
 
   graphql(COMPLETE_APPLY_JOB_MUTATION, {
     props: ({ mutate }) => ({
-      completeApplyjob: (id, complete, totalHours, rating, review) =>
+      completeApplyJob: (id, complete, totalHours, rating, review) =>
         mutate({
           variables: {
             id,

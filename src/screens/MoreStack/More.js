@@ -105,7 +105,7 @@ class More extends Component {
           backgroundColor: "#fff"
         }}
         onPress={() => {
-          console.log("Accounts pressed");
+          console.log("CreateUserPro pressed");
           this.props.navigation.navigate("accounts");
         }}
       >

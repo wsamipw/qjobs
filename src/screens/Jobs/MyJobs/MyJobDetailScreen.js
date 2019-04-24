@@ -10,16 +10,14 @@ import {
 import { Button, ListItem, Text, Container, Content } from "native-base";
 import { Card } from "react-native-elements";
 
-import { JOB_STATUS_CHECK_QUERY } from "../../../config/queries";
-
 import { _retrieveData } from "../../../config/utils";
 import { USER_DATA, PRIMARY_COLOR } from "../../../config/CONSTANTS";
 
 class MyJobDetailScreen extends Component {
   static navigationOptions = ({ navigation }) => {
     return {
-      title: `${navigation.state.params.item.name ||
-        navigation.state.params.item.job.name}`,
+      title: `${navigation.state.params.item.properties.name ||
+        navigation.state.params.item.properties.jobTitle.name}`,
       headerStyle: {
         backgroundColor: "#5968ef"
       },
@@ -55,24 +53,27 @@ class MyJobDetailScreen extends Component {
             <Card>
               {/* <Text>Name: {eachItem.name}</Text> */}
               <Text style={styles.headingTextStyles}>Description</Text>
-              <Text>{eachItem.description}</Text>
+              <Text>{eachItem.properties.description}</Text>
             </Card>
-            {eachItem.extraQuestion && eachItem.extraQuestion.length > 0 && (
-              <Card>
-                <Text style={styles.headingTextStyles}>Extra Questions</Text>
-                {eachItem.extraQuestion.map((eachExtraQuestion, index, arr) => {
-                  return (
-                    <ListItem
-                      key={index}
-                      first={index === 0}
-                      last={index === arr.length - 1}
-                    >
-                      <Text>{eachExtraQuestion}</Text>
-                    </ListItem>
-                  );
-                })}
-              </Card>
-            )}
+            {eachItem.properties.extraQuestion &&
+              eachItem.properties.extraQuestion.length > 0 && (
+                <Card>
+                  <Text style={styles.headingTextStyles}>Extra Questions</Text>
+                  {eachItem.properties.extraQuestion.map(
+                    (eachExtraQuestion, index, arr) => {
+                      return (
+                        <ListItem
+                          key={index}
+                          first={index === 0}
+                          last={index === arr.length - 1}
+                        >
+                          <Text>{eachExtraQuestion}</Text>
+                        </ListItem>
+                      );
+                    }
+                  )}
+                </Card>
+              )}
           </View>
         ) : null}
 

@@ -1,41 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Checkout</title>
-  </head>
-  <body>
-    <div id="dropin-container"></div>
-    <button id="submit-button">Purchase</button>
+ <head>
+   <meta charset="UTF-8">
+   <title>Checkout</title>
+ </head>
+ <body>
+   <div id="dropin-container"></div>
+   <button id="submit-button">Purchase</button>
 
-    <script src="https://js.braintreegateway.com/web/dropin/1.15.0/js/dropin.min.js"></script>
+   <script src="https://js.braintreegateway.com/web/dropin/1.15.0/js/dropin.min.js"></script>
 
-    <script>
-      var submitButton = document.querySelector("#submit-button");
+   <script>
+     var submitButton = document.querySelector('#submit-button');
 
-      braintree.dropin.create(
-        {
-          authorization:
-            "eyJ2ZXJzaW9uIjoyLCJhdXRob3JpemF0aW9uRmluZ2VycHJpbnQiOiI4OWUxODI2YmMxMjNkN2I4NjNkNDIzNTkwM2NmMjJjOGRlOTRjNWY1MDg5Nzg5MzQxOGQxMjZmNjZiZDBhYmUzfGNyZWF0ZWRfYXQ9MjAxOS0wMi0wNFQwNzo1NzozMi44NDE5NjY1NjErMDAwMFx1MDAyNm1lcmNoYW50X2lkPXIzcHpzM3FjaGd2YjM0NnJcdTAwMjZwdWJsaWNfa2V5PTR0aDN5cDJ0azkzOWt0d2YiLCJjb25maWdVcmwiOiJodHRwczovL2FwaS5zYW5kYm94LmJyYWludHJlZWdhdGV3YXkuY29tOjQ0My9tZXJjaGFudHMvcjNwenMzcWNoZ3ZiMzQ2ci9jbGllbnRfYXBpL3YxL2NvbmZpZ3VyYXRpb24iLCJncmFwaFFMIjp7InVybCI6Imh0dHBzOi8vcGF5bWVudHMuc2FuZGJveC5icmFpbnRyZWUtYXBpLmNvbS9ncmFwaHFsIiwiZGF0ZSI6IjIwMTgtMDUtMDgifSwiY2hhbGxlbmdlcyI6W10sImVudmlyb25tZW50Ijoic2FuZGJveCIsImNsaWVudEFwaVVybCI6Imh0dHBzOi8vYXBpLnNhbmRib3guYnJhaW50cmVlZ2F0ZXdheS5jb206NDQzL21lcmNoYW50cy9yM3B6czNxY2hndmIzNDZyL2NsaWVudF9hcGkiLCJhc3NldHNVcmwiOiJodHRwczovL2Fzc2V0cy5icmFpbnRyZWVnYXRld2F5LmNvbSIsImF1dGhVcmwiOiJodHRwczovL2F1dGgudmVubW8uc2FuZGJveC5icmFpbnRyZWVnYXRld2F5LmNvbSIsImFuYWx5dGljcyI6eyJ1cmwiOiJodHRwczovL29yaWdpbi1hbmFseXRpY3Mtc2FuZC5zYW5kYm94LmJyYWludHJlZS1hcGkuY29tL3IzcHpzM3FjaGd2YjM0NnIifSwidGhyZWVEU2VjdXJlRW5hYmxlZCI6dHJ1ZSwicGF5cGFsRW5hYmxlZCI6dHJ1ZSwicGF5cGFsIjp7ImRpc3BsYXlOYW1lIjoiUWpvYnMiLCJjbGllbnRJZCI6bnVsbCwicHJpdmFjeVVybCI6Imh0dHA6Ly9leGFtcGxlLmNvbS9wcCIsInVzZXJBZ3JlZW1lbnRVcmwiOiJodHRwOi8vZXhhbXBsZS5jb20vdG9zIiwiYmFzZVVybCI6Imh0dHBzOi8vYXNzZXRzLmJyYWludHJlZWdhdGV3YXkuY29tIiwiYXNzZXRzVXJsIjoiaHR0cHM6Ly9jaGVja291dC5wYXlwYWwuY29tIiwiZGlyZWN0QmFzZVVybCI6bnVsbCwiYWxsb3dIdHRwIjp0cnVlLCJlbnZpcm9ubWVudE5vTmV0d29yayI6dHJ1ZSwiZW52aXJvbm1lbnQiOiJvZmZsaW5lIiwidW52ZXR0ZWRNZXJjaGFudCI6ZmFsc2UsImJyYWludHJlZUNsaWVudElkIjoibWFzdGVyY2xpZW50MyIsImJpbGxpbmdBZ3JlZW1lbnRzRW5hYmxlZCI6dHJ1ZSwibWVyY2hhbnRBY2NvdW50SWQiOiJxam9icyIsImN1cnJlbmN5SXNvQ29kZSI6IkVVUiJ9LCJtZXJjaGFudElkIjoicjNwenMzcWNoZ3ZiMzQ2ciIsInZlbm1vIjoib2ZmIn0=",
-          selector: "#dropin-container"
-        },
-        function(err, dropinInstance) {
-          if (err) {
-            // Handle any errors that might've occurred when creating Drop-in
-            console.error(err);
-            return;
-          }
-          submitButton.addEventListener("click", function() {
-            dropinInstance.requestPaymentMethod(function(err, payload) {
-              if (err) {
-                // Handle errors in requesting payment method
-              }
+     braintree.dropin.create({
+       authorization: 'eyJ2ZXJzaW9uIjoyLCJhdXRob3JpemF0aW9uRmluZ2VycHJpbnQiOiJkY2JkMjY3NmU3NjZmYmFiOTI2Y2MzOTBmODc2YmEzYTViNDkwNjExMmU1NWM1YTZhZTNjMWQ2NzlhZDA2NzkzfGNyZWF0ZWRfYXQ9MjAxOS0wMi0wNFQwODo1NTo1Ni42Mzc2MTk0NTcrMDAwMFx1MDAyNm1lcmNoYW50X2lkPXIzcHpzM3FjaGd2YjM0NnJcdTAwMjZwdWJsaWNfa2V5PTR0aDN5cDJ0azkzOWt0d2YiLCJjb25maWdVcmwiOiJodHRwczovL2FwaS5zYW5kYm94LmJyYWludHJlZWdhdGV3YXkuY29tOjQ0My9tZXJjaGFudHMvcjNwenMzcWNoZ3ZiMzQ2ci9jbGllbnRfYXBpL3YxL2NvbmZpZ3VyYXRpb24iLCJncmFwaFFMIjp7InVybCI6Imh0dHBzOi8vcGF5bWVudHMuc2FuZGJveC5icmFpbnRyZWUtYXBpLmNvbS9ncmFwaHFsIiwiZGF0ZSI6IjIwMTgtMDUtMDgifSwiY2hhbGxlbmdlcyI6W10sImVudmlyb25tZW50Ijoic2FuZGJveCIsImNsaWVudEFwaVVybCI6Imh0dHBzOi8vYXBpLnNhbmRib3guYnJhaW50cmVlZ2F0ZXdheS5jb206NDQzL21lcmNoYW50cy9yM3B6czNxY2hndmIzNDZyL2NsaWVudF9hcGkiLCJhc3NldHNVcmwiOiJodHRwczovL2Fzc2V0cy5icmFpbnRyZWVnYXRld2F5LmNvbSIsImF1dGhVcmwiOiJodHRwczovL2F1dGgudmVubW8uc2FuZGJveC5icmFpbnRyZWVnYXRld2F5LmNvbSIsImFuYWx5dGljcyI6eyJ1cmwiOiJodHRwczovL29yaWdpbi1hbmFseXRpY3Mtc2FuZC5zYW5kYm94LmJyYWludHJlZS1hcGkuY29tL3IzcHpzM3FjaGd2YjM0NnIifSwidGhyZWVEU2VjdXJlRW5hYmxlZCI6dHJ1ZSwicGF5cGFsRW5hYmxlZCI6dHJ1ZSwicGF5cGFsIjp7ImRpc3BsYXlOYW1lIjoiUWpvYnMiLCJjbGllbnRJZCI6bnVsbCwicHJpdmFjeVVybCI6Imh0dHA6Ly9leGFtcGxlLmNvbS9wcCIsInVzZXJBZ3JlZW1lbnRVcmwiOiJodHRwOi8vZXhhbXBsZS5jb20vdG9zIiwiYmFzZVVybCI6Imh0dHBzOi8vYXNzZXRzLmJyYWludHJlZWdhdGV3YXkuY29tIiwiYXNzZXRzVXJsIjoiaHR0cHM6Ly9jaGVja291dC5wYXlwYWwuY29tIiwiZGlyZWN0QmFzZVVybCI6bnVsbCwiYWxsb3dIdHRwIjp0cnVlLCJlbnZpcm9ubWVudE5vTmV0d29yayI6dHJ1ZSwiZW52aXJvbm1lbnQiOiJvZmZsaW5lIiwidW52ZXR0ZWRNZXJjaGFudCI6ZmFsc2UsImJyYWludHJlZUNsaWVudElkIjoibWFzdGVyY2xpZW50MyIsImJpbGxpbmdBZ3JlZW1lbnRzRW5hYmxlZCI6dHJ1ZSwibWVyY2hhbnRBY2NvdW50SWQiOiJxam9icyIsImN1cnJlbmN5SXNvQ29kZSI6IkVVUiJ9LCJtZXJjaGFudElkIjoicjNwenMzcWNoZ3ZiMzQ2ciIsInZlbm1vIjoib2ZmIn0=',
+       selector: '#dropin-container'
+     }, function (err, dropinInstance) {
+       if (err) {
+         // Handle any errors that might've occurred when creating Drop-in
+         console.error(err);
+         return;
+       }
+       submitButton.addEventListener('click', function () {
+         dropinInstance.requestPaymentMethod(function (err, payload) {
+           if (err) {
+             // Handle errors in requesting payment method
+           }
 
-              // Send payload.nonce to your server
-            });
-          });
-        }
-      );
-    </script>
-  </body>
+           // Send payload.nonce to your server
+         });
+       });
+     });
+   </script>
+ </body>
 </html>

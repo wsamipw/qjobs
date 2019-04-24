@@ -9,7 +9,8 @@ import {
   Textarea,
   Container,
   Content,
-  Label
+  Label,
+  Toast
 } from "native-base";
 
 import RadioForm from "react-native-simple-radio-button";
@@ -28,7 +29,9 @@ import { PRIMARY_COLOR } from "../config/CONSTANTS";
 class SearchDetailScreen extends Component {
   static navigationOptions = ({ navigation }) => {
     return {
-      title: `Apply for ${navigation.state.params.item.jobTitle.name}`,
+      title: `Apply for ${
+        navigation.state.params.item.properties.jobTitle.name
+      }`,
       headerStyle: {
         backgroundColor: "#5968ef"
       },
@@ -51,8 +54,10 @@ class SearchDetailScreen extends Component {
     const item = this.props.navigation.getParam("item", null);
 
     const extraQuestion =
-      item && item.extraQuestion && item.extraQuestion.length
-        ? item.extraQuestion.map(eachExtraQuestion => ({
+      item &&
+      item.properties.extraQuestion &&
+      item.properties.extraQuestion.length
+        ? item.properties.extraQuestion.map(eachExtraQuestion => ({
             question: eachExtraQuestion,
             answer: ""
           }))
@@ -60,6 +65,10 @@ class SearchDetailScreen extends Component {
 
     this.setState({ job: item.id, extraQuestion });
   }
+
+  // componentWillUnmount() {
+  //   Toast.toastInstance = null;
+  // }
 
   onChange = (key, val) => this.setState({ [key]: val });
 
@@ -199,7 +208,7 @@ class SearchDetailScreen extends Component {
                     extraQuestion
                   )
                   .then(response => {
-                    console.log("response:", response);
+                    console.log("response apply:", response);
                     if (
                       response.data.applyJob.status === 200 &&
                       response.data.applyJob.msg === "success"
@@ -208,10 +217,19 @@ class SearchDetailScreen extends Component {
                       // this.Default_Toast_Bottom();
                       this.resetStack();
                       this.props.navigation.navigate("jobs");
-                    } else throw new Error(response);
+                    } else throw new Error(JSON.stringify(response));
                   })
                   .catch(error => {
-                    console.log("error apply jov:", JSON.stringify(error));
+                    const err = JSON.parse(error.message);
+                    console.log("error apply jov:", err);
+                    Toast.show({
+                      text:
+                        "You must first be registered as a professional for this job! \nGoto More > Register as Pro User",
+                      buttonText: "Okay",
+                      duration: 3000,
+                      position: "bottom",
+                      type: "danger"
+                    });
                   });
               }}
             >

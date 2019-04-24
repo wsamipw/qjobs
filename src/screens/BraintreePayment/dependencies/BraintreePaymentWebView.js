@@ -50,6 +50,7 @@ class BraintreePaymentWebView extends Component {
       console.log(RETRIEVE_NONCE_FULFILLED);
       this.setState({ showGetNonceActivityIndicator: false });
       this.setState({ showSubmitPaymentActivityIndicator: true });
+      console.log("event payloda nonce: ", event.payload.response.nonce);
       this.props.nonceObtainedCallback(event.payload.response.nonce);
     });
 

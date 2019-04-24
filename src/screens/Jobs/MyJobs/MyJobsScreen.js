@@ -24,12 +24,15 @@ class MyJobScreen extends Component {
               fontWeight: "bold"
             }}
           >
-            {item.jobTitle && item.jobTitle.name}
+            {item.properties.jobTitle && item.properties.jobTitle.name}
           </Text>
-          <Text note> Deadline: {moment(item.hireBy).fromNow()}</Text>
+          <Text note>
+            {" "}
+            Deadline: {moment(item.properties.hireBy).fromNow()}
+          </Text>
         </Body>
         <Right>
-          <Text note>Applicant: {item.applyJobCount}</Text>
+          <Text note>Applicant: {item.properties.applyJobCount}</Text>
           <Icon active name="arrow-forward" />
         </Right>
       </ListItem>

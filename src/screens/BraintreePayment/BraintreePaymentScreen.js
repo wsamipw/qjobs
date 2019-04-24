@@ -1,14 +1,6 @@
 import React, { Component } from "react";
-import {
-  StyleSheet,
-  Text,
-  FlatList,
-  ScrollView,
-  ActivityIndicator
-} from "react-native";
-import { Container, Content, View } from "native-base";
-import { connect } from "react-redux";
-import { Button, Card } from "react-native-elements";
+import { StyleSheet, Text, ActivityIndicator } from "react-native";
+import { View } from "native-base";
 import BraintreePaymentWebView from "./dependencies/BraintreePaymentWebView";
 
 import { Query, compose, graphql } from "react-apollo";
@@ -43,7 +35,7 @@ class BraintreePaymentScreen extends Component {
       .catch(error => {
         this.setState({ paymentAPIResponse: PAYMENT_REJECTED });
 
-        console.log("erro: ", JSON.stringify(error));
+        console.log("erro: ", error);
       });
     // this.props.client
     //   .mutate({
@@ -90,6 +82,7 @@ class BraintreePaymentScreen extends Component {
             );
           }
 
+          console.log("client payment token: ", data);
           return (
             <BraintreePaymentWebView
               clientToken={data.clientPaymentToken}

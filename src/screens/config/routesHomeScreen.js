@@ -29,7 +29,7 @@ import {
   PostJobScreen6,
   // SubPart
   PostJobScreen41,
-  Accounts,
+  CreateUserPro,
   ApplyJob,
   More,
   JobApplicationsListScreen,
@@ -111,7 +111,7 @@ const MoreStack = createStackNavigator(
 
     //Not used currently
     //settings: SettingsScreen,
-    accounts: Accounts
+    accounts: CreateUserPro
     // navigationOptions: {
     //   headerStyle: {
     //     backgroundColor: "#5968ef"

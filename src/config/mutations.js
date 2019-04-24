@@ -32,7 +32,7 @@ export const APPLY_JOB_MUTATION = gql`
 
 export const INPUT_TOTAL_HOURS_MUTATION = gql`
   mutation InputTotalhoursMutation($id: ID!, $totalHours: Float!) {
-    inputTotalhours(id: $id, totalHours: $totalHours) {
+    inputTotalHours(id: $id, totalHours: $totalHours) {
       msg
       status
     }
@@ -50,7 +50,7 @@ export const CREATE_PAYMENT_MUTATION = gql`
 
 export const DELETE_APPLY_JOB_MUTATION = gql`
   mutation DeleteApplyJobMutation($id: ID!) {
-    deleteApplyjob(id: $id) {
+    deleteApplyJob(id: $id) {
       msg
       status
     }
@@ -59,7 +59,7 @@ export const DELETE_APPLY_JOB_MUTATION = gql`
 
 export const SELECT_APPLY_JOB_MUTATION = gql`
   mutation SelectApplyJobMutation($id: ID!, $select: Boolean!) {
-    selectApplyjob(id: $id, select: $select) {
+    selectApplyJob(id: $id, select: $select) {
       msg
       status
     }
@@ -68,7 +68,7 @@ export const SELECT_APPLY_JOB_MUTATION = gql`
 
 export const CONFIRM_APPLY_JOB_MUTATION = gql`
   mutation ConfirmApplyJobMutation($id: ID!, $confirm: Boolean!) {
-    confirmApplyjob(id: $id, confirm: $confirm) {
+    confirmApplyJob(id: $id, confirm: $confirm) {
       msg
       status
     }
@@ -83,7 +83,7 @@ export const COMPLETE_APPLY_JOB_MUTATION = gql`
     $rating: Int!
     $review: String
   ) {
-    completeApplyjob(
+    completeApplyJob(
       id: $id
       complete: $complete
       totalHours: $totalHours
@@ -247,7 +247,7 @@ export const UPDATE_USER_MUTATION = gql`
 
 export const POST_JOB_MUTATION = gql`
   mutation PostJobMutation(
-    $jobTitle: ID
+    $jobTitle: ID!
     $hireBy: DateTime!
     $description: String
     $latitude: String
@@ -266,18 +266,22 @@ export const POST_JOB_MUTATION = gql`
     ) {
       job {
         id
-        jobTitle {
-          id
-          name
-        }
-        hireBy
-        description
-        timeout
-        location {
+        geometry {
           type
           coordinates
         }
-        extraQuestion
+        properties {
+          name
+          jobTitle {
+            id
+            name
+          }
+          hireBy
+          description
+          timeout
+
+          extraQuestion
+        }
       }
       msg
       status
