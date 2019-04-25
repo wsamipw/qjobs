@@ -31,11 +31,17 @@ class AppliedJobsScreen extends Component {
           </Text>
 
           <Text note>
+            {" "}
             By:{" "}
             {item.job &&
-              item.job.properties &&
-              item.job.properties.employer &&
-              item.job.properties.employer.username}
+            item.job.properties &&
+            item.job.properties.employer &&
+            item.job.properties.employer.firstName &&
+            item.job.properties.employer.lastName
+              ? `${item.job.properties.employer.firstName} ${
+                  item.job.properties.employer.lastName
+                }`
+              : `${item.job.properties.employer.username}`}
           </Text>
           <Text note>
             {" "}

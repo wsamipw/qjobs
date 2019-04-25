@@ -3,36 +3,33 @@ import {
   StyleSheet,
   View,
   Dimensions,
-  FlatList,
   ScrollView,
   StatusBar,
-  Alert,
-  Modal,
-  Picker
+  Modal
 } from "react-native";
 
 import { isEmpty } from "lodash";
 
-import {
-  Button,
-  Content,
-  Text,
-  Item,
-  Input,
-  Label,
-  Textarea
-} from "native-base";
-import { AirbnbRating } from "react-native-ratings";
+import { Button, Text, Content, Textarea } from "native-base";
 import { Card } from "react-native-elements";
-import { compose, graphql } from "react-apollo";
+import {
+  Query,
+  compose,
+  graphql,
+  WithApolloClient,
+  withApollo
+} from "react-apollo";
 
-import { Query } from "react-apollo";
+// Review Imports
+import { AirbnbRating } from "react-native-ratings";
 
-import { JOB_STATUS_CHECK_QUERY } from "../../../config/queries";
+import {
+  JOB_STATUS_CHECK_QUERY,
+  JOB_APPLICATIONS_QUERY
+} from "../../../config/queries";
 
 import { _retrieveData } from "../../../config/utils";
 import {
-  USER_DATA,
   APPLIED,
   ACCEPTED,
   REJECTED,
@@ -41,12 +38,14 @@ import {
   TIMEOUT,
   COMPLETED,
   UNCOMPLETED,
+  PAID,
+  DISPUTE,
   PRIMARY_COLOR
 } from "../../../config/CONSTANTS";
 
 import {
   SELECT_APPLY_JOB_MUTATION,
-  COMPLETE_APPLY_JOB_MUTATION
+  CREATE_REVIEW_MUTATION
 } from "../../../config/mutations";
 import { MY_JOBS_QUERY } from "../../../config/queries";
 import Tag from "../../../components/Tag";
@@ -55,9 +54,13 @@ import moment from "moment";
 class JobApplicationDetailScreen extends Component {
   static navigationOptions = ({ navigation }) => {
     return {
-      title: `${navigation.state.params.item.employee.firstName} ${
+      title:
+        navigation.state.params.item.employee.firstName &&
         navigation.state.params.item.employee.lastName
-      }`,
+          ? `${navigation.state.params.item.employee.firstName} ${
+              navigation.state.params.item.employee.lastName
+            }`
+          : `${navigation.state.params.item.employee.username}  `,
       headerStyle: {
         backgroundColor: "#5968ef"
       },
@@ -69,41 +72,27 @@ class JobApplicationDetailScreen extends Component {
   };
 
   state = {
-    // LoggedIn user id
-    id: "",
+    // For rating and review
     isModalVisible: false,
 
-    // Below field should be cast into float
-    totalHours: "",
-
-    // Below field should be cast into int
     rating: 1,
     review: "",
 
-    isJobCompleted: true,
-    eachItem: null,
-    key: null,
-    selectedApplicationItem: null
+    // When createReview mutation is successful
+    ratingReview: null
   };
 
-  async componentDidMount() {
-    try {
-      const user = JSON.parse(await _retrieveData(USER_DATA));
-      user && this.setState({ id: user.id });
-    } catch (err) {
-      console.log("error searchdetailscreen.js: ", err);
-    }
-  }
-
-  _toggleModal = item =>
+  // used for rating and review
+  _toggleModal = () =>
     this.setState({
-      isModalVisible: !this.state.isModalVisible,
-      selectedApplicationItem: item
+      isModalVisible: !this.state.isModalVisible
     });
 
-  ratingCompleted(rating) {
+  // used for rating and review
+  ratingCompleted = rating => {
     console.log("complete Rating is: " + rating);
-  }
+    this.setState({ rating });
+  };
 
   renderStatus = status => {
     if (status === ACCEPTED) {
@@ -122,13 +111,17 @@ class JobApplicationDetailScreen extends Component {
       return <Tag text="Completed" success />;
     } else if (status === UNCOMPLETED) {
       return <Tag text="Uncompleted" warning />;
+    } else if (status === PAID) {
+      return <Tag text="Paid" success />;
+    } else if (status === DISPUTE) {
+      return <Tag text="Dispute" danger />;
     } else {
       return null;
     }
   };
 
   renderJobStatus = item => {
-    console.log("job applic detai: ", item);
+    // console.log("job applic detai: ", item);
     if (item.status === COMPLETED) {
       return (
         <Button
@@ -142,7 +135,7 @@ class JobApplicationDetailScreen extends Component {
             });
           }}
         >
-          <Text>FINALIZE JOB</Text>
+          <Text>PAY</Text>
         </Button>
       );
     } else if (item.status === APPLIED) {
@@ -198,6 +191,47 @@ class JobApplicationDetailScreen extends Component {
           </Button>
         </View>
       );
+    } else if (item.status === PAID) {
+      if (
+        this.state.ratingReview ||
+        (item.reviewSet && item.reviewSet.length)
+      ) {
+        const ratingReview = this.state.ratingReview || item.reviewSet[0];
+
+        return (
+          <Card>
+            <Text style={styles.headingTextStyles}>Ratings and Review</Text>
+
+            <AirbnbRating
+              isDisabled
+              count={5}
+              size={20}
+              reviews={["Terrible", "Bad", "Okay", "Good", "Great"]}
+              defaultRating={ratingReview.rating}
+            />
+            <Text>{ratingReview.review}</Text>
+          </Card>
+        );
+      }
+      return (
+        <Button
+          block
+          primary
+          style={styles.statusBtnStylesAppliedJobs}
+          onPress={() => {
+            this._toggleModal();
+          }}
+        >
+          {/* <Text>
+            Review{" "}
+            {item.employee && item.employee.firstName && item.employee.lastName
+              ? `${item.employee.firstName} ${item.employee.lastName}`
+              : `${item.employee.username}`}{" "}
+            about his work ...
+          </Text> */}
+          <Text>Review your employee ...</Text>
+        </Button>
+      );
     } else {
       return null;
     }
@@ -213,7 +247,9 @@ class JobApplicationDetailScreen extends Component {
           <Card>
             <Text style={{ fontWeight: "bold" }}>Name: </Text>
             <Text>
-              {eachItem.employee.firstName} {eachItem.employee.lastName}
+              {eachItem.employee.firstName && eachItem.employee.lastName
+                ? `${eachItem.employee.firstName} ${eachItem.employee.lastName}`
+                : `${eachItem.employee.username}`}
             </Text>
             <Text style={{ fontWeight: "bold", marginTop: 10 }}>
               Applied Date:
@@ -245,17 +281,14 @@ class JobApplicationDetailScreen extends Component {
                  * is received from the query, `eachItem` variable
                  * is to be used to get the unchanged status
                  */
-                console.log("data polling: ", data);
                 const finalData = !isEmpty(data)
                   ? data.jobStatusChange
                   : eachItem;
 
-                if (!finalData.status !== COMPLETED) {
-                  console.log("NOT completed status");
+                if (finalData.status !== PAID) {
                   startPolling(1000);
                 }
-                if (finalData.status === COMPLETED) {
-                  console.log("status completed");
+                if (finalData.status === PAID) {
                   stopPolling();
                 }
 
@@ -266,7 +299,6 @@ class JobApplicationDetailScreen extends Component {
                 }
 
                 if (finalData) {
-                  console.log("finaldata render statys", finalData);
                   return this.renderStatus(finalData.status);
                 }
               }}
@@ -320,8 +352,8 @@ class JobApplicationDetailScreen extends Component {
                 ? data.jobStatusChange
                 : eachItem;
 
-              finalData.status !== COMPLETED && startPolling(1000);
-              finalData.status === COMPLETED && stopPolling();
+              finalData.status !== PAID && startPolling(1000);
+              finalData.status === PAID && stopPolling();
 
               if (error) {
                 console.log("error job status: ", JSON.stringify(error));
@@ -340,7 +372,7 @@ class JobApplicationDetailScreen extends Component {
             transparent={false}
             visible={this.state.isModalVisible}
             onRequestClose={() => {
-              this._toggleModal(null);
+              this._toggleModal();
             }}
           >
             <Content padder>
@@ -357,31 +389,11 @@ class JobApplicationDetailScreen extends Component {
                 <AirbnbRating
                   count={5}
                   size={20}
-                  reviews={["Terrible", "Bad", "Okay", "Good", "Greate"]}
+                  reviews={["Terrible", "Bad", "Okay", "Good", "Great"]}
                   defaultRating={this.state.rating}
                   onFinishRating={this.ratingCompleted}
                 />
 
-                <Picker
-                  selectedValue={this.state.isJobCompleted}
-                  style={{ height: 50, width: 200 }}
-                  onValueChange={isJobCompleted =>
-                    this.setState({ isJobCompleted }, () =>
-                      console.log("job comple: ", this.state)
-                    )
-                  }
-                >
-                  <Picker.Item label="Job Completed" value={true} />
-                  <Picker.Item label="Job Terminated" value={false} />
-                </Picker>
-                <Item floatingLabel>
-                  <Label>Total Hours Spent</Label>
-                  <Input
-                    keyboardType="numeric"
-                    value={this.state.totalHours}
-                    onChangeText={val => this.setState({ totalHours: val })}
-                  />
-                </Item>
                 <Textarea
                   style={{ width: "100%" }}
                   rowSpan={5}
@@ -401,38 +413,75 @@ class JobApplicationDetailScreen extends Component {
                   onPress={() => {
                     console.log("state apply job: ");
 
-                    const {
-                      isJobCompleted,
-                      totalHours,
-                      rating,
-                      review,
-                      selectedApplicationItem
-                    } = this.state;
+                    const { rating, review } = this.state;
 
-                    console.log("selc: ", selectedApplicationItem);
-                    this.props
-                      .completeApplyJob(
-                        selectedApplicationItem.id,
-                        isJobCompleted,
-                        totalHours,
-                        rating,
-                        review
-                      )
+                    const applyJobId = eachItem.id;
+
+                    console.log("applyjobid: ,", applyJobId);
+
+                    const jobId = this.props.navigation.getParam("jobId", null);
+
+                    console.log("jobbididdddddd: ", jobId);
+                    this.props.client
+                      .mutate({
+                        mutation: CREATE_REVIEW_MUTATION,
+                        variables: {
+                          applyJobId,
+                          rating,
+                          review
+                        },
+                        refetchQueries: [
+                          {
+                            query: JOB_APPLICATIONS_QUERY,
+                            variables: {
+                              jobId
+                            }
+                          }
+                        ]
+                      })
                       .then(response => {
-                        console.log("resp_confirm: ", response);
+                        console.log("review Resonse: ", response);
                         if (
-                          response.data.completeApplyJob.status === 200 &&
-                          response.data.completeApplyJob.msg === "success"
+                          response.data.createReview.status === 200 &&
+                          response.data.createReview.msg === "success"
                         ) {
-                          console.log("success close");
+                          console.log("Review success");
                           // this.props.navigation.goBack();
                           // this.setState({ eachItem: })
-                          this._toggleModal(null);
+                          this.setState(
+                            { ratingReview: response.data.createReview.review },
+                            () => {
+                              this._toggleModal();
+                            }
+                          );
                         } else throw new Error(response);
                       })
                       .catch(error => {
-                        console.log("erro: ", JSON.stringify(error));
+                        console.log(" review error: ", error);
                       });
+
+                    // this.props
+                    //   .createReview(applyJobId, rating, review)
+                    //   .then(response => {
+                    //     console.log("review Resonse: ", response);
+                    //     if (
+                    //       response.data.createReview.status === 200 &&
+                    //       response.data.createReview.msg === "success"
+                    //     ) {
+                    //       console.log("Review success");
+                    //       // this.props.navigation.goBack();
+                    //       // this.setState({ eachItem: })
+                    //       this.setState(
+                    //         { ratingReview: response.data.createReview.review },
+                    //         () => {
+                    //           this._toggleModal();
+                    //         }
+                    //       );
+                    //     } else throw new Error(response);
+                    //   })
+                    //   .catch(error => {
+                    //     console.log(" review error: ", error);
+                    //   });
                   }}
                 >
                   <Text>Submit</Text>
@@ -475,6 +524,7 @@ const styles = StyleSheet.create({
 });
 
 export default compose(
+  withApollo,
   graphql(SELECT_APPLY_JOB_MUTATION, {
     props: ({ mutate }) => ({
       selectApplyJob: (id, select) =>
@@ -488,18 +538,23 @@ export default compose(
     })
   }),
 
-  graphql(COMPLETE_APPLY_JOB_MUTATION, {
+  graphql(CREATE_REVIEW_MUTATION, {
     props: ({ mutate }) => ({
-      completeApplyJob: (id, complete, totalHours, rating, review) =>
+      createReview: (applyJobId, rating, review) =>
         mutate({
           variables: {
-            id,
-            complete,
-            totalHours,
+            applyJobId,
             rating,
             review
           },
-          refetchQueries: [{ query: MY_JOBS_QUERY }]
+          refetchQueries: [
+            {
+              query: JOB_APPLICATIONS_QUERY,
+              variables: {
+                jobId: this.state.jobId
+              }
+            }
+          ]
         })
     })
   })

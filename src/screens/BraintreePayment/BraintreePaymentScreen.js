@@ -29,7 +29,7 @@ class BraintreePaymentScreen extends Component {
           console.log("payment success confirm ");
           this.setState({ paymentAPIResponse: PAYMENT_SUCCESS });
 
-          // this.props.navigation.goBack();
+          this.props.navigation.goBack();
         } else throw new Error(response);
       })
       .catch(error => {
@@ -82,7 +82,6 @@ class BraintreePaymentScreen extends Component {
             );
           }
 
-          console.log("client payment token: ", data);
           return (
             <BraintreePaymentWebView
               clientToken={data.clientPaymentToken}

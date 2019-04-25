@@ -30,6 +30,24 @@ export const APPLY_JOB_MUTATION = gql`
   }
 `;
 
+export const CREATE_REVIEW_MUTATION = gql`
+  mutation CreateReviewMutation(
+    $applyJobId: ID!
+    $rating: Int!
+    $review: String
+  ) {
+    createReview(applyJobId: $applyJobId, rating: $rating, review: $review) {
+      msg
+      status
+      review {
+        id
+        rating
+        review
+      }
+    }
+  }
+`;
+
 export const INPUT_TOTAL_HOURS_MUTATION = gql`
   mutation InputTotalhoursMutation($id: ID!, $totalHours: Float!) {
     inputTotalHours(id: $id, totalHours: $totalHours) {
@@ -75,6 +93,7 @@ export const CONFIRM_APPLY_JOB_MUTATION = gql`
   }
 `;
 
+// This mutation is not used now ...
 export const COMPLETE_APPLY_JOB_MUTATION = gql`
   mutation CompleteApplyJobMutation(
     $id: ID!

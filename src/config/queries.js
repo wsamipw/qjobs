@@ -11,6 +11,7 @@ export const JOB_APPLICATIONS_QUERY = gql`
         id
         employee {
           id
+          username
           firstName
           lastName
           email
@@ -25,6 +26,11 @@ export const JOB_APPLICATIONS_QUERY = gql`
           id
           question
           answer
+        }
+        reviewSet {
+          id
+          rating
+          review
         }
       }
     }

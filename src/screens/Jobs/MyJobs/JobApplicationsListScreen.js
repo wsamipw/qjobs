@@ -24,6 +24,8 @@ import {
   TIMEOUT,
   COMPLETED,
   UNCOMPLETED,
+  PAID,
+  DISPUTE,
   PRIMARY_COLOR
 } from "../../../config/CONSTANTS";
 
@@ -77,6 +79,10 @@ class JobApplicationsListScreen extends Component {
       return <Tag text="Completed" success />;
     } else if (status === UNCOMPLETED) {
       return <Tag text="Uncompleted" warning />;
+    } else if (status === PAID) {
+      return <Tag text="Paid" success />;
+    } else if (status === DISPUTE) {
+      return <Tag text="Dispute" danger />;
     } else {
       return null;
     }
@@ -128,7 +134,8 @@ class JobApplicationsListScreen extends Component {
                               this.props.navigation.navigate(
                                 "jobApplicationDetail",
                                 {
-                                  item
+                                  item,
+                                  jobId
                                 }
                               )
                             }
@@ -140,9 +147,12 @@ class JobApplicationsListScreen extends Component {
                                   Name:{" "}
                                 </Text>
                                 {item.employee &&
-                                  `${item.employee.firstName} ${
-                                    item.employee.lastName
-                                  }`}
+                                item.employee.firstName &&
+                                item.employee.lastName
+                                  ? `${item.employee.firstName} ${
+                                      item.employee.lastName
+                                    }`
+                                  : `${item.employee.username}  `}
                               </Text>
                               <Text>
                                 <Text style={{ fontWeight: "bold" }}>

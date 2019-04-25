@@ -31,7 +31,8 @@ import {
   TIMEOUT,
   COMPLETED,
   UNCOMPLETED,
-  PRIMARY_COLOR
+  PRIMARY_COLOR,
+  PAID
 } from "../../../config/CONSTANTS";
 
 import {
@@ -530,8 +531,8 @@ class AppliedJobDetailScreen extends Component {
                 ? data.jobStatusChange
                 : eachItem;
 
-              !finalData.status !== COMPLETED && startPolling(1000);
-              finalData.status === COMPLETED && stopPolling();
+              finalData.status !== PAID && startPolling(1000);
+              finalData.status === PAID && stopPolling();
 
               // console.log("data inside query: ", data);
               if (error) {
@@ -542,13 +543,17 @@ class AppliedJobDetailScreen extends Component {
               if (finalData) {
                 // console.log("finaldata ran applied job detail: ", finalData);
 
-                return this.renderStatus(finalData);
+                return (
+                  <View>
+                    {this.renderStatus(finalData)}
+                    {finalData.status === CONFIRMED &&
+                      this.renderInputTotalHoursForm()}
+                  </View>
+                );
               }
             }}
           </Query>
-          {this.renderInputTotalHoursForm()}
         </View>
-        {/* <DropdownAlert ref={ref => (this.dropdown = ref)} /> */}
       </ScrollView>
     ) : null;
   }
