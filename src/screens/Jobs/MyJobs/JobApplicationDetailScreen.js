@@ -12,13 +12,7 @@ import { isEmpty } from "lodash";
 
 import { Button, Text, Content, Textarea } from "native-base";
 import { Card } from "react-native-elements";
-import {
-  Query,
-  compose,
-  graphql,
-  WithApolloClient,
-  withApollo
-} from "react-apollo";
+import { Query, compose, graphql, withApollo } from "react-apollo";
 
 // Review Imports
 import { AirbnbRating } from "react-native-ratings";

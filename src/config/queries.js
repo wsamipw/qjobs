@@ -163,6 +163,8 @@ export const JOBS_QUERY = gql`
           employer {
             id
             username
+            firstName
+            lastName
           }
           applyjobSet {
             employee {

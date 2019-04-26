@@ -1,15 +1,28 @@
 import React, { Component } from "react";
-import { View, FlatList, ActivityIndicator } from "react-native";
+import {
+  View,
+  FlatList,
+  ActivityIndicator,
+  StyleSheet,
+  Dimensions
+} from "react-native";
 import { Query } from "react-apollo";
 import moment from "moment";
-import { ListItem, Right, Body, Text, Icon, Badge, Spinner } from "native-base";
+import {
+  ListItem,
+  Right,
+  Body,
+  Text,
+  Icon,
+  Badge,
+  Spinner,
+  Button
+} from "native-base";
 import { APPLIED_JOBS_QUERY } from "../../../config/queries";
 import { PRIMARY_COLOR } from "../../../config/CONSTANTS";
 
 class AppliedJobsScreen extends Component {
-  val = { page: 1, rows: 5 };
-
-  fetchMoreLoading = false;
+  state = { page: 1, rows: 5, fetchMoreLoading: false };
 
   _renderItem = ({ item }) => {
     return (
@@ -68,24 +81,31 @@ class AppliedJobsScreen extends Component {
   };
 
   render() {
+    console.log("this state aplpied job: ", this.state);
     return (
       <View>
         <Query
           query={APPLIED_JOBS_QUERY}
           fetchPolicy="cache-and-network"
-          variables={{ page: this.val.page, rows: this.val.rows }}
-          // notifyOnNetworkStatusChange
+          // Never use this.state.page in this variables
+          // or else, below fetchMore and refetch might
+          // jeopardise the result.
+          // Trust me, I ignored above instructions
+          // and got back to 0 (same state).
+          // So, don't try again.
+          variables={{ page: 1, rows: 5 }}
+          notifyOnNetworkStatusChange
         >
           {({ loading, error, data, refetch, networkStatus, fetchMore }) => {
-            if (networkStatus === 4) {
-              console.log("network status lading: ", loading);
-              console.log("network status data: ", data);
+            // if (networkStatus === 4) {
+            //   console.log("network status lading: ", loading);
+            //   // console.log("network status data: ", data);
 
-              return <ActivityIndicator size="large" color="#ff6347" />;
-            }
-            if (loading && !this.fetchMoreLoading) {
+            //   return <ActivityIndicator size="large" color="#ff6347" />;
+            // }
+            if (loading && !this.state.fetchMoreLoading) {
               console.log("loading  loading: ", loading);
-              console.log("loading  data: ", data);
+              // console.log("loading  data: ", data);
               return <ActivityIndicator size="large" color="#ff6347" />;
             }
             if (error) {
@@ -93,68 +113,72 @@ class AppliedJobsScreen extends Component {
               return <Text>Error Fetching Data !</Text>;
             }
 
-            // console.log(
-            //   "data: appleid:  ",
-            //   data.appliedJobs.page,
-            //   " ",
-            //   data.appliedJobs.pages,
-            //   " ",
-            //   data.appliedJobs.rows,
-            //   " ",
-            //   data.appliedJobs.rowCount
-            // );
-
             if (data && data.appliedJobs && data.appliedJobs.data.length) {
-              console.log("data apllied jos: ", data.appliedJobs);
+              // console.log("data apllied jos: ", data.appliedJobs);
               return (
                 <View>
                   <FlatList
                     data={data.appliedJobs.data}
                     refreshing={networkStatus === 4}
                     onRefresh={() => {
-                      console.log("val page refetch: ", this.val.page);
-                      this.val.page = 1;
-                      refetch();
+                      console.log("state page refetch: ", this.state.page);
+                      this.setState({ page: 1 }, () => refetch());
                     }}
                     keyExtractor={item => item.id}
                     onEndReached={() => {
-                      this.val.page += 1;
-                      this.fetchMoreLoading = true;
+                      this.setState({ fetchMoreLoading: true }, () => {
+                        console.log("page:", this.state.page);
+                        console.log("pagessss: ", data.appliedJobs.pages);
+                        if (this.state.page < data.appliedJobs.pages) {
+                          console.log("fetchmore ran: ", this.state.page);
 
-                      console.log("page:", this.val.page);
-                      console.log("pagessss: ", data.appliedJobs.pages);
-                      if (this.val.page <= data.appliedJobs.pages) {
-                        console.log("fetchmore ran: ", this.val.page);
-                        fetchMore({
-                          variables: {
-                            page: this.val.page,
-                            rows: this.val.rows
-                          },
-                          updateQuery: (prev, { fetchMoreResult }) => {
-                            this.fetchMoreLoading = false;
-                            if (!fetchMoreResult) return prev;
-                            return Object.assign({}, prev, {
-                              appliedJobs: {
-                                ...prev.appliedJobs,
-                                data: [
-                                  ...prev.appliedJobs.data,
-                                  ...fetchMoreResult.appliedJobs.data
-                                ],
-                                page: fetchMoreResult.appliedJobs.page
-                              }
-                            });
-                          }
-                        });
-                      }
+                          this.setState(
+                            {
+                              page: this.state.page + 1
+                            },
+                            () => {
+                              fetchMore({
+                                variables: {
+                                  page: this.state.page,
+                                  rows: this.state.rows
+                                },
+                                updateQuery: (
+                                  previousResult,
+                                  { fetchMoreResult }
+                                ) => {
+                                  this.setState({ fetchMoreLoading: false });
+
+                                  if (!fetchMoreResult) return previousResult;
+                                  return Object.assign({}, previousResult, {
+                                    appliedJobs: {
+                                      ...previousResult.appliedJobs,
+                                      data: [
+                                        ...previousResult.appliedJobs.data,
+                                        ...fetchMoreResult.appliedJobs.data
+                                      ],
+                                      page: fetchMoreResult.appliedJobs.page
+                                    }
+                                  });
+                                }
+                              });
+                            }
+                          );
+                        } else {
+                          this.setState({ fetchMoreLoading: false });
+
+                          console.log("page >= data pages");
+                        }
+                      });
                     }}
-                    onEndReachedThreshold={0.8}
+                    onEndReachedThreshold={0.1}
                     renderItem={this._renderItem}
                   />
-                  {this.fetchMoreLoading && <Spinner color="grey" />}
+                  {this.state.fetchMoreLoading && <Spinner color="grey" />}
                 </View>
               );
             } else {
               if (loading) {
+                console.log("LOADING TEXTTTTTTTTTT laoding ....");
                 return (
                   <View>
                     <Text>Loading...</Text>
@@ -172,7 +196,7 @@ class AppliedJobsScreen extends Component {
                       style={{
                         flex: 1,
                         // height: "100%",
-                        marginTop: 100,
+                        marginTop: 200,
                         flexDirection: "column",
                         justifyContent: "center",
                         alignItems: "center"
@@ -184,9 +208,19 @@ class AppliedJobsScreen extends Component {
                         style={{ fontSize: 50, color: "#d3d3d3" }}
                       />
                       <Text note>
-                        No results for{" "}
+                        Currently, you have not applied for any jobs!{" "}
                         {/* {this.props.navigation.state.params.query} */}
                       </Text>
+                      <Button
+                        block
+                        success
+                        style={styles.statusBtnStylesAppliedJobs}
+                        onPress={() => {
+                          this.props.route.navigation.navigate("search");
+                        }}
+                      >
+                        <Text>Search for a Job</Text>
+                      </Button>
                     </View>
                   </View>
                 );
@@ -198,5 +232,12 @@ class AppliedJobsScreen extends Component {
     );
   }
 }
+
+const styles = StyleSheet.create({
+  statusBtnStylesAppliedJobs: {
+    marginHorizontal: Dimensions.get("screen").width * 0.1,
+    marginVertical: 10
+  }
+});
 
 export default AppliedJobsScreen;

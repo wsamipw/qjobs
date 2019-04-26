@@ -216,6 +216,17 @@ class SearchResultScreen extends Component {
                                 {moment(item.properties.hireBy).fromNow()}
                               </Text>
                             </View>
+                            <View style={styles.searchMetaStyles}>
+                              <Text style={styles.searchMetaTextStyles}>
+                                Posted By:{" "}
+                                {item.properties.employer.firstName &&
+                                item.properties.employer.lastName
+                                  ? `${item.properties.employer.firstName} ${
+                                      item.properties.employer.lastName
+                                    }`
+                                  : `${item.properties.employer.username}`}
+                              </Text>
+                            </View>
                           </Card>
                         </TouchableOpacity>
                       );

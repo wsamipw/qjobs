@@ -17,7 +17,7 @@ import RadioForm from "react-native-simple-radio-button";
 
 import { connect } from "react-redux";
 
-import { compose, graphql } from "react-apollo";
+import { compose, graphql, withApollo } from "react-apollo";
 
 import { APPLY_JOB_MUTATION } from "../config/mutations";
 // import CustomToast from "../config/CustomToast";
@@ -43,7 +43,6 @@ class SearchDetailScreen extends Component {
   };
   state = {
     job: "",
-    // backgroundCheck: false,
     description: "",
     // Below field should be cast into float
     hourlyRate: "",
@@ -130,19 +129,6 @@ class SearchDetailScreen extends Component {
               value={this.state.description}
               onChangeText={val => this.onChange("description", val)}
             />
-            {/* <Text style={{ fontWeight: "bold" }}>Background Check</Text>
-        <RadioForm
-        radio_props={[
-        { label: "Required", value: "Required" },
-        { label: "Not Required", value: "Not Required" }
-        ]}
-        initial={this.state.backgroundCheck}
-        onPress={value => {
-        this.setState({
-        backgroundCheck: value === "Required" ? true : false
-        });
-        }}
-        /> */}
             {this.state.extraQuestion.length ? (
               <View>
                 <Text
@@ -192,21 +178,28 @@ class SearchDetailScreen extends Component {
 
                 const hourlyRate = Number(this.state.hourlyRate);
 
-                const {
-                  job,
-                  description,
-                  //backgroundCheck,
-                  extraQuestion
-                } = this.state;
+                const { job, description, extraQuestion } = this.state;
 
-                this.props
-                  .applyJob(
-                    job,
-                    //backgroundCheck,
-                    description,
-                    hourlyRate,
-                    extraQuestion
-                  )
+                this.props.client
+                  .mutate({
+                    mutation: APPLY_JOB_MUTATION,
+                    variables: {
+                      job,
+                      description,
+                      hourlyRate,
+                      extraQuestion
+                    },
+                    refetchQueries: [
+                      {
+                        query: APPLIED_JOBS_QUERY,
+                        variables: {
+                          //awaitRefetchQueries: true,
+                          page: 1,
+                          rows: 4
+                        }
+                      }
+                    ]
+                  })
                   .then(response => {
                     console.log("response apply:", response);
                     if (
@@ -276,35 +269,6 @@ const mapStateToProps = ({ myNavigation }) => {
 };
 
 export default compose(
-  connect(mapStateToProps),
-  graphql(APPLY_JOB_MUTATION, {
-    props: ({ mutate }) => ({
-      applyJob: (
-        job,
-        // backgroundCheck,
-        description,
-        hourlyRate,
-        extraQuestion
-      ) =>
-        mutate({
-          variables: {
-            job,
-            // backgroundCheck,
-            description,
-            hourlyRate,
-            extraQuestion
-          },
-          refetchQueries: [
-            {
-              query: APPLIED_JOBS_QUERY,
-              variables: {
-                //awaitRefetchQueries: true,
-                page: 1,
-                rows: 4
-              }
-            }
-          ]
-        })
-    })
-  })
+  withApollo,
+  connect(mapStateToProps)
 )(SearchDetailScreen);

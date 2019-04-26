@@ -71,8 +71,32 @@ class MyJobScreen extends Component {
               );
             } else {
               return (
-                <View>
-                  <Text>No Data Found</Text>
+                <View style={{ flex: 1 }}>
+                  {/* <StatusBar
+                      barStyle="light-content"
+                      backgroundColor={PRIMARY_COLOR}
+                    /> */}
+                  <View
+                    style={{
+                      flex: 1,
+                      // height: "100%",
+                      marginTop: 200,
+                      flexDirection: "column",
+                      justifyContent: "center",
+                      alignItems: "center"
+                    }}
+                  >
+                    <Icon
+                      type="MaterialIcons"
+                      name="cloud-off"
+                      style={{ fontSize: 50, color: "#d3d3d3" }}
+                    />
+                    <Text note>
+                      You have not created any Jobs!{"\n"} Click on the ' + '
+                      plus icon to create a job
+                      {/* {this.props.navigation.state.params.query} */}
+                    </Text>
+                  </View>
                 </View>
               );
             }

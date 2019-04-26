@@ -232,12 +232,13 @@ export const WORK_EXPERIENCE_MUTATION = gql`
 
 export const UPDATE_USER_MUTATION = gql`
   mutation UpdateUserMutation(
-    $firstName: String!
-    $lastName: String!
-    $currentAddress: String!
-    $permanentAddress: String!
-    $gender: String!
-    $dateOfBirth: Date!
+    $avatar: String
+    $firstName: String
+    $lastName: String
+    $currentAddress: String
+    $permanentAddress: String
+    $gender: String
+    $dateOfBirth: Date
   ) {
     updateUser(
       firstName: $firstName
@@ -246,6 +247,7 @@ export const UPDATE_USER_MUTATION = gql`
       permanentAddress: $permanentAddress
       gender: $gender
       dateOfBirth: $dateOfBirth
+      avatar: $avatar
     ) {
       user {
         id
@@ -257,6 +259,7 @@ export const UPDATE_USER_MUTATION = gql`
         permanentAddress
         gender
         dateOfBirth
+        avatar
       }
       msg
       status
