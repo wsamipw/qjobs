@@ -53,7 +53,7 @@ class MyJobScreen extends Component {
             if (loading)
               return <ActivityIndicator size="large" color="#ff6347" />;
             if (error) {
-              console.log("error: ", JSON.stringify(error));
+              console.log("my jobs screen error: ", error);
               return <Text>Error Fetching Data !</Text>;
             }
 

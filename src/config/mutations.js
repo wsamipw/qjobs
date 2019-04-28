@@ -53,6 +53,9 @@ export const INPUT_TOTAL_HOURS_MUTATION = gql`
     inputTotalHours(id: $id, totalHours: $totalHours) {
       msg
       status
+      applyJob {
+        status
+      }
     }
   }
 `;
@@ -62,6 +65,10 @@ export const CREATE_PAYMENT_MUTATION = gql`
     createPayment(id: $id, nonce: $nonce) {
       msg
       status
+      applyJob {
+        status
+        paid
+      }
     }
   }
 `;
@@ -71,6 +78,9 @@ export const DELETE_APPLY_JOB_MUTATION = gql`
     deleteApplyJob(id: $id) {
       msg
       status
+      applyJob {
+        status
+      }
     }
   }
 `;
@@ -80,6 +90,9 @@ export const SELECT_APPLY_JOB_MUTATION = gql`
     selectApplyJob(id: $id, select: $select) {
       msg
       status
+      applyJob {
+        status
+      }
     }
   }
 `;
@@ -89,6 +102,9 @@ export const CONFIRM_APPLY_JOB_MUTATION = gql`
     confirmApplyJob(id: $id, confirm: $confirm) {
       msg
       status
+      applyJob {
+        status
+      }
     }
   }
 `;

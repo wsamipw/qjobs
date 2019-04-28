@@ -81,7 +81,6 @@ class AppliedJobsScreen extends Component {
   };
 
   render() {
-    console.log("this state aplpied job: ", this.state);
     return (
       <View>
         <Query

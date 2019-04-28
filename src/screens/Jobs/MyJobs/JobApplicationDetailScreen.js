@@ -66,6 +66,7 @@ class JobApplicationDetailScreen extends Component {
   };
 
   state = {
+    eachItem: null,
     // For rating and review
     isModalVisible: false,
 
@@ -74,6 +75,38 @@ class JobApplicationDetailScreen extends Component {
 
     // When createReview mutation is successful
     ratingReview: null
+  };
+
+  componentDidMount = () => {
+    const eachItem = this.props.navigation.getParam("item", null);
+    this.setState({ eachItem }, async () => {
+      try {
+        console.log("before AWAIT");
+        const { data } = await this.props.client.query({
+          query: JOB_STATUS_CHECK_QUERY,
+          variables: {
+            id: eachItem.id,
+            status: eachItem.status
+          }
+        });
+
+        // const pollQuery = this.props.client.query({
+        //   query: My_QUERY,
+        //   variables: { ...vars }
+        // });
+        // const response =  await pollQuery.startPolling(1000);
+
+        console.log("RESPONE JOB STATU : ", data);
+        this.setState({
+          eachItem: {
+            ...this.state.eachItem,
+            status: data.jobStatusChange.status
+          }
+        });
+      } catch (error) {
+        console.log("error catched JOB STATUS CHECK: ", error);
+      }
+    });
   };
 
   // used for rating and review
@@ -88,7 +121,9 @@ class JobApplicationDetailScreen extends Component {
     this.setState({ rating });
   };
 
-  renderStatus = status => {
+  renderStatus = () => {
+    const status = this.state.eachItem.status;
+
     if (status === ACCEPTED) {
       return <Tag text="Accepted" primary />;
     } else if (status === REJECTED) {
@@ -114,8 +149,10 @@ class JobApplicationDetailScreen extends Component {
     }
   };
 
-  renderJobStatus = item => {
+  renderJobStatus = () => {
     // console.log("job applic detai: ", item);
+    const item = this.state.eachItem;
+
     if (item.status === COMPLETED) {
       return (
         <Button
@@ -149,11 +186,17 @@ class JobApplicationDetailScreen extends Component {
                     response.data.selectApplyJob.msg === "success"
                   ) {
                     console.log("success close");
+                    this.setState({
+                      eachItem: {
+                        ...this.state.eachItem,
+                        status: response.data.selectApplyJob.applyJob.status
+                      }
+                    });
                     // this.props.navigation.goBack();
                   } else throw new Error(response);
                 })
                 .catch(error => {
-                  console.log("erro: ", error);
+                  console.log(" job app detail REJECT erro: ", error);
                 });
             }}
           >
@@ -173,11 +216,20 @@ class JobApplicationDetailScreen extends Component {
                     response.data.selectApplyJob.msg === "success"
                   ) {
                     console.log("success tick");
+                    this.setState({
+                      eachItem: {
+                        ...this.state.eachItem,
+                        status: response.data.selectApplyJob.applyJob.status
+                      }
+                    });
                     // this.props.navigation.goBack();
                   } else throw new Error(response);
                 })
                 .catch(error => {
-                  console.log("erro: ", JSON.stringify(error));
+                  console.log(
+                    "job app detail ACCEPT erro: ",
+                    JSON.stringify(error)
+                  );
                 });
             }}
           >
@@ -190,7 +242,9 @@ class JobApplicationDetailScreen extends Component {
         this.state.ratingReview ||
         (item.reviewSet && item.reviewSet.length)
       ) {
-        const ratingReview = this.state.ratingReview || item.reviewSet[0];
+        const ratingReview =
+          this.state.ratingRevieeachItem.employee.firstNamew ||
+          item.reviewSet[0];
 
         return (
           <Card>
@@ -232,8 +286,9 @@ class JobApplicationDetailScreen extends Component {
   };
 
   render() {
-    const eachItem = this.props.navigation.getParam("item", null);
+    const { eachItem } = this.state;
 
+    console.log("eachItem job app detail render: ", eachItem);
     return eachItem ? (
       <ScrollView scrollEnabled>
         <View style={styles.mainWrapper}>
@@ -256,16 +311,24 @@ class JobApplicationDetailScreen extends Component {
             <Text style={{ fontWeight: "bold", marginTop: 10 }}>Rate:</Text>
             <Text>{eachItem.hourlyRate}</Text>
             {/* {this.renderStatus(eachItem.status)} */}
-            <Query
+            {/* <Query
               query={JOB_STATUS_CHECK_QUERY}
               fetchPolicy="network-only"
               variables={{
                 id: eachItem.id,
                 status: eachItem.status
               }}
+              notifyOnNetworkStatusChange
               // pollInterval={1000}
             >
-              {({ loading, error, data, startPolling, stopPolling }) => {
+              {({
+                loading,
+                error,
+                data,
+                startPolling,
+                stopPolling,
+                networkStatus
+              }) => {
                 /*
                  * `finalData` priotizes the data received
                  * from the query .i.e the changed status data.
@@ -274,7 +337,13 @@ class JobApplicationDetailScreen extends Component {
                  * is changed else it is timedOut. So if no response
                  * is received from the query, `eachItem` variable
                  * is to be used to get the unchanged status
-                 */
+                 
+
+                console.log("STATUS CHECK POLL LOADING: ", loading);
+                console.log(
+                  "STATUS CHECK POLL REFETCH LOADING: ",
+                  networkStatus
+                );
                 const finalData = !isEmpty(data)
                   ? data.jobStatusChange
                   : eachItem;
@@ -293,10 +362,12 @@ class JobApplicationDetailScreen extends Component {
                 }
 
                 if (finalData) {
+                  console.log("final data");
                   return this.renderStatus(finalData.status);
                 }
               }}
-            </Query>
+            </Query> */}
+            {this.renderStatus()}
           </Card>
           {eachItem.applyjobquestionsSet &&
             eachItem.applyjobquestionsSet.length > 0 && (
@@ -317,7 +388,7 @@ class JobApplicationDetailScreen extends Component {
                 )}
               </Card>
             )}
-          <Query
+          {/* <Query
             query={JOB_STATUS_CHECK_QUERY}
             fetchPolicy="cache-and-network"
             variables={{
@@ -327,12 +398,6 @@ class JobApplicationDetailScreen extends Component {
             // pollInterval={1000}
           >
             {({ loading, error, data, startPolling, stopPolling }) => {
-              console.log("eachITem in side query id: ", eachItem.id);
-              console.log(
-                "eachITem in side query job app detaik status: ",
-                eachItem.status
-              );
-
               /*
                * `finalData` priotizes the data received
                * from the query .i.e the changed status data.
@@ -341,7 +406,7 @@ class JobApplicationDetailScreen extends Component {
                * is changed else it is timedOut. So if no response
                * if received from the query, `eachItem` variable
                * is to be used to get the unchanged status
-               */
+               
               const finalData = !isEmpty(data)
                 ? data.jobStatusChange
                 : eachItem;
@@ -360,7 +425,9 @@ class JobApplicationDetailScreen extends Component {
                 return this.renderJobStatus(finalData);
               }
             }}
-          </Query>
+          </Query> */}
+
+          {this.renderJobStatus()}
           <Modal
             animationType="slide"
             transparent={false}

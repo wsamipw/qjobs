@@ -112,7 +112,7 @@ class JobApplicationsListScreen extends Component {
                 return <Text>Error Fetching Data !</Text>;
               }
 
-              console.log("dataL list: ", data);
+              // console.log("dataL list: ", data);
 
               if (
                 data &&

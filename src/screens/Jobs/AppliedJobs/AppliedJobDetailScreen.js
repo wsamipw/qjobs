@@ -14,7 +14,7 @@ import { isEmpty } from "lodash";
 
 import { Item, Button, ListItem, Text, Input, Toast } from "native-base";
 import { Card, Divider } from "react-native-elements";
-import { compose, graphql } from "react-apollo";
+import { compose, graphql, withApollo } from "react-apollo";
 
 import { Query } from "react-apollo";
 
@@ -32,7 +32,8 @@ import {
   COMPLETED,
   UNCOMPLETED,
   PRIMARY_COLOR,
-  PAID
+  PAID,
+  DISPUTE
 } from "../../../config/CONSTANTS";
 
 import {
@@ -58,62 +59,58 @@ class AppliedJobDetailScreen extends Component {
   };
 
   state = {
-    // LoggedIn user id
-    id: "",
     totalHours: "",
     loading: false
   };
 
-  async componentDidMount() {
-    try {
-      const user = JSON.parse(await _retrieveData(USER_DATA));
-      user && this.setState({ id: user.id });
-    } catch (err) {
-      console.log("error searchdetailscreen.js: ", err);
-    }
-  }
+  componentDidMount = () => {
+    const eachItem = this.props.navigation.getParam("item", null);
+
+    this.setState({ eachItem }, async () => {
+      try {
+        console.log("before AWAIT ------>  APPLIED JOB");
+        const { data } = await this.props.client.query({
+          query: JOB_STATUS_CHECK_QUERY,
+          variables: {
+            id: eachItem.id,
+            status: eachItem.status
+          }
+        });
+
+        // const pollQuery = this.props.client.query({
+        //   query: My_QUERY,
+        //   variables: { ...vars }
+        // });
+        // const response =  await pollQuery.startPolling(1000);
+
+        console.log("RESPONE JOB STATUS ------>  APPLIED JOB : ", data);
+        this.setState({
+          eachItem: {
+            ...this.state.eachItem,
+            status: data.jobStatusChange.status
+          }
+        });
+      } catch (error) {
+        console.log(
+          "error catched JOB STATUS CHECK ------>  APPLIED JOB: ",
+          error
+        );
+      }
+    });
+  };
 
   componentWillUnmount() {
     Toast.toastInstance = null;
   }
 
-  renderStatus = item => {
-    // console.log("renderStatus applied job ", item);
+  renderStatus = () => {
+    const item = this.state.eachItem;
+
+    console.log("itemmmmmm: applied job detail: ", item);
     if (item.status === ACCEPTED) {
-      console.log("accepted: ", item.status);
       return (
         <View>
-          <Button
-            block
-            primary
-            style={styles.statusBtnStylesAppliedJobs}
-            onPress={() => {
-              Alert.alert("CANCEL JOB", "Do you want to cancel the job?", [
-                {
-                  text: "CANCEL JOB",
-                  onPress: () => {
-                    console.log("CANCEL JOB CLICKED");
-                    this.props
-                      .deleteApplyjob(item.id)
-                      .then(response => {
-                        console.log("resp_delete apply: ", response);
-                        if (
-                          response.data.deleteApplyjob.status === 200 &&
-                          response.data.deleteApplyjob.msg === "success"
-                        ) {
-                          console.log("success delete apply");
-                          this.props.navigation.goBack();
-                        } else throw new Error(response);
-                      })
-                      .catch(error => {
-                        console.log("erro: ", JSON.stringify(error));
-                      });
-                  }
-                },
-                { text: "GO BACK" }
-              ]);
-            }}
-          >
+          <Button block primary style={styles.statusBtnStylesAppliedJobs}>
             <Text>ACCEPTED</Text>
           </Button>
           <Button
@@ -122,19 +119,25 @@ class AppliedJobDetailScreen extends Component {
             style={styles.statusBtnStylesAppliedJobs}
             onPress={() => {
               this.props
-                .confirmApplyjob(item.id, true)
+                .confirmApplyJob(item.id, true)
                 .then(response => {
                   console.log("resp_confirm: ", response);
                   if (
-                    response.data.confirmApplyjob.status === 200 &&
-                    response.data.confirmApplyjob.msg === "success"
+                    response.data.confirmApplyJob.status === 200 &&
+                    response.data.confirmApplyJob.msg === "success"
                   ) {
                     console.log("success confirm ");
+                    this.setState({
+                      eachItem: {
+                        ...this.state.eachItem,
+                        status: response.data.confirmApplyJob.applyJob.status
+                      }
+                    });
                     // this.props.navigation.goBack();
                   } else throw new Error(response);
                 })
                 .catch(error => {
-                  console.log("erro: ", JSON.stringify(error));
+                  console.log("appliedjob detaul : ===> confirm erro: ", error);
                 });
             }}
           >
@@ -146,19 +149,28 @@ class AppliedJobDetailScreen extends Component {
             style={styles.statusBtnStylesAppliedJobs}
             onPress={() => {
               this.props
-                .confirmApplyjob(item.id, false)
+                .confirmApplyJob(item.id, false)
                 .then(response => {
                   console.log("resp_revoke: ", response);
                   if (
-                    response.data.confirmApplyjob.status === 200 &&
-                    response.data.confirmApplyjob.msg === "success"
+                    response.data.confirmApplyJob.status === 200 &&
+                    response.data.confirmApplyJob.msg === "success"
                   ) {
                     console.log("success close revoke");
+                    this.setState({
+                      eachItem: {
+                        ...this.state.eachItem,
+                        status: response.data.confirmApplyJob.applyJob.status
+                      }
+                    });
                     // this.props.navigation.goBack();
                   } else throw new Error(response);
                 })
                 .catch(error => {
-                  console.log("erro: ", JSON.stringify(error));
+                  console.log(
+                    "appied job detal --> crevoke erro: ",
+                    JSON.stringify(error)
+                  );
                 });
             }}
           >
@@ -168,37 +180,7 @@ class AppliedJobDetailScreen extends Component {
       );
     } else if (item.status === REJECTED) {
       return (
-        <Button
-          onPress={() => {
-            Alert.alert("CANCEL JOB", "Do you want to cancel the job?", [
-              {
-                text: "CANCEL JOB",
-                onPress: () => {
-                  console.log("CANCEL JOB CLICKED");
-                  this.props
-                    .deleteApplyjob(item.id)
-                    .then(response => {
-                      console.log("resp_delete apply: ", response);
-                      if (
-                        response.data.deleteApplyjob.status === 200 &&
-                        response.data.deleteApplyjob.msg === "success"
-                      ) {
-                        console.log("success delete apply");
-                        this.props.navigation.goBack();
-                      } else throw new Error(response);
-                    })
-                    .catch(error => {
-                      console.log("erro: ", JSON.stringify(error));
-                    });
-                }
-              },
-              { text: "GO BACK" }
-            ]);
-          }}
-          block
-          danger
-          style={styles.statusBtnStylesAppliedJobs}
-        >
+        <Button block danger style={styles.statusBtnStylesAppliedJobs}>
           <Text> REJECTED</Text>
         </Button>
       );
@@ -217,19 +199,22 @@ class AppliedJobDetailScreen extends Component {
                 onPress: () => {
                   console.log("CANCEL JOB CLICKED");
                   this.props
-                    .deleteApplyjob(item.id)
+                    .deleteApplyJob(item.id)
                     .then(response => {
                       console.log("resp_delete apply: ", response);
                       if (
-                        response.data.deleteApplyjob.status === 200 &&
-                        response.data.deleteApplyjob.msg === "success"
+                        response.data.deleteApplyJob.status === 200 &&
+                        response.data.deleteApplyJob.msg === "success"
                       ) {
                         console.log("success delete apply");
                         this.props.navigation.goBack();
                       } else throw new Error(response);
                     })
                     .catch(error => {
-                      console.log("erro: ", JSON.stringify(error));
+                      console.log(
+                        "apleid job detail: ===> APPLIED erro: ",
+                        JSON.stringify(error)
+                      );
                     });
                 }
               },
@@ -242,146 +227,38 @@ class AppliedJobDetailScreen extends Component {
       );
     } else if (item.status === CONFIRMED) {
       return (
-        <Button
-          onPress={() => {
-            Alert.alert("CANCEL JOB", "Do you want to cancel the job?", [
-              {
-                text: "CANCEL JOB",
-                onPress: () => {
-                  console.log("CANCEL JOB CLICKED");
-                  this.props
-                    .deleteApplyjob(item.id)
-                    .then(response => {
-                      console.log("resp_delete apply: ", response);
-                      if (
-                        response.data.deleteApplyjob.status === 200 &&
-                        response.data.deleteApplyjob.msg === "success"
-                      ) {
-                        console.log("success delete apply");
-                        this.props.navigation.goBack();
-                      } else throw new Error(response);
-                    })
-                    .catch(error => {
-                      console.log("erro: ", JSON.stringify(error));
-                    });
-                }
-              },
-              { text: "GO BACK" }
-            ]);
-          }}
-          block
-          primary
-          style={styles.statusBtnStylesAppliedJobs}
-        >
+        <Button block primary style={styles.statusBtnStylesAppliedJobs}>
           <Text>CONFIRMED</Text>
         </Button>
       );
     } else if (item.status === REVOKED) {
       return (
-        <Button
-          onPress={() => {
-            Alert.alert("CANCEL JOB", "Do you want to cancel the job?", [
-              {
-                text: "CANCEL JOB",
-                onPress: () => {
-                  console.log("CANCEL JOB CLICKED");
-                  this.props
-                    .deleteApplyjob(item.id)
-                    .then(response => {
-                      console.log("resp_delete apply: ", response);
-                      if (
-                        response.data.deleteApplyjob.status === 200 &&
-                        response.data.deleteApplyjob.msg === "success"
-                      ) {
-                        console.log("success delete apply");
-                        this.props.navigation.goBack();
-                      } else throw new Error(response);
-                    })
-                    .catch(error => {
-                      console.log("erro: ", JSON.stringify(error));
-                    });
-                }
-              },
-              { text: "GO BACK" }
-            ]);
-          }}
-          block
-          info
-          style={styles.statusBtnStylesAppliedJobs}
-        >
+        <Button block info style={styles.statusBtnStylesAppliedJobs}>
           <Text>REVOKED</Text>
         </Button>
       );
     } else if (item.status === TIMEOUT) {
       return (
-        <Button
-          onPress={() => {
-            Alert.alert("CANCEL JOB", "Do you want to cancel the job?", [
-              {
-                text: "CANCEL JOB",
-                onPress: () => {
-                  console.log("CANCEL JOB CLICKED");
-                  this.props
-                    .deleteApplyjob(item.id)
-                    .then(response => {
-                      console.log("resp_delete apply: ", response);
-                      if (
-                        response.data.deleteApplyjob.status === 200 &&
-                        response.data.deleteApplyjob.msg === "success"
-                      ) {
-                        console.log("success delete apply");
-                        this.props.navigation.goBack();
-                      } else throw new Error(response);
-                    })
-                    .catch(error => {
-                      console.log("erro: ", JSON.stringify(error));
-                    });
-                }
-              },
-              { text: "GO BACK" }
-            ]);
-          }}
-          block
-          warning
-          style={styles.statusBtnStylesAppliedJobs}
-        >
+        <Button block warning style={styles.statusBtnStylesAppliedJobs}>
           <Text>TIMEOUT</Text>
         </Button>
       );
     } else if (item.status === COMPLETED) {
       return (
-        <Button
-          onPress={() => {
-            Alert.alert("CANCEL JOB", "Do you want to cancel the job?", [
-              {
-                text: "CANCEL JOB",
-                onPress: () => {
-                  console.log("CANCEL JOB CLICKED");
-                  this.props
-                    .deleteApplyjob(item.id)
-                    .then(response => {
-                      console.log("resp_delete apply: ", response);
-                      if (
-                        response.data.deleteApplyjob.status === 200 &&
-                        response.data.deleteApplyjob.msg === "success"
-                      ) {
-                        console.log("success delete apply");
-                        this.props.navigation.goBack();
-                      } else throw new Error(response);
-                    })
-                    .catch(error => {
-                      console.log("erro: ", JSON.stringify(error));
-                    });
-                }
-              },
-              { text: "GO BACK" }
-            ]);
-          }}
-          block
-          success
-          style={styles.statusBtnStylesAppliedJobs}
-        >
+        <Button block success style={styles.statusBtnStylesAppliedJobs}>
           <Text>COMPLETED</Text>
+        </Button>
+      );
+    } else if (item.status === PAID) {
+      return (
+        <Button block success style={styles.statusBtnStylesAppliedJobs}>
+          <Text> PAID</Text>
+        </Button>
+      );
+    } else if (item.status === DISPUTE) {
+      return (
+        <Button block danger style={styles.statusBtnStylesAppliedJobs}>
+          <Text> DISPUTE</Text>
         </Button>
       );
     } else {
@@ -429,6 +306,12 @@ class AppliedJobDetailScreen extends Component {
                     this.setState({ loading: false });
 
                     // this.dropdown.alertWithType("success", "Success");
+                    this.setState({
+                      eachItem: {
+                        ...this.state.eachItem,
+                        status: response.data.inputTotalHours.applyJob.status
+                      }
+                    });
 
                     Toast.show({
                       text: "Success",
@@ -469,8 +352,7 @@ class AppliedJobDetailScreen extends Component {
   };
 
   render() {
-    const eachItem = this.props.navigation.getParam("item", null);
-    console.log("each item applied job detail: ", eachItem);
+    const { eachItem } = this.state;
 
     return eachItem ? (
       <ScrollView scrollEnabled>
@@ -502,7 +384,7 @@ class AppliedJobDetailScreen extends Component {
               </Card>
             )}
 
-          <Query
+          {/* <Query
             query={JOB_STATUS_CHECK_QUERY}
             fetchPolicy="cache-and-network"
             variables={{
@@ -526,7 +408,7 @@ class AppliedJobDetailScreen extends Component {
                * is changed else it is timedOut. So if no response
                * if received from the query, `eachItem` variable
                * is to be used to get the unchanged status
-               */
+               
               const finalData = !isEmpty(data)
                 ? data.jobStatusChange
                 : eachItem;
@@ -552,7 +434,10 @@ class AppliedJobDetailScreen extends Component {
                 );
               }
             }}
-          </Query>
+          </Query> */}
+          {this.renderStatus()}
+          {this.state.eachItem.status === CONFIRMED &&
+            this.renderInputTotalHoursForm()}
         </View>
       </ScrollView>
     ) : null;
@@ -576,6 +461,7 @@ const styles = StyleSheet.create({
 });
 
 export default compose(
+  withApollo,
   graphql(INPUT_TOTAL_HOURS_MUTATION, {
     props: ({ mutate }) => ({
       inputTotalHours: (id, totalHours) =>
@@ -589,7 +475,7 @@ export default compose(
   }),
   graphql(DELETE_APPLY_JOB_MUTATION, {
     props: ({ mutate }) => ({
-      deleteApplyjob: id =>
+      deleteApplyJob: id =>
         mutate({
           variables: {
             id
@@ -608,7 +494,7 @@ export default compose(
   }),
   graphql(CONFIRM_APPLY_JOB_MUTATION, {
     props: ({ mutate }) => ({
-      confirmApplyjob: (id, confirm) =>
+      confirmApplyJob: (id, confirm) =>
         mutate({
           variables: {
             id,

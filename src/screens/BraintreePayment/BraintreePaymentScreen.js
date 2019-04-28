@@ -27,15 +27,15 @@ class BraintreePaymentScreen extends Component {
           response.data.createPayment.msg === "success"
         ) {
           console.log("payment success confirm ");
-          this.setState({ paymentAPIResponse: PAYMENT_SUCCESS });
-
-          this.props.navigation.goBack();
+          this.setState({ paymentAPIResponse: PAYMENT_SUCCESS }, () => {
+            this.props.navigation.goBack();
+          });
         } else throw new Error(response);
       })
       .catch(error => {
         this.setState({ paymentAPIResponse: PAYMENT_REJECTED });
 
-        console.log("erro: ", error);
+        console.log("brain tree payment error: ", error);
       });
     // this.props.client
     //   .mutate({
