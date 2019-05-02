@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import ParallaxScrollView from "react-native-parallax-scroll-view";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { _removeData, _retrieveData } from "../../config/utils";
 import {
   JWT_AUTH_TOKEN,
@@ -106,7 +107,7 @@ class More extends Component {
         }}
         onPress={() => {
           console.log("CreateUserPro pressed");
-          this.props.navigation.navigate("accounts");
+          this.props.navigation.navigate("createUserPro");
         }}
       >
         <SimpleLineIcons name="energy" style={styles.actionButtonIcon} />
@@ -119,6 +120,31 @@ class More extends Component {
           }}
         >
           <Text style={styles.textStyle}>Register as Pro User</Text>
+        </View>
+      </TouchableOpacity>
+      <View style={styles.borderViewStyle} />
+
+      <TouchableOpacity
+        style={{
+          flex: 1,
+          flexDirection: "row",
+          backgroundColor: "#fff"
+        }}
+        onPress={() => {
+          console.log("My reviews pressed");
+          this.props.navigation.navigate("myReviews");
+        }}
+      >
+        <MaterialIcons name="rate-review" style={styles.actionButtonIcon} />
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            padding: 20,
+            marginLeft: 5
+          }}
+        >
+          <Text style={styles.textStyle}>My Reviews</Text>
         </View>
       </TouchableOpacity>
       <View style={styles.borderViewStyle} />

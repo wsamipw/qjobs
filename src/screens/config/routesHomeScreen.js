@@ -32,6 +32,7 @@ import {
   CreateUserPro,
   ApplyJob,
   More,
+  MyReviews,
   JobApplicationsListScreen,
   JobApplicationDetailScreen,
   BraintreePayment
@@ -111,7 +112,8 @@ const MoreStack = createStackNavigator(
 
     //Not used currently
     //settings: SettingsScreen,
-    accounts: CreateUserPro
+    createUserPro: CreateUserPro,
+    myReviews: MyReviews
     // navigationOptions: {
     //   headerStyle: {
     //     backgroundColor: "#5968ef"

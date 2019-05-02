@@ -242,9 +242,7 @@ class JobApplicationDetailScreen extends Component {
         this.state.ratingReview ||
         (item.reviewSet && item.reviewSet.length)
       ) {
-        const ratingReview =
-          this.state.ratingRevieeachItem.employee.firstNamew ||
-          item.reviewSet[0];
+        const ratingReview = this.state.ratingReview || item.reviewSet[0];
 
         return (
           <Card>

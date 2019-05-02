@@ -38,10 +38,10 @@ class SettingsScreen extends Component {
             rounded
             block
             onPress={() => {
-              this.props.navigation.navigate("accounts");
+              this.props.navigation.navigate("createUserPro");
             }}
           >
-            <Text uppercase={false}>Accounts</Text>
+            <Text uppercase={false}>CreateUserPro</Text>
           </Button>
         </Content>
       </Container>

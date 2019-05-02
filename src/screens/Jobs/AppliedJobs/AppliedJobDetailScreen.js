@@ -60,7 +60,9 @@ class AppliedJobDetailScreen extends Component {
 
   state = {
     totalHours: "",
-    loading: false
+    loading: false,
+
+    eachItem: null
   };
 
   componentDidMount = () => {
@@ -98,10 +100,6 @@ class AppliedJobDetailScreen extends Component {
       }
     });
   };
-
-  componentWillUnmount() {
-    Toast.toastInstance = null;
-  }
 
   renderStatus = () => {
     const item = this.state.eachItem;
@@ -303,10 +301,10 @@ class AppliedJobDetailScreen extends Component {
                   console.log("eresponse: ", response);
 
                   if (response.data.inputTotalHours.msg === "success") {
-                    this.setState({ loading: false });
+                    this.setState({});
 
-                    // this.dropdown.alertWithType("success", "Success");
                     this.setState({
+                      loading: false,
                       eachItem: {
                         ...this.state.eachItem,
                         status: response.data.inputTotalHours.applyJob.status
@@ -327,7 +325,7 @@ class AppliedJobDetailScreen extends Component {
                   this.setState({ loading: false });
 
                   Toast.show({
-                    text: error.message,
+                    text: error.message || "Error performing the task.",
                     buttonText: "Okay",
                     duration: 5000,
                     position: "bottom",
@@ -394,9 +392,9 @@ class AppliedJobDetailScreen extends Component {
             // pollInterval={1000}
           >
             {({ loading, error, data, startPolling, stopPolling }) => {
-              // console.log("eachITem in side query id: ", eachItem.id);
+              // console.log("eachItem in side query id: ", eachItem.id);
               // console.log(
-              //   "eachITem in side query applied job detail status: ",
+              //   "eachItem in side query applied job detail status: ",
               //   eachItem.status
               // );
 

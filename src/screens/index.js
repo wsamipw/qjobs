@@ -42,6 +42,7 @@ import SettingsScreen from "./Settings/SettingsScreen";
 import CreateUserPro from "./Settings/CreateUserPro/CreateUserPro";
 import ApplyJob from "./ApplyJob";
 import More from "./MoreStack/More";
+import MyReviews from "./MoreStack/MyReviews";
 
 import BraintreePayment from "./BraintreePayment/BraintreePaymentScreen";
 
@@ -98,5 +99,6 @@ export {
   PostJobScreen51,
   CreateUserPro,
   ApplyJob,
-  More
+  More,
+  MyReviews
 };

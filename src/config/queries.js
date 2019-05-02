@@ -106,6 +106,34 @@ export const APPLIED_JOBS_QUERY = gql`
   }
 `;
 
+export const MY_REVIEW_LIST_QUERY = gql`
+  query MyReviewList($page: Int, $rows: Int, $id: ID) {
+    myReviewList(page: $page, rows: $rows, id: $id) {
+      data {
+        id
+        reviewer {
+          id
+          firstName
+          lastName
+          username
+          email
+        }
+        jobTitle {
+          id
+          name
+        }
+        rating
+        review
+        created
+      }
+      page
+      rows
+      rowCount
+      pages
+    }
+  }
+`;
+
 export const CLIENT_PAYMENT_TOKEN_QUERY = gql`
   query clientPaymentTokenQuery {
     clientPaymentToken

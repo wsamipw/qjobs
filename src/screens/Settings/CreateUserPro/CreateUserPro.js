@@ -41,8 +41,6 @@ class CreateUserPro extends Component {
   };
 
   componentWillUnmount() {
-    // Toast.toastInstance = null;
-
     this.setState({
       jobTitle: SELECT_A_JOB_TITLE,
       verifyingDoc1Image: null,
