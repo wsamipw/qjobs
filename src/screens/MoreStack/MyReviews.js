@@ -127,7 +127,7 @@ class MyReviews extends Component {
                       }
                     });
                   }}
-                  onEndReachedThreshold={0.1}
+                  onEndReachedThreshold={0.5}
                   renderItem={({ item }) => {
                     return (
                       <Card key={item.id}>

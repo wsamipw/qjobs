@@ -24,6 +24,18 @@ class PostJobScreen41 extends Component {
     name: ""
   };
 
+  componentDidMount = () => {
+    const eachExtraQuestion = this.props.navigation.getParam(
+      "eachExtraQuestion",
+      null
+    );
+
+    eachExtraQuestion &&
+      this.setState({
+        name: eachExtraQuestion
+      });
+  };
+
   onChange = (key, val) => this.setState({ [key]: val });
 
   render() {
@@ -44,38 +56,73 @@ class PostJobScreen41 extends Component {
               />
             </Item>
 
-            <Button
-              backgroundColor={PRIMARY_COLOR}
-              rounded
-              block
-              style={{
-                marginTop: 15
-              }}
-              onPress={() => {
-                if (this.state.name) {
-                  const extraQuestion =
-                    this.props.postJobState &&
-                    this.props.postJobState.extraQuestion;
+            {this.props.navigation.getParam("eachExtraQuestion", null) ? (
+              <Button
+                backgroundColor={PRIMARY_COLOR}
+                rounded
+                block
+                style={{
+                  marginTop: 15
+                }}
+                onPress={() => {
+                  const index = this.props.navigation.getParam("index", null);
 
-                  extraQuestion && extraQuestion.length
-                    ? this.props.saveMultiplePostJobScreensState({
-                        extraQuestion: [...extraQuestion, this.state.name]
-                      })
-                    : this.props.saveMultiplePostJobScreensState({
-                        extraQuestion: [this.state.name]
-                      });
-                  this.props.navigation.goBack();
-                } else {
-                  Alert.alert(
-                    "Question is Empty!",
-                    "Please type a question or press Back Button",
-                    [{ text: "OK" }]
-                  );
-                }
-              }}
-            >
-              <Text>Add</Text>
-            </Button>
+                  if (this.state.name) {
+                    const extraQuestion =
+                      this.props.postJobState &&
+                      this.props.postJobState.extraQuestion;
+
+                    extraQuestion[index] = this.state.name;
+
+                    this.props.saveMultiplePostJobScreensState({
+                      extraQuestion
+                    });
+                    this.props.navigation.goBack();
+                  } else {
+                    Alert.alert(
+                      "Question is Empty!",
+                      "Please type a question or press Back Button",
+                      [{ text: "OK" }]
+                    );
+                  }
+                }}
+              >
+                <Text>Edit</Text>
+              </Button>
+            ) : (
+              <Button
+                backgroundColor={PRIMARY_COLOR}
+                rounded
+                block
+                style={{
+                  marginTop: 15
+                }}
+                onPress={() => {
+                  if (this.state.name) {
+                    const extraQuestion =
+                      this.props.postJobState &&
+                      this.props.postJobState.extraQuestion;
+
+                    extraQuestion && extraQuestion.length
+                      ? this.props.saveMultiplePostJobScreensState({
+                          extraQuestion: [...extraQuestion, this.state.name]
+                        })
+                      : this.props.saveMultiplePostJobScreensState({
+                          extraQuestion: [this.state.name]
+                        });
+                    this.props.navigation.goBack();
+                  } else {
+                    Alert.alert(
+                      "Question is Empty!",
+                      "Please type a question or press Back Button",
+                      [{ text: "OK" }]
+                    );
+                  }
+                }}
+              >
+                <Text>Add</Text>
+              </Button>
+            )}
           </ScrollView>
         </Content>
       </Container>

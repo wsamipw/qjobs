@@ -102,11 +102,7 @@ class AppliedJobsScreen extends Component {
 
             //   return <ActivityIndicator size="large" color="#ff6347" />;
             // }
-            if (loading && !this.state.fetchMoreLoading) {
-              console.log("loading  loading: ", loading);
-              // console.log("loading  data: ", data);
-              return <ActivityIndicator size="large" color="#ff6347" />;
-            }
+
             if (error) {
               console.log("error applied jobs: ", JSON.stringify(error));
               return <Text>Error Fetching Data !</Text>;
@@ -120,7 +116,6 @@ class AppliedJobsScreen extends Component {
                     data={data.appliedJobs.data}
                     refreshing={networkStatus === 4}
                     onRefresh={() => {
-                      console.log("state page refetch: ", this.state.page);
                       this.setState({ page: 1 }, () => refetch());
                     }}
                     keyExtractor={item => item.id}
@@ -128,9 +123,10 @@ class AppliedJobsScreen extends Component {
                       this.setState({ fetchMoreLoading: true }, () => {
                         console.log("page:", this.state.page);
                         console.log("pagessss: ", data.appliedJobs.pages);
-                        if (this.state.page < data.appliedJobs.pages) {
-                          console.log("fetchmore ran: ", this.state.page);
-
+                        if (
+                          data.appliedJobs.data.length <
+                          data.appliedJobs.rowCount
+                        ) {
                           this.setState(
                             {
                               page: this.state.page + 1
@@ -169,62 +165,56 @@ class AppliedJobsScreen extends Component {
                         }
                       });
                     }}
-                    onEndReachedThreshold={0.1}
+                    onEndReachedThreshold={0.5}
                     renderItem={this._renderItem}
                   />
                   {this.state.fetchMoreLoading && <Spinner color="grey" />}
                 </View>
               );
-            } else {
-              if (loading) {
-                console.log("LOADING TEXTTTTTTTTTT laoding ....");
-                return (
-                  <View>
-                    <Text>Loading...</Text>
-                  </View>
-                );
-              } else {
-                console.log("no result for aplplpedi jos: ", data.appliedJobs);
-                return (
-                  <View style={{ flex: 1 }}>
-                    {/* <StatusBar
+            }
+            if (loading) {
+              console.log("loading  loading: ", loading);
+              // console.log("loading  data: ", data);
+              return <ActivityIndicator size="large" color="#ff6347" />;
+            }
+            return (
+              <View style={{ flex: 1 }}>
+                {/* <StatusBar
                       barStyle="light-content"
                       backgroundColor={PRIMARY_COLOR}
                     /> */}
-                    <View
-                      style={{
-                        flex: 1,
-                        // height: "100%",
-                        marginTop: 200,
-                        flexDirection: "column",
-                        justifyContent: "center",
-                        alignItems: "center"
-                      }}
-                    >
-                      <Icon
-                        type="MaterialIcons"
-                        name="cloud-off"
-                        style={{ fontSize: 50, color: "#d3d3d3" }}
-                      />
-                      <Text note>
-                        Currently, you have not applied for any jobs!{" "}
-                        {/* {this.props.navigation.state.params.query} */}
-                      </Text>
-                      <Button
-                        block
-                        success
-                        style={styles.statusBtnStylesAppliedJobs}
-                        onPress={() => {
-                          this.props.route.navigation.navigate("search");
-                        }}
-                      >
-                        <Text>Search for a Job</Text>
-                      </Button>
-                    </View>
-                  </View>
-                );
-              }
-            }
+                <View
+                  style={{
+                    flex: 1,
+                    // height: "100%",
+                    marginTop: 200,
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }}
+                >
+                  <Icon
+                    type="MaterialIcons"
+                    name="cloud-off"
+                    style={{ fontSize: 50, color: "#d3d3d3" }}
+                  />
+                  <Text note>
+                    Currently, you have not applied for any jobs!{" "}
+                    {/* {this.props.navigation.state.params.query} */}
+                  </Text>
+                  <Button
+                    block
+                    success
+                    style={styles.statusBtnStylesAppliedJobs}
+                    onPress={() => {
+                      this.props.route.navigation.navigate("search");
+                    }}
+                  >
+                    <Text>Search for a Job</Text>
+                  </Button>
+                </View>
+              </View>
+            );
           }}
         </Query>
       </View>

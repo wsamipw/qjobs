@@ -9,7 +9,7 @@ import {
   ActivityIndicator
 } from "react-native";
 
-import { Button, Icon, Text } from "native-base";
+import { Button, Icon, Text, Spinner } from "native-base";
 
 import { Card, Divider } from "react-native-elements";
 import moment from "moment";
@@ -43,7 +43,12 @@ class SearchResultScreen extends Component {
     queryDisable: true,
     title: "",
     // LoggedIn user
-    user: null
+    user: null,
+
+    page: 1,
+    rows: 4,
+
+    fetchMoreLoading: false
   };
 
   async componentDidMount() {
@@ -68,7 +73,6 @@ class SearchResultScreen extends Component {
       console.log("error in try catch location: ", err);
     }
   }
-  val = { page: 1, rows: 4 };
 
   _checkJobStatus = item => {
     if (
@@ -105,10 +109,10 @@ class SearchResultScreen extends Component {
         <StatusBar barStyle="light-content" backgroundColor={PRIMARY_COLOR} />
         <Query
           query={JOBS_QUERY}
-          fetchPolicy="network-only"
+          fetchPolicy="cache-and-network"
           variables={{
-            page: this.val.page,
-            rows: this.val.rows,
+            page: 1,
+            rows: 4,
             query,
             latitude:
               this.state.location &&
@@ -124,7 +128,7 @@ class SearchResultScreen extends Component {
                 : undefined
           }}
         >
-          {({ loading, error, data, fetchMore }) => {
+          {({ loading, error, data, fetchMore, refetch, networkStatus }) => {
             // This loading will re-render entire page
             // But we don't want that on Infinite-Scroll page
             // So it is checked below
@@ -146,33 +150,45 @@ class SearchResultScreen extends Component {
                   <FlatList
                     data={data.jobs.data}
                     keyExtractor={item => item.id}
+                    refreshing={networkStatus === 4}
+                    onRefresh={() => {
+                      console.log("search result refresh pressed");
+                      this.setState({ page: 1 }, () => refetch());
+                    }}
                     onEndReached={() => {
-                      this.val.page += 1;
-                      // console.log("val: ", this.val);
                       // console.log("pages: ", data.jobs.pages);
                       // console.log("data length: ", data.jobs.data.length);
-                      if (data.jobs.data.length < data.jobs.rowCount) {
-                        fetchMore({
-                          variables: {
-                            page: this.val.page,
-                            rows: this.val.rows
-                          },
-                          updateQuery: (prev, { fetchMoreResult }) => {
-                            if (!fetchMoreResult) return prev;
-                            return Object.assign({}, prev, {
-                              jobs: {
-                                ...prev.jobs,
-                                data: [
-                                  ...prev.jobs.data,
-                                  ...fetchMoreResult.jobs.data
-                                ]
+
+                      this.setState({ fetchMoreLoading: true }, () => {
+                        if (data.jobs.data.length < data.jobs.rowCount) {
+                          this.setState({ page: this.state.page + 1 }, () => {
+                            fetchMore({
+                              variables: {
+                                page: this.state.page,
+                                rows: this.state.rows
+                              },
+                              updateQuery: (prev, { fetchMoreResult }) => {
+                                this.setState({ fetchMoreLoading: false });
+
+                                if (!fetchMoreResult) return prev;
+                                return Object.assign({}, prev, {
+                                  jobs: {
+                                    ...prev.jobs,
+                                    data: [
+                                      ...prev.jobs.data,
+                                      ...fetchMoreResult.jobs.data
+                                    ]
+                                  }
+                                });
                               }
                             });
-                          }
-                        });
-                      }
+                          });
+                        } else {
+                          this.setState({ fetchMoreLoading: false });
+                        }
+                      });
                     }}
-                    onEndReachedThreshold={0.1}
+                    onEndReachedThreshold={0.5}
                     renderItem={({ item }) => {
                       const jobStatus = this._checkJobStatus(item);
 
@@ -232,6 +248,7 @@ class SearchResultScreen extends Component {
                       );
                     }}
                   />
+                  {this.state.fetchMoreLoading && <Spinner color="grey" />}
                 </View>
               );
             }

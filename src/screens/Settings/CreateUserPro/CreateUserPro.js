@@ -9,7 +9,15 @@ import {
   Platform,
   StatusBar
 } from "react-native";
-import { Container, Content, Button, Text, View, Toast } from "native-base";
+import {
+  Container,
+  Content,
+  Button,
+  Text,
+  View,
+  Toast,
+  Spinner
+} from "native-base";
 import { ImagePicker } from "expo";
 import { connect } from "react-redux";
 import { Query, compose, graphql } from "react-apollo";
@@ -193,86 +201,89 @@ class CreateUserPro extends Component {
               <Text>{verifyingDoc2Image ? "Change" : "Upload"}</Text>
             </Button>
           </View>
-          <Button
-            rounded
-            backgroundColor={PRIMARY_COLOR}
-            block
-            disabled={this.state.loading}
-            style={{
-              marginBottom: 20
-            }}
-            onPress={() => {
-              const {
-                jobTitle,
-                verifyingDoc1Base64,
-                verifyingDoc2Base64
-              } = this.state;
+          {this.state.loading ? (
+            <Spinner color="orange" />
+          ) : (
+            <Button
+              rounded
+              backgroundColor={PRIMARY_COLOR}
+              block
+              style={{
+                marginBottom: 20
+              }}
+              onPress={() => {
+                const {
+                  jobTitle,
+                  verifyingDoc1Base64,
+                  verifyingDoc2Base64
+                } = this.state;
 
-              if (
-                jobTitle !== SELECT_A_JOB_TITLE &&
-                (verifyingDoc1Base64 || verifyingDoc2Base64)
-              ) {
-                this.setState({ loading: true }, () => {
-                  this.props
-                    .createUserPro(
-                      jobTitle,
-                      verifyingDoc1Base64,
-                      verifyingDoc2Base64
-                    )
-                    .then(response => {
-                      console.log("response use pros: ", response);
-                      if (
-                        response.data.createUserpro.status === 200 &&
-                        response.data.createUserpro.msg === "success"
-                      ) {
+                if (
+                  jobTitle !== SELECT_A_JOB_TITLE &&
+                  (verifyingDoc1Base64 || verifyingDoc2Base64)
+                ) {
+                  this.setState({ loading: true }, () => {
+                    this.props
+                      .createUserPro(
+                        jobTitle,
+                        verifyingDoc1Base64,
+                        verifyingDoc2Base64
+                      )
+                      .then(response => {
+                        console.log("response use pros: ", response);
+                        if (
+                          response.data.createUserpro.status === 200 &&
+                          response.data.createUserpro.msg === "success"
+                        ) {
+                          this.setState({ loading: false });
+                          // this.dropdown.alertWithType(
+                          //   "success",
+                          //   "Success",
+                          //   "Successfully Updated"
+                          // );
+                          Toast.show({
+                            text: "Successfully Registered",
+                            buttonText: "Okay",
+                            duration: 3000,
+                            position: "bottom",
+                            type: "success"
+                          });
+                        } else throw new Error(response.data.createUserpro.msg);
+                      })
+                      .catch(error => {
                         this.setState({ loading: false });
-                        // this.dropdown.alertWithType(
-                        //   "success",
-                        //   "Success",
-                        //   "Successfully Updated"
-                        // );
+                        console.log(
+                          "register pro error: ",
+                          JSON.stringify(error)
+                        );
+
                         Toast.show({
-                          text: "Successfully Registered",
+                          text: error.message,
                           buttonText: "Okay",
                           duration: 3000,
                           position: "bottom",
-                          type: "success"
+                          type: "danger"
                         });
-                      } else throw new Error(response.data.createUserpro.msg);
-                    })
-                    .catch(error => {
-                      this.setState({ loading: false });
-                      console.log(
-                        "register pro error: ",
-                        JSON.stringify(error)
-                      );
 
-                      Toast.show({
-                        text: error.message,
-                        buttonText: "Okay",
-                        duration: 3000,
-                        position: "bottom",
-                        type: "danger"
+                        // this.dropdown.alertWithType(
+                        //   "error",
+                        //   "Error",
+                        //   error.message
+                        // );
                       });
-
-                      // this.dropdown.alertWithType(
-                      //   "error",
-                      //   "Error",
-                      //   error.message
-                      // );
-                    });
-                });
-              } else {
-                Alert.alert(
-                  "JobTitle Not Selected or Image not Uploaded",
-                  "Please give title and upload both images",
-                  [{ text: "OK" }]
-                );
-              }
-            }}
-          >
-            <Text>Submit</Text>
-          </Button>
+                  });
+                } else {
+                  Alert.alert(
+                    "JobTitle Not Selected or Image not Uploaded",
+                    "Please give title and upload both images",
+                    [{ text: "OK" }]
+                  );
+                }
+              }}
+            >
+              <Text>Submit</Text>
+            </Button>
+          )}
         </Content>
         {/* <DropdownAlert ref={ref => (this.dropdown = ref)} /> */}
       </Container>

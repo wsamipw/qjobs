@@ -1,6 +1,14 @@
 import React, { Component } from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
-import { Container, Content, Item, Input, Icon } from "native-base";
+import {
+  Container,
+  Content,
+  Item,
+  Input,
+  Icon,
+  Spinner,
+  Toast
+} from "native-base";
 import { Button } from "react-native-elements";
 import styles from "../../Styles/LoginRegisterStyles";
 
@@ -23,7 +31,9 @@ class RegisterScreen extends Component {
     errorUsername: "",
     errorPassword: "",
     errorEmail: "",
-    errorPasswordMismatch: ""
+    errorPasswordMismatch: "",
+
+    loading: false
   };
 
   togglePassVisisble = () => {
@@ -124,6 +134,7 @@ class RegisterScreen extends Component {
               containerViewStyle={styles.loginButtton}
               rounded
               title="Register"
+              loading={this.state.loading}
               onPress={() => {
                 const {
                   username,
@@ -167,35 +178,53 @@ class RegisterScreen extends Component {
                     errorPasswordMismatch: ""
                   });
 
-                if (username && password && email)
-                  if (password === confirm_password)
-                    this.props
-                      .createUser(email, password, username)
-                      .then(async response => {
-                        console.log("data: ", response.data);
-                        if (response.data.createUser.msg === "success") {
-                          try {
-                            await _storeData(
-                              JWT_AUTH_TOKEN,
-                              response.data.createUser.token
-                            );
+                if (username && password && email) {
+                  if (password === confirm_password) {
+                    this.setState({ loading: true }, () => {
+                      this.props
+                        .createUser(email, password, username)
+                        .then(async response => {
+                          console.log("data: ", response.data);
+                          if (response.data.createUser.msg === "success") {
+                            try {
+                              await _storeData(
+                                JWT_AUTH_TOKEN,
+                                response.data.createUser.token
+                              );
 
-                            await _storeData(
-                              USER_DATA,
-                              JSON.stringify(response.data.createUser.user)
-                            );
+                              await _storeData(
+                                USER_DATA,
+                                JSON.stringify(response.data.createUser.user)
+                              );
 
-                            this.props.navigation.navigate("home");
-                          } catch (err) {
-                            console.log("catch err: ", err);
-                          }
-                        } else throw new Error(response);
-                      })
-                      .catch(error =>
-                        console.log("data error: ", JSON.stringify(error))
-                      );
+                              this.setState({ loading: false });
+
+                              this.props.navigation.navigate("home");
+                            } catch (err) {
+                              console.log("catch err: ", err);
+                              throw new Error(err);
+                            }
+                          } else throw new Error(response);
+                        })
+                        .catch(error => {
+                          this.setState({ loading: false });
+
+                          console.log("data error: ", JSON.stringify(error));
+
+                          Toast.show({
+                            text: "Error Creating User !",
+                            buttonText: "Okay",
+                            duration: 3000,
+                            position: "bottom",
+                            type: "danger"
+                          });
+                        });
+                    });
+                  }
+                }
               }}
             />
+
             <View style={styles.bottomTextWrapper}>
               <Text style={styles.bottomText}>Privacy Policy</Text>
               <TouchableOpacity

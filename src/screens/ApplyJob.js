@@ -10,7 +10,8 @@ import {
   Container,
   Content,
   Label,
-  Toast
+  Toast,
+  Spinner
 } from "native-base";
 
 import RadioForm from "react-native-simple-radio-button";
@@ -46,7 +47,9 @@ class SearchDetailScreen extends Component {
     description: "",
     // Below field should be cast into float
     hourlyRate: "",
-    extraQuestion: []
+    extraQuestion: [],
+
+    loading: false
   };
 
   componentDidMount() {
@@ -166,68 +169,86 @@ class SearchDetailScreen extends Component {
                 })}
               </View>
             ) : null}
-            <Button
-              backgroundColor={PRIMARY_COLOR}
-              rounded
-              block
-              style={{
-                marginTop: 15
-              }}
-              onPress={() => {
-                console.log("state apply job: ", this.state);
 
-                const hourlyRate = Number(this.state.hourlyRate);
+            {this.state.loading ? (
+              <Spinner />
+            ) : (
+              <Button
+                backgroundColor={PRIMARY_COLOR}
+                rounded
+                block
+                style={{
+                  marginTop: 15
+                }}
+                onPress={() => {
+                  this.setState({ loading: true }, () => {
+                    console.log("state apply job: ", this.state);
+                    const hourlyRate = Number(this.state.hourlyRate);
 
-                const { job, description, extraQuestion } = this.state;
+                    const { job, description, extraQuestion } = this.state;
 
-                this.props.client
-                  .mutate({
-                    mutation: APPLY_JOB_MUTATION,
-                    variables: {
-                      job,
-                      description,
-                      hourlyRate,
-                      extraQuestion
-                    },
-                    refetchQueries: [
-                      {
-                        query: APPLIED_JOBS_QUERY,
+                    this.props.client
+                      .mutate({
+                        mutation: APPLY_JOB_MUTATION,
                         variables: {
-                          //awaitRefetchQueries: true,
-                          page: 1,
-                          rows: 4
-                        }
-                      }
-                    ]
-                  })
-                  .then(response => {
-                    console.log("response apply:", response);
-                    if (
-                      response.data.applyJob.status === 200 &&
-                      response.data.applyJob.msg === "success"
-                    ) {
-                      console.log("success apply job: ");
-                      // this.Default_Toast_Bottom();
-                      this.resetStack();
-                      this.props.navigation.navigate("jobs");
-                    } else throw new Error(JSON.stringify(response));
-                  })
-                  .catch(error => {
-                    const err = JSON.parse(error.message);
-                    console.log("error apply jov:", err);
-                    Toast.show({
-                      text:
-                        "You must first be registered as a professional for this job! \nGoto More > Register as Pro User",
-                      buttonText: "Okay",
-                      duration: 3000,
-                      position: "bottom",
-                      type: "danger"
-                    });
+                          job,
+                          description,
+                          hourlyRate,
+                          extraQuestion
+                        },
+                        refetchQueries: [
+                          {
+                            query: APPLIED_JOBS_QUERY,
+                            variables: {
+                              //awaitRefetchQueries: true,
+                              page: 1,
+                              rows: 4
+                            }
+                          }
+                        ]
+                      })
+                      .then(response => {
+                        console.log("response apply:", response);
+                        if (
+                          response.data.applyJob.status === 200 &&
+                          response.data.applyJob.msg === "success"
+                        ) {
+                          console.log("success apply job: ");
+                          // this.Default_Toast_Bottom();
+                          this.setState({ loading: false });
+                          Toast.show({
+                            text: "Successfully Applied !",
+                            buttonText: "Okay",
+                            duration: 3000,
+                            position: "bottom",
+                            type: "success"
+                          });
+
+                          this.resetStack();
+
+                          this.props.navigation.navigate("jobs");
+                        } else throw new Error(JSON.stringify(response));
+                      })
+                      .catch(error => {
+                        const err = JSON.parse(error.message);
+                        this.setState({ loading: false });
+
+                        console.log("error apply jov:", err);
+                        Toast.show({
+                          text:
+                            "You must first be registered as a professional for this job! \nGoto More > Register as Pro User",
+                          buttonText: "Okay",
+                          duration: 3000,
+                          position: "bottom",
+                          type: "danger"
+                        });
+                      });
                   });
-              }}
-            >
-              <Text>Apply</Text>
-            </Button>
+                }}
+              >
+                <Text>Apply</Text>
+              </Button>
+            )}
             {/* <CustomToast ref="defaultToastBottom" position="bottom" /> */}
           </ScrollView>
         </Content>

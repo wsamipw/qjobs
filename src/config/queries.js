@@ -76,6 +76,7 @@ export const APPLIED_JOBS_QUERY = gql`
       page
       rows
       pages
+      rowCount
       data {
         id
         job {

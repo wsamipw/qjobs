@@ -18,15 +18,16 @@ import {
 } from "native-base";
 // import DropdownAlert from "react-native-dropdownalert";
 import { Button, SocialIcon } from "react-native-elements";
+import { Facebook } from "expo";
 
 import { Constants, Location, Permissions } from "expo";
 import { connect } from "react-redux";
 
-import { compose, graphql } from "react-apollo";
+import { compose, graphql, withApollo } from "react-apollo";
 
 import styles from "../../Styles/LoginRegisterStyles";
 import { JWT_AUTH_TOKEN, LOCATION, USER_DATA } from "../../config/CONSTANTS";
-import { LOGIN_MUTATION } from "../../config/mutations";
+import { LOGIN_MUTATION, SOCIAL_AUTH_MUTATION } from "../../config/mutations";
 
 import { _storeData, _retrieveData } from "../../config/utils";
 
@@ -34,6 +35,8 @@ class LoginScreen extends Component {
   state = {
     hidePass: true,
     showToast: false,
+
+    loading: false,
 
     username: "",
     password: "",
@@ -83,6 +86,65 @@ class LoginScreen extends Component {
   };
 
   onChange = (key, val) => this.setState({ [key]: val });
+
+  facebookLogIn = async () => {
+    try {
+      const {
+        type,
+        token,
+        expires,
+        permissions,
+        declinedPermissions
+      } = await Facebook.logInWithReadPermissionsAsync("672251063134173", {
+        permissions: ["public_profile"]
+      });
+
+      if (type === "success") {
+        // Get the user's name using Facebook's Graph API
+        console.log("type facebook: ", type);
+        console.log("token facebook: ", token);
+
+        this.props.client
+          .mutate({
+            mutation: SOCIAL_AUTH_MUTATION,
+            variables: {
+              accessToken: token,
+              provider: "facebook"
+            }
+          })
+          .then(response => {
+            console.log("response faceboook: ", response);
+
+            _storeData(JWT_AUTH_TOKEN, response.data.socialAuth.token);
+            _storeData(
+              USER_DATA,
+              JSON.stringify(response.data.socialAuth.user)
+            );
+
+            _retrieveData(JWT_AUTH_TOKEN);
+            _retrieveData(USER_DATA);
+
+            this.props.navigation.navigate("home");
+          })
+          .catch(error => {
+            console.log("facebook errro:", error);
+
+            Toast.show({
+              text: "Error Logging Facebook !",
+              buttonText: "Okay",
+              duration: 5000,
+              position: "bottom",
+              type: "danger"
+            });
+          });
+      } else {
+        // type === 'cancel'
+        console.log("err type: ", type);
+      }
+    } catch ({ message }) {
+      console.log(`Facebook Login Error: ${message}`);
+    }
+  };
 
   render() {
     return (
@@ -140,6 +202,7 @@ class LoginScreen extends Component {
             <Button
               backgroundColor="#3F51B5"
               containerViewStyle={styles.loginButtton}
+              loading={this.state.loading}
               rounded
               title="Login"
               onPress={() => {
@@ -163,42 +226,58 @@ class LoginScreen extends Component {
                     errorPassword: ""
                   });
 
-                if (username && password)
-                  this.props
-                    .tokenAuth(username, password)
-                    .then(response => {
-                      console.log("data: ", response.data);
+                if (username && password) {
+                  this.setState({ loading: true }, () => {
+                    this.props.client
+                      .mutate({
+                        mutation: LOGIN_MUTATION,
+                        variables: {
+                          username,
+                          password
+                        }
+                      })
+                      .then(response => {
+                        console.log("data: ", response.data);
 
-                      _storeData(JWT_AUTH_TOKEN, response.data.tokenAuth.token);
-                      _storeData(
-                        USER_DATA,
-                        JSON.stringify(response.data.tokenAuth.user)
-                      );
+                        _storeData(
+                          JWT_AUTH_TOKEN,
+                          response.data.tokenAuth.token
+                        );
+                        _storeData(
+                          USER_DATA,
+                          JSON.stringify(response.data.tokenAuth.user)
+                        );
 
-                      _retrieveData(JWT_AUTH_TOKEN);
-                      _retrieveData(USER_DATA);
+                        // _retrieveData(JWT_AUTH_TOKEN);
+                        // _retrieveData(USER_DATA);
 
-                      this.props.navigation.navigate("home");
-                    })
-                    .catch(error => {
-                      console.log("data error: ", JSON.stringify(error));
-                      // this.dropdown.alertWithType(
-                      //   "error",
-                      //   "Login Error",
-                      //   "Please, enter valid credentials"
-                      // );
+                        this.setState({ loading: false });
 
-                      Toast.show({
-                        text: "Please enter valid credentials!",
-                        buttonText: "Okay",
-                        duration: 3000,
-                        position: "bottom",
-                        type: "danger"
+                        this.props.navigation.navigate("home");
+                      })
+                      .catch(error => {
+                        console.log("data error: ", JSON.stringify(error));
+                        // this.dropdown.alertWithType(
+                        //   "error",
+                        //   "Login Error",
+                        //   "Please, enter valid credentials"
+                        // );
+
+                        this.setState({ loading: false });
+
+                        Toast.show({
+                          text: "Please enter valid credentials!",
+                          buttonText: "Okay",
+                          duration: 3000,
+                          position: "bottom",
+                          type: "danger"
+                        });
                       });
-                    });
 
-                {
-                  /* this.props.navigation.navigate("home"); */
+                    {
+                      /* this.props.navigation.navigate("home"); */
+                    }
+                  });
                 }
               }}
             />
@@ -209,6 +288,10 @@ class LoginScreen extends Component {
                 title="Sign In With Facebook"
                 button
                 type="facebook"
+                onPress={async () => {
+                  console.log("facebbok login presed");
+                  await this.facebookLogIn();
+                }}
               />
               <SocialIcon
                 style={styles.SocialloginButtton}
@@ -253,10 +336,5 @@ const mapStateToProps = ({ extraReducer }) => ({ ...extraReducer });
 
 export default compose(
   connect(mapStateToProps),
-  graphql(LOGIN_MUTATION, {
-    props: ({ mutate }) => ({
-      tokenAuth: (username, password) =>
-        mutate({ variables: { username, password } })
-    })
-  })
+  withApollo
 )(LoginScreen);

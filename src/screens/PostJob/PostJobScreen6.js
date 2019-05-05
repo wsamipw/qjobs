@@ -1,11 +1,19 @@
 import React, { Component } from "react";
 import { ScrollView, ActivityIndicator } from "react-native";
-import { Item, Input, Button, Container, Content, Text } from "native-base";
+import {
+  Item,
+  Input,
+  Button,
+  Container,
+  Content,
+  Text,
+  Spinner,
+  Toast
+} from "native-base";
 
 import { connect } from "react-redux";
 import { MapView } from "expo";
 import { compose, graphql, withApollo } from "react-apollo";
-import DropdownAlert from "react-native-dropdownalert";
 
 import { deleteMultiplePostJobScreensState } from "../../actions/";
 import { _retrieveData } from "../../config/utils";
@@ -31,9 +39,6 @@ class PostJobScreen6 extends Component {
   onChange = (key, val) => this.setState({ [key]: val });
 
   render() {
-    if (this.state.loading)
-      return <ActivityIndicator size="large" color="#ff6347" />;
-
     return (
       <Container>
         <Content
@@ -64,53 +69,56 @@ class PostJobScreen6 extends Component {
               />
             </Item>
 
-            <Button
-              backgroundColor={PRIMARY_COLOR}
-              rounded
-              block
-              style={{
-                marginTop: 15
-              }}
-              onPress={async () => {
-                this.setState({
-                  loading: true
-                });
-                // console.log("porp6: ", this.props.postJobState);
-                const {
-                  jobTitle,
-                  hireBy,
-                  description,
-                  extraQuestion
-                } = this.props.postJobState;
+            {this.state.loading ? (
+              <Spinner />
+            ) : (
+              <Button
+                backgroundColor={PRIMARY_COLOR}
+                rounded
+                block
+                style={{
+                  marginTop: 15
+                }}
+                onPress={async () => {
+                  this.setState({
+                    loading: true
+                  });
+                  // console.log("porp6: ", this.props.postJobState);
+                  const {
+                    jobTitle,
+                    hireBy,
+                    description,
+                    extraQuestion
+                  } = this.props.postJobState;
 
-                const { timeOut } = this.state;
+                  const { timeOut } = this.state;
 
-                const timeout = Number(timeOut);
+                  const timeout = Number(timeOut);
 
-                const location = JSON.parse(await _retrieveData(LOCATION));
+                  const location = JSON.parse(await _retrieveData(LOCATION));
 
-                const latitude = location
-                  ? location.coords.latitude
-                  : undefined;
-                const longitude = location
-                  ? location.coords.longitude
-                  : undefined;
+                  const latitude = location
+                    ? location.coords.latitude
+                    : undefined;
+                  const longitude = location
+                    ? location.coords.longitude
+                    : undefined;
 
-                // console.log("latitude: ", latitude, " longiidf: ", longitude);
+                  // console.log("latitude: ", latitude, " longiidf: ", longitude);
 
-                // console.log(
-                //   "reuquesDAt: ",
-                //   jobTitle,
-                //   hireBy,
-                //   description,
-                //   latitude,
-                //   longitude,
-                //   timeout,
-                //   extraQuestion
-                // );
+                  // console.log(
+                  //   "reuquesDAt: ",
+                  //   jobTitle,
+                  //   hireBy,
+                  //   description,
+                  //   latitude,
+                  //   longitude,
+                  //   timeout,
+                  //   extraQuestion
+                  // );
 
-                {
-                  /* const response = await this.props.createJob(
+                  {
+                    /* const response = await this.props.createJob(
         jobTitle,
         hireBy,
         description,
@@ -119,10 +127,10 @@ class PostJobScreen6 extends Component {
         timeout,
         extraQuestion
         ); */
-                }
+                  }
 
-                {
-                  /* const {
+                  {
+                    /* const {
         data: {
         createJob: { msg, status }
         }
@@ -134,48 +142,54 @@ class PostJobScreen6 extends Component {
         } else {
         console.log("error: ", response);
         } */
-                }
+                  }
 
-                this.props
-                  .createJob(
-                    jobTitle,
-                    hireBy,
-                    description,
-                    latitude,
-                    longitude,
-                    timeout,
-                    extraQuestion
-                  )
-                  .then(response => {
-                    if (response.data.createJob.msg === "success") {
+                  this.props
+                    .createJob(
+                      jobTitle,
+                      hireBy,
+                      description,
+                      latitude,
+                      longitude,
+                      timeout,
+                      extraQuestion
+                    )
+                    .then(response => {
+                      if (response.data.createJob.msg === "success") {
+                        this.setState({ loading: false });
+                        console.log("success: ", response);
+
+                        Toast.show({
+                          text: "Job Successfully Created !",
+                          buttonText: "Okay",
+                          duration: 3000,
+                          position: "bottom",
+                          type: "success"
+                        });
+
+                        this.props.deleteMultiplePostJobScreensState();
+
+                        this.props.navigation.navigate("jobs");
+                      } else throw new Error(response.data.createJob.msg);
+                    })
+                    .catch(error => {
                       this.setState({ loading: false });
-                      console.log("success: ", response);
-                      this.dropdown.alertWithType(
-                        "success",
-                        "Success",
-                        "Job Created Successfully"
-                      );
-                      this.props.deleteMultiplePostJobScreensState();
 
-                      this.props.navigation.navigate("jobs");
-                    } else throw new Error(response.data.createJob.msg);
-                  })
-                  .catch(error => {
-                    this.setState({ loading: false });
+                      console.log("job post errror: ", JSON.stringify(error));
 
-                    console.log("job post errror: ", JSON.stringify(error));
-
-                    this.dropdown.alertWithType(
-                      "error",
-                      "Error",
-                      error.message
-                    );
-                  });
-              }}
-            >
-              <Text>Publish</Text>
-            </Button>
-            <DropdownAlert ref={ref => (this.dropdown = ref)} />
+                      Toast.show({
+                        text: error.message,
+                        buttonText: "Okay",
+                        duration: 5000,
+                        position: "bottom",
+                        type: "danger"
+                      });
+                    });
+                }}
+              >
+                <Text>Publish</Text>
+              </Button>
+            )}
           </ScrollView>
         </Content>
       </Container>

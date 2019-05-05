@@ -1,5 +1,24 @@
 import gql from "graphql-tag";
 
+export const SOCIAL_AUTH_MUTATION = gql`
+  mutation SocialAuthMutation($accessToken: String!, $provider: String!) {
+    socialAuth(accessToken: $accessToken, provider: $provider) {
+      token
+      user {
+        id
+        username
+        firstName
+        lastName
+        email
+        currentAddress
+        permanentAddress
+        gender
+        dateOfBirth
+      }
+    }
+  }
+`;
+
 export const APPLY_JOB_MUTATION = gql`
   mutation ApplyJobMutation(
     $job: ID

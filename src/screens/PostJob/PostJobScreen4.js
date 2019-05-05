@@ -1,7 +1,15 @@
 import React, { Component } from "react";
 import { StyleSheet, ScrollView } from "react-native";
 import { connect } from "react-redux";
-import { Button, Card, Text, Container, Content, ListItem } from "native-base";
+import {
+  Button,
+  Card,
+  Text,
+  Container,
+  Content,
+  ListItem,
+  Icon
+} from "native-base";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -10,6 +18,8 @@ import HeaderButtons, {
   Item
 } from "react-navigation-header-buttons";
 import { PRIMARY_COLOR } from "../../config/CONSTANTS";
+
+import { removeSelectedExtraQuestion } from "../../actions";
 
 /*
  * This Screen/Page is changed from `experience` to `extraquestion`
@@ -83,6 +93,26 @@ class PostJobScreen4 extends Component {
                     last={index === arr.length - 1}
                   >
                     <Text>{eachExtraQuestion}</Text>
+                    <Icon
+                      style={{ alignSelf: "flex-end" }}
+                      type="MaterialIcons"
+                      name="edit"
+                      onPress={() => {
+                        this.props.navigation.navigate("postJob41", {
+                          index,
+                          eachExtraQuestion
+                        });
+                      }}
+                    />
+
+                    <Icon
+                      style={{ alignSelf: "flex-end" }}
+                      type="SimpleLineIcons"
+                      name="minus"
+                      onPress={() => {
+                        this.props.removeSelectedExtraQuestion({ index });
+                      }}
+                    />
                   </ListItem>
                 )
               )}
@@ -130,4 +160,7 @@ const mapStateToProps = ({ postJobReducer }) => {
   return { ...postJobReducer };
 };
 
-export default connect(mapStateToProps)(PostJobScreen4);
+export default connect(
+  mapStateToProps,
+  { removeSelectedExtraQuestion }
+)(PostJobScreen4);

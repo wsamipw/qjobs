@@ -1,6 +1,7 @@
 import {
   SAVE_MULTIPLE_POST_JOB_SCREENS_STATE,
-  DELETE_MULTIPLE_POST_JOB_SCREENS_STATE
+  DELETE_MULTIPLE_POST_JOB_SCREENS_STATE,
+  REMOVE_SELECTED_EXTRA_QUESTION
 } from "../actions/types";
 
 const INITIAL_STATE = {
@@ -19,6 +20,16 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         postJobState: null
+      };
+
+    case REMOVE_SELECTED_EXTRA_QUESTION:
+      const extraQuestion = state.postJobState.extraQuestion.filter(
+        (_, index) => index !== action.payload.index
+      );
+      state.postJobState;
+      return {
+        ...state,
+        postJobState: { ...state.postJobState, extraQuestion: extraQuestion }
       };
 
     default:

@@ -69,6 +69,7 @@ class App extends React.Component {
     });
 
     const token = await _retrieveData(JWT_AUTH_TOKEN);
+    console.log("token: ", token);
     this.setState({ navigateTo: token ? "home" : "login" });
 
     // This is used for Expo.Font.loadAsync and
