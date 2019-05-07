@@ -129,10 +129,6 @@ class JobApplicationsListScreen extends Component {
                       keyExtractor={item => item.id}
                       onEndReached={() => {
                         this.setState({ fetchMoreLoading: true }, () => {
-                          console.log(
-                            "rowcount: ",
-                            data.jobApplications.rowCount
-                          );
                           console.log("page: ", data.jobApplications.page);
                           console.log("pages: ", data.jobApplications.pages);
                           console.log("pages: ", data.jobApplications.pages);
@@ -141,10 +137,7 @@ class JobApplicationsListScreen extends Component {
                             "data.length: ",
                             data.jobApplications.data.length
                           );
-                          if (
-                            data.jobApplications.data.length <
-                            data.jobApplications.rowCount
-                          ) {
+                          if (this.state.page < data.jobApplications.pages) {
                             this.setState(
                               {
                                 page: this.state.page + 1

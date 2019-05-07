@@ -123,10 +123,7 @@ class AppliedJobsScreen extends Component {
                       this.setState({ fetchMoreLoading: true }, () => {
                         console.log("page:", this.state.page);
                         console.log("pagessss: ", data.appliedJobs.pages);
-                        if (
-                          data.appliedJobs.data.length <
-                          data.appliedJobs.rowCount
-                        ) {
+                        if (this.state.page < data.appliedJobs.pages) {
                           this.setState(
                             {
                               page: this.state.page + 1

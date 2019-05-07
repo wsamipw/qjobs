@@ -5,13 +5,15 @@ import {
   Dimensions,
   ScrollView,
   StatusBar,
-  Modal
+  Modal,
+  RefreshControl,
+  Alert
 } from "react-native";
 
 import { isEmpty } from "lodash";
 
-import { Button, Text, Content, Textarea } from "native-base";
-import { Card } from "react-native-elements";
+import { Button, Text, Content, Textarea, Toast } from "native-base";
+import { Card, Divider } from "react-native-elements";
 import { Query, compose, graphql, withApollo } from "react-apollo";
 
 // Review Imports
@@ -74,39 +76,15 @@ class JobApplicationDetailScreen extends Component {
     review: "",
 
     // When createReview mutation is successful
-    ratingReview: null
+    ratingReview: null,
+
+    refreshing: false
   };
 
   componentDidMount = () => {
     const eachItem = this.props.navigation.getParam("item", null);
-    this.setState({ eachItem }, async () => {
-      try {
-        console.log("before AWAIT");
-        const { data } = await this.props.client.query({
-          query: JOB_STATUS_CHECK_QUERY,
-          variables: {
-            id: eachItem.id,
-            status: eachItem.status
-          }
-        });
 
-        // const pollQuery = this.props.client.query({
-        //   query: My_QUERY,
-        //   variables: { ...vars }
-        // });
-        // const response =  await pollQuery.startPolling(1000);
-
-        console.log("RESPONE JOB STATU : ", data);
-        this.setState({
-          eachItem: {
-            ...this.state.eachItem,
-            status: data.jobStatusChange.status
-          }
-        });
-      } catch (error) {
-        console.log("error catched JOB STATUS CHECK: ", error);
-      }
-    });
+    this.setState({ eachItem });
   };
 
   // used for rating and review
@@ -162,7 +140,8 @@ class JobApplicationDetailScreen extends Component {
           onPress={() => {
             // this._toggleModal(item);
             this.props.navigation.navigate("payment", {
-              id: item.id
+              id: item.id,
+              onMyGoBack: () => this._onRefresh()
             });
           }}
         >
@@ -283,12 +262,79 @@ class JobApplicationDetailScreen extends Component {
     }
   };
 
+  _onRefresh = () => {
+    if (this.state.eachItem.status !== PAID) {
+      this.setState({ refreshing: true }, async () => {
+        try {
+          const { data } = await this.props.client.query({
+            query: JOB_STATUS_CHECK_QUERY,
+            variables: {
+              id: this.state.eachItem.id,
+              status: this.state.eachItem.status
+            }
+          });
+
+          console.log("dataa job app deta: ", data);
+
+          this.setState({
+            refreshing: false,
+            eachItem: {
+              ...this.state.eachItem,
+              status: data.jobStatusChange.status
+            }
+          });
+        } catch (error) {
+          console.log(
+            "error catched JOB STATUS CHECK --> job app detail: ",
+            error
+          );
+
+          this.setState({ refreshing: false });
+
+          Toast.show({
+            text: "Error Getting Data From Server !",
+            buttonText: "Okay",
+            duration: 8000,
+            position: "bottom",
+            type: "danger"
+          });
+        }
+      });
+    } else {
+      if (
+        (this.state.eachItem.reviewSet &&
+          this.state.eachItem.reviewSet.length) ||
+        this.state.review
+      ) {
+        Alert.alert(
+          "Job Completed",
+          "Congratulations! Job Completed Successfully",
+          [{ text: "OK" }]
+        );
+      } else {
+        Alert.alert(
+          "Congratulations! Job Completed",
+          "Now review your employee about his performance",
+          [{ text: "OK" }]
+        );
+      }
+    }
+  };
+
   render() {
     const { eachItem } = this.state;
 
     console.log("eachItem job app detail render: ", eachItem);
     return eachItem ? (
-      <ScrollView scrollEnabled>
+      <ScrollView
+        scrollEnabled
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this._onRefresh}
+          />
+        }
+      >
         <View style={styles.mainWrapper}>
           <StatusBar barStyle="light-content" backgroundColor={PRIMARY_COLOR} />
           <Card>

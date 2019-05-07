@@ -28,6 +28,7 @@ class BraintreePaymentScreen extends Component {
         ) {
           console.log("payment success confirm ");
           this.setState({ paymentAPIResponse: PAYMENT_SUCCESS }, () => {
+            this.props.navigation.state.params.onMyGoBack();
             this.props.navigation.goBack();
           });
         } else throw new Error(response);

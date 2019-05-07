@@ -95,10 +95,7 @@ class MyReviews extends Component {
                   }}
                   onEndReached={() => {
                     this.setState({ fetchMoreLoading: true }, () => {
-                      if (
-                        data.myReviewList.data.length <
-                        data.myReviewList.rowCount
-                      ) {
+                      if (this.state.page < data.myReviewList.pages) {
                         this.setState({ page: this.state.page + 1 }, () => {
                           console.log("state page: ", this.state.page);
                           fetchMore({
@@ -116,7 +113,8 @@ class MyReviews extends Component {
                                   data: [
                                     ...prev.myReviewList.data,
                                     ...fetchMoreResult.myReviewList.data
-                                  ]
+                                  ],
+                                  page: fetchMoreResult.myReviewList.page
                                 }
                               });
                             }

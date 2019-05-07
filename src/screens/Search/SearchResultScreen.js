@@ -139,7 +139,6 @@ class SearchResultScreen extends Component {
             }
 
             if (data && data.jobs && data.jobs.data.length) {
-              console.log("data::", data.jobs.data);
               return (
                 <View
                   style={{
@@ -160,7 +159,7 @@ class SearchResultScreen extends Component {
                       // console.log("data length: ", data.jobs.data.length);
 
                       this.setState({ fetchMoreLoading: true }, () => {
-                        if (data.jobs.data.length < data.jobs.rowCount) {
+                        if (this.state.page < data.jobs.pages) {
                           this.setState({ page: this.state.page + 1 }, () => {
                             fetchMore({
                               variables: {
@@ -177,7 +176,8 @@ class SearchResultScreen extends Component {
                                     data: [
                                       ...prev.jobs.data,
                                       ...fetchMoreResult.jobs.data
-                                    ]
+                                    ],
+                                    page: fetchMoreResult.jobs.page
                                   }
                                 });
                               }

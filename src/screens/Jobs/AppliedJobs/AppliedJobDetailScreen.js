@@ -5,7 +5,8 @@ import {
   Dimensions,
   ScrollView,
   StatusBar,
-  Alert
+  Alert,
+  RefreshControl
 } from "react-native";
 
 // import DropdownAlert from "react-native-dropdownalert";
@@ -62,49 +63,20 @@ class AppliedJobDetailScreen extends Component {
     totalHours: "",
     loading: false,
 
-    eachItem: null
+    eachItem: null,
+    refreshing: false
   };
 
   componentDidMount = () => {
     const eachItem = this.props.navigation.getParam("item", null);
 
-    this.setState({ eachItem }, async () => {
-      try {
-        console.log("before AWAIT ------>  APPLIED JOB");
-        const { data } = await this.props.client.query({
-          query: JOB_STATUS_CHECK_QUERY,
-          variables: {
-            id: eachItem.id,
-            status: eachItem.status
-          }
-        });
-
-        // const pollQuery = this.props.client.query({
-        //   query: My_QUERY,
-        //   variables: { ...vars }
-        // });
-        // const response =  await pollQuery.startPolling(1000);
-
-        console.log("RESPONE JOB STATUS ------>  APPLIED JOB : ", data);
-        this.setState({
-          eachItem: {
-            ...this.state.eachItem,
-            status: data.jobStatusChange.status
-          }
-        });
-      } catch (error) {
-        console.log(
-          "error catched JOB STATUS CHECK ------>  APPLIED JOB: ",
-          error
-        );
-      }
-    });
+    this.setState({ eachItem });
   };
 
   renderStatus = () => {
     const item = this.state.eachItem;
 
-    console.log("itemmmmmm: applied job detail: ", item);
+    // console.log("itemmmmmm: applied job detail: ", item);
     if (item.status === ACCEPTED) {
       return (
         <View>
@@ -349,11 +321,65 @@ class AppliedJobDetailScreen extends Component {
     );
   };
 
+  _onRefresh = () => {
+    if (this.state.eachItem.status !== PAID) {
+      this.setState({ refreshing: true }, async () => {
+        try {
+          const { data } = await this.props.client.query({
+            query: JOB_STATUS_CHECK_QUERY,
+            variables: {
+              id: this.state.eachItem.id,
+              status: this.state.eachItem.status
+            }
+          });
+
+          console.log("dataa applied job detai: ", data);
+
+          this.setState({
+            refreshing: false,
+            eachItem: {
+              ...this.state.eachItem,
+              status: data.jobStatusChange.status
+            }
+          });
+        } catch (error) {
+          console.log(
+            "error catched JOB STATUS CHECK ------>  APPLIED JOB: ",
+            error
+          );
+
+          this.setState({ refreshing: false });
+          Toast.show({
+            text: "Error Getting Data From Server !",
+            buttonText: "Okay",
+            duration: 8000,
+            position: "bottom",
+            type: "danger"
+          });
+        }
+      });
+    } else {
+      Alert.alert(
+        "Job Completed",
+        "Congratulations! Job Completed Successfully",
+        [{ text: "OK" }]
+      );
+    }
+  };
+
   render() {
     const { eachItem } = this.state;
 
     return eachItem ? (
-      <ScrollView scrollEnabled>
+      <ScrollView
+        scrollEnabled
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this._onRefresh}
+          />
+        }
+      >
         <View style={styles.mainWrapper}>
           <StatusBar barStyle="light-content" backgroundColor={PRIMARY_COLOR} />
           <Card>
