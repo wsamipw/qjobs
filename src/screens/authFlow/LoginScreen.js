@@ -20,14 +20,21 @@ import {
 import { Button, SocialIcon } from "react-native-elements";
 import { Facebook } from "expo";
 
-import { Constants, Location, Permissions } from "expo";
 import { connect } from "react-redux";
 
-import { compose, graphql, withApollo } from "react-apollo";
+import { compose, withApollo } from "react-apollo";
 
 import styles from "../../Styles/LoginRegisterStyles";
-import { JWT_AUTH_TOKEN, LOCATION, USER_DATA } from "../../config/CONSTANTS";
-import { LOGIN_MUTATION, SOCIAL_AUTH_MUTATION } from "../../config/mutations";
+import {
+  JWT_AUTH_TOKEN,
+  USER_DATA,
+  EXPO_PUSH_TOKEN
+} from "../../config/CONSTANTS";
+import {
+  LOGIN_MUTATION,
+  SOCIAL_AUTH_MUTATION,
+  ADD_APPTOKEN_MUTATION
+} from "../../config/mutations";
 
 import { _storeData, _retrieveData } from "../../config/utils";
 
@@ -43,40 +50,6 @@ class LoginScreen extends Component {
 
     errorUsername: "",
     errorPassword: ""
-  };
-
-  componentDidMount() {
-    if (Platform.OS === "android" && !Constants.isDevice) {
-      BackHandler.exitApp();
-    } else {
-      this._getLocationAsync();
-    }
-  }
-
-  // componentWillUnmount() {
-  //   Toast.toastInstance = null;
-  // }
-
-  _getLocationAsync = async () => {
-    let { status } = await Permissions.askAsync(Permissions.LOCATION);
-
-    if (status !== "granted") {
-      console.log("not granted");
-      // Alert.alert(
-      //   "No Location Permission",
-      //   "Please Allow the location permission to the app. Reopen the App again.",
-      //   [{ text: "OK", onPress: () => BackHandler.exitApp() }]
-      // );
-    } else {
-      console.log("granted");
-
-      try {
-        let location = await Location.getCurrentPositionAsync({});
-        _storeData(LOCATION, JSON.stringify(location));
-      } catch (error) {
-        console.log("error location fetch login screen: ", error);
-      }
-    }
   };
 
   togglePassVisisble = () => {
@@ -236,7 +209,7 @@ class LoginScreen extends Component {
                           password
                         }
                       })
-                      .then(response => {
+                      .then(async response => {
                         console.log("data: ", response.data);
 
                         _storeData(
@@ -248,12 +221,34 @@ class LoginScreen extends Component {
                           JSON.stringify(response.data.tokenAuth.user)
                         );
 
-                        // _retrieveData(JWT_AUTH_TOKEN);
-                        // _retrieveData(USER_DATA);
+                        const expoPushToken = await _retrieveData(
+                          EXPO_PUSH_TOKEN
+                        );
 
-                        this.setState({ loading: false });
+                        this.props.client
+                          .mutate({
+                            mutation: ADD_APPTOKEN_MUTATION,
+                            variables: { token: expoPushToken }
+                          })
+                          .then(response => {
+                            console.log(
+                              "response expo push notifica: ",
+                              response
+                            );
+                            // _retrieveData(JWT_AUTH_TOKEN);
+                            // _retrieveData(USER_DATA);
 
-                        this.props.navigation.navigate("home");
+                            this.setState({ loading: false });
+
+                            this.props.navigation.navigate("home");
+                          })
+                          .catch(expoError => {
+                            console.log(
+                              "expo push notiication errro ;",
+                              expoError
+                            );
+                            this.setState({ loading: false });
+                          });
                       })
                       .catch(error => {
                         console.log("data error: ", JSON.stringify(error));

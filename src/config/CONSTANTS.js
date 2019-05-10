@@ -1,6 +1,7 @@
 export const JWT_AUTH_TOKEN = "JWT_AUTH_TOKEN";
 export const USER_DATA = "USER_DATA";
 export const LOCATION = "LOCATION";
+export const EXPO_PUSH_TOKEN = "EXPO_PUSH_TOKEN";
 
 // Used in PostJobScreen1.js
 export const SELECT_A_JOB_TITLE = "Select a Job Title";

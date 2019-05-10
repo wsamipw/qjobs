@@ -1,7 +1,9 @@
 import React from "react";
-import { SafeAreaView, StatusBar } from "react-native";
+import { SafeAreaView, StatusBar, Platform, BackHandler } from "react-native";
 import { Container, StyleProvider, Root } from "native-base";
-import { Provider } from "react-redux";
+import { Provider, connect } from "react-redux";
+
+import { Notifications, Constants } from "expo";
 
 // Apollo Requirements
 import { ApolloProvider } from "react-apollo";
@@ -16,13 +18,18 @@ import getTheme from "./native-base-theme/components";
 import platform from "./native-base-theme/variables/platform";
 import store from "./src/store";
 import { uri } from "./Settings";
-import { _retrieveData } from "./src/config/utils";
+import {
+  _retrieveData,
+  registerForPushNotificationsAsync,
+  _getLocationAsync
+} from "./src/config/utils";
 import { JWT_AUTH_TOKEN } from "./src/config/CONSTANTS";
+import { storeNotificationObject } from "./src/actions";
 
 // Middleware for passing token in the Request Headers
 const authLink = setContext(async (_, { headers }) => {
   const token = await _retrieveData(JWT_AUTH_TOKEN);
-  console.log("token: ", token);
+  // console.log("token: ", token);
   return {
     headers: {
       ...headers,
@@ -63,20 +70,46 @@ class App extends React.Component {
   }
 
   async componentDidMount() {
-    await Expo.Font.loadAsync({
-      Roboto: require("native-base/Fonts/Roboto.ttf"),
-      Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
-    });
+    try {
+      await Expo.Font.loadAsync({
+        Roboto: require("native-base/Fonts/Roboto.ttf"),
+        Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
+      });
 
-    const token = await _retrieveData(JWT_AUTH_TOKEN);
-    console.log("token: ", token);
-    this.setState({ navigateTo: token ? "home" : "login" });
+      if (Platform.OS === "android" && !Constants.isDevice) {
+        BackHandler.exitApp();
+      } else {
+        _getLocationAsync();
+      }
 
-    // This is used for Expo.Font.loadAsync and
-    // thus kept this piece of code separate
-    // to avoid future confusions.
-    this.setState({ loading: false });
+      const token = await _retrieveData(JWT_AUTH_TOKEN);
+      console.log("token: ", token);
+      this.setState({ navigateTo: token ? "home" : "login" });
+
+      registerForPushNotificationsAsync();
+
+      // This is used for Expo.Font.loadAsync and
+      // thus kept this piece of code separate
+      // to avoid future confusions.
+      this.setState({ loading: false });
+
+      // Handle notifications that are received or selected while the app
+      // is open. If the app was closed and then opened by tapping the
+      // notification (rather than just tapping the app icon to open it),
+      // this function will fire on the next tick after the app starts
+      // with the notification data.
+      this._notificationSubscription = Notifications.addListener(
+        this._handleNotification
+      );
+    } catch (error) {
+      console.log("catch error App.js: ", error);
+    }
   }
+
+  _handleNotification = notification => {
+    console.log(notification);
+    this.props.storeNotificationObject({ notification });
+  };
 
   render() {
     StatusBar.setBarStyle("dark-content", true);
@@ -105,8 +138,13 @@ class App extends React.Component {
   }
 }
 
+const ConnectApp = connect(
+  null,
+  { storeNotificationObject }
+)(App);
+
 export default () => (
   <Provider store={store}>
-    <App />
+    <ConnectApp />
   </Provider>
 );

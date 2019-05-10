@@ -19,6 +19,46 @@ export const SOCIAL_AUTH_MUTATION = gql`
   }
 `;
 
+export const REMOVE_APPTOKEN_MUTATION = gql`
+  mutation RemoveApptokenMutation($token: String!) {
+    removeApptoken(token: $token) {
+      msg
+      status
+      user {
+        id
+        username
+        firstName
+        lastName
+        email
+        currentAddress
+        permanentAddress
+        gender
+        dateOfBirth
+      }
+    }
+  }
+`;
+
+export const ADD_APPTOKEN_MUTATION = gql`
+  mutation AddApptokenMutation($token: String!) {
+    addApptoken(token: $token) {
+      msg
+      status
+      user {
+        id
+        username
+        firstName
+        lastName
+        email
+        currentAddress
+        permanentAddress
+        gender
+        dateOfBirth
+      }
+    }
+  }
+`;
+
 export const APPLY_JOB_MUTATION = gql`
   mutation ApplyJobMutation(
     $job: ID

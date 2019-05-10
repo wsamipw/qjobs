@@ -1,5 +1,11 @@
 import React, { Component } from "react";
-import { View, FlatList, ActivityIndicator } from "react-native";
+import {
+  View,
+  FlatList,
+  ActivityIndicator,
+  ScrollView,
+  RefreshControl
+} from "react-native";
 
 import { Query } from "react-apollo";
 import moment from "moment";
@@ -41,68 +47,74 @@ class MyJobScreen extends Component {
 
   render() {
     return (
-      <View>
-        <Query
-          query={MY_JOBS_QUERY}
-          fetchPolicy="cache-and-network"
-          notifyOnNetworkStatusChange
-        >
-          {({ loading, error, data, refetch, networkStatus }) => {
-            if (networkStatus === 4)
-              return <ActivityIndicator size="large" color="#ff6347" />;
-            if (loading)
-              return <ActivityIndicator size="large" color="#ff6347" />;
-            if (error) {
-              console.log("my jobs screen error: ", error);
-              return <Text>Error Fetching Data !</Text>;
-            }
+      <Query
+        query={MY_JOBS_QUERY}
+        fetchPolicy="cache-and-network"
+        notifyOnNetworkStatusChange
+      >
+        {({ loading, error, data, refetch, networkStatus }) => {
+          if (networkStatus === 4)
+            return <ActivityIndicator size="large" color="#ff6347" />;
+          if (loading)
+            return <ActivityIndicator size="large" color="#ff6347" />;
+          if (error) {
+            console.log("my jobs screen error: ", error);
+            return <Text>Error Fetching Data !</Text>;
+          }
 
-            if (data && data.me && data.me.jobSet && data.me.jobSet.length) {
-              return (
-                <View>
-                  <FlatList
-                    data={data.me.jobSet}
+          if (data && data.me && data.me.jobSet && data.me.jobSet.length) {
+            return (
+              <ScrollView
+                scrollEnabled
+                refreshControl={
+                  <RefreshControl
                     refreshing={networkStatus === 4}
                     onRefresh={() => refetch()}
-                    keyExtractor={item => item.id}
-                    renderItem={this._renderItem}
                   />
-                </View>
-              );
-            } else {
-              return (
-                <View style={{ flex: 1 }}>
-                  {/* <StatusBar
+                }
+              >
+                <FlatList
+                  data={data.me.jobSet}
+                  // refreshing={networkStatus === 4}
+                  // onRefresh={() => refetch()}
+                  keyExtractor={item => item.id}
+                  renderItem={this._renderItem}
+                />
+              </ScrollView>
+            );
+          } else {
+            return (
+              <View style={{ flex: 1 }}>
+                {/* <StatusBar
                       barStyle="light-content"
                       backgroundColor={PRIMARY_COLOR}
                     /> */}
-                  <View
-                    style={{
-                      flex: 1,
-                      // height: "100%",
-                      marginTop: 200,
-                      flexDirection: "column",
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }}
-                  >
-                    <Icon
-                      type="MaterialIcons"
-                      name="cloud-off"
-                      style={{ fontSize: 50, color: "#d3d3d3" }}
-                    />
-                    <Text note>
-                      You have not created any Jobs!{"\n"} Click on the ' + '
-                      plus icon to create a job
-                      {/* {this.props.navigation.state.params.query} */}
-                    </Text>
-                  </View>
+                <View
+                  style={{
+                    flex: 1,
+                    // height: "100%",
+                    marginTop: 200,
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }}
+                >
+                  <Icon
+                    type="MaterialIcons"
+                    name="cloud-off"
+                    style={{ fontSize: 50, color: "#d3d3d3" }}
+                  />
+                  <Text note>
+                    You have not created any Jobs!{"\n"} Click on the ' + ' plus
+                    icon to create a job
+                    {/* {this.props.navigation.state.params.query} */}
+                  </Text>
                 </View>
-              );
-            }
-          }}
-        </Query>
-      </View>
+              </View>
+            );
+          }
+        }}
+      </Query>
     );
   }
 }
