@@ -27,3 +27,7 @@ export const PAYMENT_REJECTED = "PAYMENT_REJECTED";
 export const RETRIEVE_NONCE_PENDING = "RETRIEVE_NONCE_PENDING";
 export const RETRIEVE_NONCE_FULFILLED = "RETRIEVE_NONCE_FULFILLED";
 export const RETRIEVE_NONCE_REJECTED = "RETRIEVE_NONCE_REJECTED";
+
+// used for notification
+// must be lower case as obtained in the notification object in `_handleNotification()`
+export const NOTIFICATION_SELECTED = "selected";

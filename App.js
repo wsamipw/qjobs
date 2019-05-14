@@ -13,6 +13,9 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import { setContext } from "apollo-link-context";
 
 import Expo from "expo";
+
+import NavigationService from "./NavigationService";
+
 import mainNavigator from "./src/config/routes";
 import getTheme from "./native-base-theme/components";
 import platform from "./native-base-theme/variables/platform";
@@ -23,7 +26,7 @@ import {
   registerForPushNotificationsAsync,
   _getLocationAsync
 } from "./src/config/utils";
-import { JWT_AUTH_TOKEN } from "./src/config/CONSTANTS";
+import { JWT_AUTH_TOKEN, NOTIFICATION_SELECTED } from "./src/config/CONSTANTS";
 import { storeNotificationObject } from "./src/actions";
 
 // Middleware for passing token in the Request Headers
@@ -108,6 +111,12 @@ class App extends React.Component {
 
   _handleNotification = notification => {
     console.log(notification);
+
+    const { origin, data } = notification;
+
+    if (origin === NOTIFICATION_SELECTED) {
+      NavigationService.navigate("jobs", { data });
+    }
     this.props.storeNotificationObject({ notification });
   };
 
@@ -126,7 +135,8 @@ class App extends React.Component {
               <Container>
                 <MainNavigator
                   ref={navigatorRef => {
-                    this.navigatorEl = navigatorRef;
+                    // this.navigatorEl = navigatorRef;
+                    NavigationService.setTopLevelNavigator(navigatorRef);
                   }}
                 />
               </Container>
