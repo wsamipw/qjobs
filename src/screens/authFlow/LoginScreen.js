@@ -225,6 +225,8 @@ class LoginScreen extends Component {
                           EXPO_PUSH_TOKEN
                         );
 
+                        console.log('expo push toke: ', expoPushToken)
+
                         this.props.client
                           .mutate({
                             mutation: ADD_APPTOKEN_MUTATION,

@@ -32,7 +32,7 @@ class SearchDetailScreen extends Component {
     return {
       title: `Apply for ${
         navigation.state.params.item.properties.jobTitle.name
-      }`,
+        }`,
       headerStyle: {
         backgroundColor: "#5968ef"
       },
@@ -57,12 +57,12 @@ class SearchDetailScreen extends Component {
 
     const extraQuestion =
       item &&
-      item.properties.extraQuestion &&
-      item.properties.extraQuestion.length
+        item.properties.extraQuestion &&
+        item.properties.extraQuestion.length
         ? item.properties.extraQuestion.map(eachExtraQuestion => ({
-            question: eachExtraQuestion,
-            answer: ""
-          }))
+          question: eachExtraQuestion,
+          answer: ""
+        }))
         : [];
 
     this.setState({ job: item.id, extraQuestion });
@@ -156,9 +156,9 @@ class SearchDetailScreen extends Component {
                             extraQuestion: this.state.extraQuestion.map(each =>
                               each.question === eachExtraQuestion.question
                                 ? {
-                                    ...each,
-                                    answer: val
-                                  }
+                                  ...each,
+                                  answer: val
+                                }
                                 : each
                             )
                           })
@@ -173,82 +173,82 @@ class SearchDetailScreen extends Component {
             {this.state.loading ? (
               <Spinner />
             ) : (
-              <Button
-                backgroundColor={PRIMARY_COLOR}
-                rounded
-                block
-                style={{
-                  marginTop: 15
-                }}
-                onPress={() => {
-                  this.setState({ loading: true }, () => {
-                    console.log("state apply job: ", this.state);
-                    const hourlyRate = Number(this.state.hourlyRate);
+                <Button
+                  backgroundColor={PRIMARY_COLOR}
+                  rounded
+                  block
+                  style={{
+                    marginTop: 15
+                  }}
+                  onPress={() => {
+                    this.setState({ loading: true }, () => {
+                      console.log("state apply job: ", this.state);
+                      const hourlyRate = Number(this.state.hourlyRate);
 
-                    const { job, description, extraQuestion } = this.state;
+                      const { job, description, extraQuestion } = this.state;
 
-                    this.props.client
-                      .mutate({
-                        mutation: APPLY_JOB_MUTATION,
-                        variables: {
-                          job,
-                          description,
-                          hourlyRate,
-                          extraQuestion
-                        },
-                        refetchQueries: [
-                          {
-                            query: APPLIED_JOBS_QUERY,
-                            variables: {
-                              //awaitRefetchQueries: true,
-                              page: 1,
-                              rows: 4
+                      this.props.client
+                        .mutate({
+                          mutation: APPLY_JOB_MUTATION,
+                          variables: {
+                            job,
+                            description,
+                            hourlyRate,
+                            extraQuestion
+                          },
+                          refetchQueries: [
+                            {
+                              query: APPLIED_JOBS_QUERY,
+                              variables: {
+                                //awaitRefetchQueries: true,
+                                page: 1,
+                                rows: 4
+                              }
                             }
-                          }
-                        ]
-                      })
-                      .then(response => {
-                        console.log("response apply:", response);
-                        if (
-                          response.data.applyJob.status === 200 &&
-                          response.data.applyJob.msg === "success"
-                        ) {
-                          console.log("success apply job: ");
-                          // this.Default_Toast_Bottom();
+                          ]
+                        })
+                        .then(response => {
+                          console.log("response apply:", response);
+                          if (
+                            response.data.applyJob.status === 200 &&
+                            response.data.applyJob.msg === "success"
+                          ) {
+                            console.log("success apply job: ");
+                            // this.Default_Toast_Bottom();
+                            this.setState({ loading: false });
+                            Toast.show({
+                              text: "Successfully Applied !",
+                              buttonText: "Okay",
+                              duration: 3000,
+                              position: "bottom",
+                              type: "success"
+                            });
+
+                            this.resetStack();
+
+                            this.props.navigation.navigate("jobs");
+                          } else throw new Error(JSON.stringify(response));
+                        })
+                        .catch(error => {
+                          const err = JSON.parse(error.message);
                           this.setState({ loading: false });
+
+                          console.log("error apply jov:", err);
                           Toast.show({
-                            text: "Successfully Applied !",
+                            text:
+                              "You must first be registered as a professional for this job! \nGoto More > Register as Pro User",
                             buttonText: "Okay",
                             duration: 3000,
                             position: "bottom",
-                            type: "success"
+                            type: "danger"
                           });
-
-                          this.resetStack();
-
-                          this.props.navigation.navigate("jobs");
-                        } else throw new Error(JSON.stringify(response));
-                      })
-                      .catch(error => {
-                        const err = JSON.parse(error.message);
-                        this.setState({ loading: false });
-
-                        console.log("error apply jov:", err);
-                        Toast.show({
-                          text:
-                            "You must first be registered as a professional for this job! \nGoto More > Register as Pro User",
-                          buttonText: "Okay",
-                          duration: 3000,
-                          position: "bottom",
-                          type: "danger"
                         });
-                      });
-                  });
-                }}
-              >
-                <Text>Apply</Text>
-              </Button>
-            )}
+                    });
+                  }}
+                >
+                  <Text>Apply</Text>
+                </Button>
+              )}
             {/* <CustomToast ref="defaultToastBottom" position="bottom" /> */}
           </ScrollView>
         </Content>

@@ -149,8 +149,8 @@ class MyReviews extends Component {
                           Reviewed By:{" "}
                           {item.reviewer.firstName && item.reviewer.lastName
                             ? `${item.reviewer.firstName} ${
-                                item.reviewer.lastName
-                              }`
+                            item.reviewer.lastName
+                            }`
                             : `${item.reviewer.username}`}
                         </Text>
                       </Card>
@@ -166,6 +166,8 @@ class MyReviews extends Component {
             console.log("loading my review: ", loading);
             return <ActivityIndicator size="large" color="#ff6347" />;
           }
+
+          return <Text>No Review Found</Text>
         }}
       </Query>
     );
